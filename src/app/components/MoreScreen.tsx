@@ -1,6 +1,6 @@
 import { Building2, Info, Phone, Settings, ChevronRight } from 'lucide-react';
 import { Card, CardContent } from '@/app/components/ui/card';
-import { schoolInfo } from '@/data/mockData';
+import { schoolInfo } from "@/data/announcements";
 
 interface MoreScreenProps {
   onNavigate: (view: string) => void;

@@ -2,7 +2,7 @@ import { Info, History, Target, Eye, Heart, Award, Megaphone, ChevronLeft } from
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { Separator } from '@/app/components/ui/separator';
-import { schoolInfo } from '@/data/mockData';
+import { schoolInfo } from '@/data/announcements';
 import { useAppContext } from '@/context/AppContext';
 
 interface SchoolInfoProps {

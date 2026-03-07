@@ -13,7 +13,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Separator } from '@/app/components/ui/separator';
-import { contactInfo } from '@/data/mockData';
+import { contactInfo } from "@/data/announcements";
 
 interface ContactProps {
   onNavigate: (view: string) => void;

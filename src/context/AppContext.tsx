@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { campusData, FloorData as CampusFloorData } from '../data/campusData';
+import { defaultEvents, defaultNotices } from '../data/announcements';
 
 // Re-exporting for use in other files
 export type FloorData = CampusFloorData;
@@ -69,13 +70,14 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [notices, setNotices] = useState<Notice[]>([]);
+  // Initializing state with imported data
+  const [events, setEvents] = useState<Event[]>(defaultEvents);
+  const [notices, setNotices] = useState<Notice[]>(defaultNotices);
   const [floors, setFloors] = useState<FloorData[]>(campusData);
   const [staff] = useState<StaffMember[]>([]);
   const [facilities] = useState<Facility[]>([]);
 
-  // Simple handlers (Omitted full CRUD for brevity as requested)
+  // Handlers
   const addEvent = (event: Omit<Event, 'id'>) => setEvents(prev => [...prev, { ...event, id: Date.now().toString() }]);
   const addNotice = (notice: Omit<Notice, 'id'>) => setNotices(prev => [...prev, { ...notice, id: Date.now() }]);
   const updateEvent = (id: string, event: Omit<Event, 'id'>) => setEvents(prev => prev.map(e => e.id === id ? { ...event, id } : e));
