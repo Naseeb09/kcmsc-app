@@ -1,4 +1,4 @@
-# 📍 Campus Navigator: KC Model School & College
+📍 Campus Navigator: KC Model School & College
 
 <p align="center">
 <img src="https://img.shields.io/badge/Founder-Khan%20Jariff-059669?style=for-the-badge&logo=github" />
@@ -7,7 +7,11 @@
 </p>
 
 Campus Navigator is a high-performance digital infrastructure tool designed to streamline navigation for students and faculty at KC Model School & College. Developed by Glitched Technologies, this application provides real-time access to classroom locations, faculty directories, and campus facilities across 8 levels (Basement to 7th Floor).
-## 🚀 Core Features
+📲 Download & Access
+Platform	Link	Status
+🌐 Web Version	Launch on Vercel	Live
+🤖 Android (APK)	Download Latest Release	Coming Soon
+🚀 Core Features
 
     🔍 Omni-Filter Search: Instant filtering by Class name, Section (e.g., SB-1), Form Teacher, or Room number.
 
@@ -19,7 +23,7 @@ Campus Navigator is a high-performance digital infrastructure tool designed to s
 
     📱 Cross-Platform: Built with React and TypeScript, ready for Vercel web deployment and Android APK distribution.
 
-## 🛠️ Technical Stack
+🛠️ Technical Stack
 
     ⚛️ Frontend: React 18 with TypeScript for type-safe development.
 
@@ -31,7 +35,8 @@ Campus Navigator is a high-performance digital infrastructure tool designed to s
 
     ⚡ Backend: Supabase for data persistence and Vercel for automated CI/CD.
 
-## 📦 Installation & Setup
+📦 Installation & Deployment
+Local Development
 
 To run this project locally, ensure you have Node.js installed.
 Bash
@@ -48,7 +53,16 @@ npm install
 # 🚀 Start the development server
 npm run dev
 
-## 🗺️ Roadmap
+⚡ The "3-Line Boom" Update
+
+To push new updates live to the web version:
+Bash
+
+git add .
+git commit -m "feat: updated floor detail filtering"
+git push origin main
+
+🗺️ Roadmap
 
     [x] 🎨 Initial UI/UX Design System (Glitched Tech Style)
 
@@ -60,12 +74,12 @@ npm run dev
 
     [ ] 🤖 Android APK Release via Capacitor
 
-## 🛡️ Leadership & Credits
+🛡️ Leadership & Credits
 
     Lead Engineer & Founder: Khan Jariff Al Naseeb
 
     The Team: Glitched Technologies
 
-## 📩 Bug Reports & Suggestions
+📩 Bug Reports & Suggestions
 
 Found a bug or have a feature idea? Please open an Issue or submit a Pull Request. We are actively improving the navigator based on student feedback.
