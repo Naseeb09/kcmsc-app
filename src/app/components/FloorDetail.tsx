@@ -1,125 +1,115 @@
-import { ChevronLeft, Building, Users, ArrowUpDown, DoorOpen, Phone, Layers, Info } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { ChevronLeft, Users, ArrowUpDown, DoorOpen, Phone, Layers, Search, MapPin } from 'lucide-react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { useAppContext } from '@/context/AppContext';
 
 interface FloorDetailProps {
-  onNavigate: (view: string) => void;
+  onNavigate: (view: string, data?: any) => void;
   floorId: string;
 }
 
 export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
   const { floors } = useAppContext();
+  const [searchQuery, setSearchQuery] = useState('');
   const floor = floors.find(f => f.id === floorId);
+
+  // OMNI-FILTER: Search Section, Teacher, Class Name, and Room No
+  const filteredClasses = useMemo(() => {
+    if (!floor) return [];
+    const query = searchQuery.toLowerCase();
+    return floor.classes.filter(c => 
+      c.name.toLowerCase().includes(query) || 
+      c.room.toLowerCase().includes(query) ||
+      c.teacher.toLowerCase().includes(query) ||
+      c.section.toLowerCase().includes(query)
+    );
+  }, [floor, searchQuery]);
 
   if (!floor) return null;
 
   return (
     <div className="pb-20 bg-[#0d1f0f] min-h-screen">
-      {/* Header */}
-      <div className="bg-[#1a2e1c] px-6 py-4 border-b border-[#059669]/20 sticky top-0 z-10">
-        <div className="max-w-2xl mx-auto">
+      <div className="bg-[#1a2e1c] px-6 pt-6 pb-4 border-b border-[#059669]/20 sticky top-0 z-20">
+        <div className="max-w-2xl mx-auto space-y-4">
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => onNavigate('floors')}
-              className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#1a3a1d] text-[#059669] hover:bg-[#059669]/10 transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5" />
+            <button onClick={() => onNavigate('floors')} className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#0d1f0f] text-[#059669] border border-[#059669]/20">
+              <ChevronLeft className="w-6 h-6" />
             </button>
-            <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-[#0d1f0f]"
-              style={{ backgroundColor: floor.color || '#059669' }}
-            >
+            <div className="w-12 h-12 rounded-2xl flex items-center justify-center font-black text-[#0d1f0f] text-lg" style={{ backgroundColor: floor.color }}>
               {floor.label}
             </div>
             <div className="flex-1">
-              <h1 className="text-lg font-medium text-[#e8f5e9]">{floor.name}</h1>
-              <p className="text-[10px] text-[#059669] font-bold uppercase tracking-wider">{floor.purpose}</p>
+              <h1 className="text-lg font-black text-[#e8f5e9] tracking-tight uppercase leading-tight">{floor.name}</h1>
+              <p className="text-[10px] text-[#059669] font-black uppercase tracking-widest">{floor.purpose}</p>
             </div>
+          </div>
+
+          <div className="relative pb-2">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#059669]" />
+            <input 
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search section, teacher, or room..."
+              className="w-full bg-[#0d1f0f] border border-[#059669]/30 rounded-2xl py-4 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-[#fbbf24]/50 transition-all shadow-2xl"
+            />
           </div>
         </div>
       </div>
 
-      <div className="px-6 py-6 max-w-2xl mx-auto">
-        {/* Floor Quick Stats */}
-        <div className="grid grid-cols-2 gap-3 mb-6">
-          <Card className="bg-[#1a3a1d] border border-[#059669]/20">
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#059669]/20 flex items-center justify-center">
-                <DoorOpen className="w-5 h-5 text-[#fbbf24]" />
-              </div>
-              <div>
-                <p className="text-[10px] text-[#a0b5a3] uppercase">Rooms</p>
-                <p className="text-xl font-bold text-[#e8f5e9]">{floor.totalRooms}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="bg-[#1a3a1d] border border-[#059669]/20">
-            <CardContent className="p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#059669]/20 flex items-center justify-center">
-                <ArrowUpDown className="w-5 h-5 text-[#fbbf24]" />
-              </div>
-              <div>
-                <p className="text-[10px] text-[#a0b5a3] uppercase">Lifts</p>
-                <p className="text-xl font-bold text-[#e8f5e9]">{floor.lifts.length}</p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Classroom List */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Building className="w-4 h-4 text-[#fbbf24]" />
-            <h2 className="text-xs font-bold text-[#a0b5a3] uppercase tracking-widest">Room Directory</h2>
-          </div>
-          
-          {floor.classes.map((classInfo, index) => (
-            <Card key={index} className="bg-[#1a3a1d] border border-[#059669]/20 overflow-hidden">
+      <div className="px-6 py-8 max-w-2xl mx-auto">
+        <div className="space-y-6">
+          {filteredClasses.map((classInfo, index) => (
+            <Card key={index} className="group bg-gradient-to-br from-[#1a2e1c] to-[#0d1f0f] border border-white/5 hover:border-[#fbbf24]/30 rounded-[2rem] overflow-hidden transition-all duration-300">
               <CardContent className="p-0">
-                {/* Room Header */}
-                <div className="bg-[#059669]/10 p-3 flex justify-between items-center border-b border-[#059669]/10">
-                  <div className="flex items-center gap-2">
-                    <span className="text-lg font-black text-[#059669]">{classInfo.room}</span>
-                    <div className="h-4 w-[1px] bg-[#059669]/30" />
-                    <span className="text-sm font-bold text-white uppercase tracking-tight">
-                       {classInfo.name !== 'N/A' ? `Class ${classInfo.name}` : classInfo.section}
-                    </span>
-                  </div>
-                  {classInfo.version !== 'N/A' && (
-                    <span className="text-[9px] font-bold bg-[#fbbf24] text-[#0d1f0f] px-2 py-0.5 rounded uppercase">
-                      {classInfo.version}
-                    </span>
-                  )}
-                </div>
-
-                {/* Info Grid */}
-                <div className="p-4 space-y-3">
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2 text-[#a0b5a3]">
-                      <Layers className="w-3.5 h-3.5" />
-                      <span className="text-xs">Section</span>
-                    </div>
-                    <span className="text-xs font-medium text-[#e8f5e9]">{classInfo.section}</span>
-                  </div>
-
-                  <div className="flex justify-between items-center">
-                    <div className="flex items-center gap-2 text-[#a0b5a3]">
-                      <Users className="w-3.5 h-3.5" />
-                      <span className="text-xs">Form Teacher</span>
-                    </div>
-                    <span className="text-xs font-medium text-[#e8f5e9]">{classInfo.teacher}</span>
-                  </div>
-
-                  {classInfo.teacherNumber !== 'N/A' && (
-                    <div className="flex justify-between items-center pt-2 border-t border-[#059669]/10">
-                      <div className="flex items-center gap-2 text-[#a0b5a3]">
-                        <Phone className="w-3.5 h-3.5" />
-                        <span className="text-xs">Contact</span>
+                <div className="p-6 bg-white/5">
+                  <div className="flex justify-between items-start mb-3">
+                    <div className="space-y-2.5"> {/* TAPPING THE SPACE HERE */}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] font-black text-[#fbbf24] bg-[#fbbf24]/10 border border-[#fbbf24]/20 px-3 py-1 rounded-full uppercase tracking-widest">
+                          Room {classInfo.room}
+                        </span>
+                        {classInfo.version !== 'N/A' && (
+                          <span className="text-[9px] font-black text-[#059669] bg-[#059669]/10 border border-[#059669]/20 px-3 py-1 rounded-full uppercase tracking-widest">
+                            {classInfo.version}
+                          </span>
+                        )}
                       </div>
-                      <span className="text-xs font-bold text-[#fbbf24]">{classInfo.teacherNumber}</span>
+                      <h3 className="text-xl font-black text-white group-hover:text-[#fbbf24] transition-colors">
+                        {classInfo.name !== 'N/A' ? `Class ${classInfo.name}` : classInfo.section}
+                      </h3>
                     </div>
-                  )}
+                    <div className="p-2.5 bg-[#0d1f0f] rounded-2xl border border-white/5">
+                      <MapPin className="w-4 h-4 text-[#059669]" />
+                    </div>
+                  </div>
                 </div>
+
+                <div className="px-6 py-5 grid grid-cols-2 gap-4 border-t border-white/5 relative">
+                  <div className="absolute left-1/2 top-5 bottom-5 w-[1px] bg-white/5" />
+                  <div className="space-y-1.5">
+                    <div className="flex items-center gap-2 text-[#059669]">
+                      <Users className="w-4 h-4" />
+                      <span className="text-[9px] font-black uppercase tracking-widest">Faculty</span>
+                    </div>
+                    <p className="text-sm font-bold text-[#e8f5e9] truncate">{classInfo.teacher}</p>
+                  </div>
+                  <div className="space-y-1.5 pl-4">
+                    <div className="flex items-center gap-2 text-[#059669]">
+                      <Layers className="w-4 h-4" />
+                      <span className="text-[9px] font-black uppercase tracking-widest">Section</span>
+                    </div>
+                    <p className="text-sm font-bold text-[#e8f5e9]">{classInfo.section}</p>
+                  </div>
+                </div>
+
+                {classInfo.teacherNumber !== 'N/A' && (
+                  <div className="p-4 bg-white/[0.02] border-t border-white/5">
+                    <a href={`tel:${classInfo.teacherNumber}`} className="w-full flex items-center justify-center gap-2 bg-[#059669] text-[#0d1f0f] rounded-2xl py-4 text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#fbbf24] transition-all">
+                      <Phone size={14} /> Call Representative
+                    </a>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

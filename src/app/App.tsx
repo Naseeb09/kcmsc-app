@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { HomeScreen } from '@/app/components/HomeScreen';
 import { ClassSearch } from '@/app/components/ClassSearch';
 import { FloorMaps } from '@/app/components/FloorMaps';
@@ -21,12 +21,21 @@ import { AppProvider } from '@/context/AppContext';
 
 function AppContent() {
   const [currentView, setCurrentView] = useState('home');
+  const [navigationData, setNavigationData] = useState<any>(null);
 
-  const handleNavigate = (view: string) => {
+  const handleNavigate = (view: string, data?: any) => {
+    setNavigationData(data || null);
     setCurrentView(view);
     // Scroll to top when navigating
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
+
+  // Automatically clear navigation data if we leave the search view
+  useEffect(() => {
+    if (currentView !== 'search' && navigationData) {
+      setNavigationData(null);
+    }
+  }, [currentView, navigationData]);
 
   const renderView = () => {
     // Check if it's a floor detail view
@@ -39,7 +48,7 @@ function AppContent() {
       case 'home':
         return <HomeScreen onNavigate={handleNavigate} />;
       case 'search':
-        return <ClassSearch onNavigate={handleNavigate} />;
+        return <ClassSearch onNavigate={handleNavigate} initialQuery={navigationData?.initialQuery} />;
       case 'floors':
         return <FloorMaps onNavigate={handleNavigate} />;
       case 'staff':
@@ -66,31 +75,6 @@ function AppContent() {
         return <ManageNotices onNavigate={handleNavigate} />;
       case 'manage-floors':
         return <ManageFloors onNavigate={handleNavigate} />;
-      case 'add-floor':
-      case 'add-staff':
-      case 'manage-staff':
-      case 'add-facility':
-      case 'manage-facilities':
-        // These will show a "Coming Soon" message for now
-        return (
-          <div className="pb-20 bg-[#0d1f0f] min-h-screen flex items-center justify-center">
-            <div className="text-center px-6">
-              <div className="w-16 h-16 rounded-full bg-[#059669]/20 flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">🚧</span>
-              </div>
-              <h2 className="text-lg font-medium text-[#e8f5e9] mb-2">Feature Available</h2>
-              <p className="text-sm text-[#a0b5a3] mb-4">
-                This feature is ready to use via the Manage sections
-              </p>
-              <button
-                onClick={() => handleNavigate('profile')}
-                className="px-6 py-2 bg-[#059669] text-white rounded-lg text-sm font-medium"
-              >
-                Back to Dashboard
-              </button>
-            </div>
-          </div>
-        );
       case 'more':
         return <MoreScreen onNavigate={handleNavigate} />;
       default:
@@ -101,9 +85,9 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-[#0d1f0f]">
       {/* Mobile Container */}
-      <div className="max-w-md mx-auto bg-[#0d1f0f] min-h-screen">
-        {/* Main Content */}
-        <div className="relative">
+      <div className="max-w-md mx-auto bg-[#0d1f0f] min-h-screen relative">
+        {/* Main Content Area */}
+        <div className="relative pb-24">
           {renderView()}
         </div>
 
