@@ -1,4 +1,4 @@
-📍 Campus Navigator: KC Model School & College
+# # # 📍 Campus Navigator: KC Model School & College
 
 Campus Navigator is a high-performance digital infrastructure tool designed to streamline navigation for students and faculty at KC Model School. Developed by Glitched Technologies, this application provides real-time access to classroom locations, faculty directories, and campus facilities across 8 levels (Basement to 7th Floor).
 
