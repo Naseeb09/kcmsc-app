@@ -1,115 +1,144 @@
-import { MapPin, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
+import { MapPin, ChevronLeft, Navigation, Globe, Compass, Info, Building2, Car, Shield, TrainFront, ExternalLink, Clock, PhoneCall } from 'lucide-react';
+import { Badge } from '@/app/components/ui/badge';
+import { contactInfo } from "@/data/announcements";
+import buildingImg from "@/data/KCMSC Building.jpg";
 
 interface MapProps {
   onNavigate: (view: string) => void;
 }
 
 export function Map({ onNavigate }: MapProps) {
+  const pinterestUrl = "https://www.pinterest.com/kcmscofficial/";
+
   return (
-    <div className="pb-20 bg-[#0d1f0f] min-h-screen">
-      {/* Header */}
-      <div className="bg-[#1a2e1c] px-6 py-4 border-b border-[#059669]/20">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-center gap-3">
+    <div className="pb-24 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
+      
+      {/* 1. HEADER - COMPACT & READABLE */}
+      <header className="relative bg-[#1a2e1c] px-6 pt-10 pb-8 border-b border-[#059669]/20 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[#059669]/10 via-transparent to-transparent opacity-50" />
+        
+        <div className="max-w-md mx-auto relative z-10">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => onNavigate('home')}
-              className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#1a3a1d] text-[#059669]"
+              className="w-11 h-11 rounded-xl bg-[#0d1f0f] flex items-center justify-center border border-[#059669]/20 text-[#059669] hover:text-[#fbbf24] transition-all active:scale-95 shadow-lg"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-6 h-6" />
             </button>
-            <div className="flex-1">
-              <h1 className="text-lg font-medium text-[#e8f5e9]">Campus Map</h1>
-              <p className="text-[10px] text-[#a0b5a3] uppercase tracking-wide">INTERACTIVE VIEW</p>
-            </div>
-            <div className="w-10 h-10 rounded-lg bg-[#059669]/20 flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-[#fbbf24]" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="px-6 py-6 max-w-2xl mx-auto">
-        {/* Map Container */}
-        <div className="bg-[#1a3a1d] border border-[#059669]/20 rounded-2xl overflow-hidden mb-6">
-          <div className="relative aspect-[4/3]">
-            {/* Static Map Image Placeholder */}
-            <img 
-              src="https://images.unsplash.com/photo-1520425785126-a1fe4bfaf006?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxidWlsZGluZyUyMG1hcHxlbnwxfHx8fDE3NjkzMzIxODd8MA&ixlib=rb-4.1.0&q=80&w=1080"
-              alt="Campus Map"
-              className="w-full h-full object-cover"
-            />
             
-            {/* Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/50" />
+            <div>
+              <h1 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] mb-0.5">Campus Location</h1>
+              <div className="flex items-center gap-1.5 mt-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
+                <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-widest">Find the Campus</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-md mx-auto px-6 py-8 space-y-6">
+        
+        {/* 2. Building Hero Section */}
+        <section className="relative group">
+          <div className="relative bg-[#1a2e1c] border border-white/10 rounded-[2.5rem] overflow-hidden shadow-2xl">
+            <div className="aspect-[4/3] relative">
+              <img 
+                src={buildingImg}
+                alt="KC Model School & College Building"
+                className="w-full h-full object-cover transition-transform duration-700"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0d1f0f] via-transparent to-transparent opacity-80" />
+              
+              <div className="absolute bottom-6 left-6 right-6">
+                <Badge className="bg-[#fbbf24] text-[#0d1f0f] border-0 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest mb-2 shadow-lg">Main Campus</Badge>
+                <h3 className="text-2xl font-black text-white uppercase tracking-tight leading-none">KC Model School <br/>& College</h3>
+              </div>
+            </div>
             
-            {/* Map Label */}
-            <div className="absolute bottom-4 left-4 right-4">
-              <div className="bg-black/70 backdrop-blur-sm rounded-xl p-3">
-                <h3 className="text-sm font-medium text-white mb-1">KC Model School & College</h3>
-                <p className="text-xs text-white/80">Dakshinkhan, Dhaka, Prembagan 1230</p>
-              </div>
+            <div className="p-5 bg-[#112613] flex items-center justify-between border-t border-[#059669]/20">
+                <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 rounded-full bg-[#059669] shadow-[0_0_8px_#059669]" />
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Premises Active</span>
+                </div>
+                <a 
+                  href={pinterestUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-[10px] font-black text-[#fbbf24] uppercase tracking-widest flex items-center gap-1.5 hover:underline"
+                >
+                    View Gallery <ExternalLink size={12} />
+                </a>
             </div>
+          </div>
+        </section>
 
-            {/* Zoom Controls */}
-            <div className="absolute top-4 right-4 flex flex-col gap-2">
-              <button className="w-10 h-10 bg-black/50 backdrop-blur-sm rounded-lg flex items-center justify-center text-white hover:bg-black/70 transition-colors">
-                <ZoomIn className="w-5 h-5" />
-              </button>
-              <button className="w-10 h-10 bg-black/50 backdrop-blur-sm rounded-lg flex items-center justify-center text-white hover:bg-black/70 transition-colors">
-                <ZoomOut className="w-5 h-5" />
-              </button>
+        {/* 3. Address Card */}
+        <div className="bg-[#1a2e1c] border border-[#059669]/20 rounded-[2rem] p-6 shadow-xl">
+            <div className="flex items-center gap-4 mb-5">
+                <div className="w-12 h-12 rounded-2xl bg-[#0d1f0f] border border-[#fbbf24]/20 flex items-center justify-center">
+                    <MapPin className="w-6 h-6 text-[#fbbf24]" />
+                </div>
+                <div>
+                    <p className="text-[10px] font-black text-[#059669] uppercase tracking-widest mb-1">Physical Address</p>
+                    <p className="text-sm font-bold text-white uppercase leading-tight">{contactInfo.address}</p>
+                </div>
             </div>
+            <button className="w-full bg-[#059669] text-[#0d1f0f] py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 active:scale-95">
+                <Navigation className="w-4 h-4 fill-current" />
+                Open Maps Navigation
+            </button>
+        </div>
+
+        {/* 4. Quick Info Grid */}
+        <div className="grid grid-cols-2 gap-4">
+            <div className="bg-[#1a2e1c] border border-white/5 rounded-[2rem] p-5">
+                <Clock className="w-5 h-5 text-[#fbbf24] mb-3" />
+                <p className="text-[9px] font-black text-[#059669] uppercase tracking-widest mb-1">Office Hours</p>
+                <p className="text-xs text-white font-bold uppercase">{contactInfo.officeHours}</p>
+            </div>
+            <div className="bg-[#1a2e1c] border border-white/5 rounded-[2rem] p-5">
+                <PhoneCall className="w-5 h-5 text-[#059669] mb-3" />
+                <p className="text-[9px] font-black text-[#059669] uppercase tracking-widest mb-1">Contact Office</p>
+                <p className="text-xs text-white font-bold uppercase">{contactInfo.phone}</p>
+                <button onClick={() => onNavigate('contact')} className="text-[9px] font-black text-[#fbbf24] uppercase mt-2 block">Support Info →</button>
+            </div>
+        </div>
+
+        {/* 5. Context Section */}
+        <section className="space-y-3">
+            <h4 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] ml-2">Area Context</h4>
+            <div className="space-y-3">
+                <div className="bg-[#112613] border border-white/5 rounded-2xl p-4 flex items-center gap-4">
+                    <Building2 size={20} className="text-[#059669]" />
+                    <div>
+                        <p className="text-xs font-black text-white uppercase">Prembagan Landmark</p>
+                        <p className="text-[10px] text-[#a0b5a3] font-bold uppercase opacity-60">Easily accessible from main road.</p>
+                    </div>
+                </div>
+
+                <div className="bg-[#112613] border border-white/5 rounded-2xl p-4 flex items-center gap-4">
+                    <TrainFront size={20} className="text-[#fbbf24]" />
+                    <div>
+                        <p className="text-xs font-black text-white uppercase">Public Connectivity</p>
+                        <p className="text-[10px] text-[#a0b5a3] font-bold uppercase opacity-60">Stops directly at the gate.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {/* 6. Visitor Info */}
+        <div className="bg-[#fbbf24]/10 border border-[#fbbf24]/20 rounded-[2rem] p-5">
+          <div className="flex items-start gap-3">
+            <Info className="text-[#fbbf24] w-5 h-5 shrink-0" />
+            <p className="text-[11px] text-white leading-relaxed font-bold uppercase">
+              <span className="text-[#fbbf24] font-black mr-1">Visitor Info:</span> 
+              New visitors check in at the <span className="text-[#059669]">Main Desk</span>. For rooms, use the <button onClick={() => onNavigate('floors')} className="underline">Floor Navigator</button>.
+            </p>
           </div>
         </div>
 
-        {/* Location Information */}
-        <div className="bg-[#1a3a1d] border border-[#059669]/20 rounded-2xl p-4 mb-4">
-          <h3 className="text-sm font-medium text-[#e8f5e9] mb-3">Location Details</h3>
-          <div className="space-y-2">
-            <div className="flex items-start gap-2">
-              <MapPin className="w-4 h-4 text-[#059669] mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="text-xs text-[#a0b5a3]">Address</p>
-                <p className="text-sm text-[#e8f5e9]">Dakshinkhan, Dhaka, Prembagan 1230, Bangladesh</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 gap-3">
-          <button 
-            onClick={() => onNavigate('floors')}
-            className="bg-[#1a3a1d] border border-[#059669]/20 rounded-xl p-4 hover:border-[#059669]/40 transition-all"
-          >
-            <div className="text-center">
-              <div className="w-10 h-10 bg-[#059669]/20 rounded-xl flex items-center justify-center mx-auto mb-2">
-                <span className="text-lg">🏢</span>
-              </div>
-              <p className="text-xs font-medium text-[#e8f5e9]">Floor Navigation</p>
-            </div>
-          </button>
-
-          <button 
-            onClick={() => onNavigate('contact')}
-            className="bg-[#1a3a1d] border border-[#059669]/20 rounded-xl p-4 hover:border-[#059669]/40 transition-all"
-          >
-            <div className="text-center">
-              <div className="w-10 h-10 bg-[#059669]/20 rounded-xl flex items-center justify-center mx-auto mb-2">
-                <span className="text-lg">📞</span>
-              </div>
-              <p className="text-xs font-medium text-[#e8f5e9]">Get Directions</p>
-            </div>
-          </button>
-        </div>
-
-        {/* Note */}
-        <div className="mt-4 bg-[#fbbf24]/10 border border-[#fbbf24]/30 rounded-2xl p-4">
-          <p className="text-xs text-[#a0b5a3] leading-relaxed">
-            <span className="text-[#fbbf24] font-medium">Note:</span> For detailed floor-by-floor navigation, please use the Floor Navigation feature from the home screen.
-          </p>
-        </div>
-      </div>
+      </main>
     </div>
   );
 }

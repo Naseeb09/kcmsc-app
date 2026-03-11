@@ -1,10 +1,11 @@
-import { School, MapPin, Users, Building2, BookOpen, Phone, Search, DollarSign, ChevronRight, Sparkles } from 'lucide-react';
+import { MapPin, Users, Building2, BookOpen, Phone, Search, DollarSign, ChevronRight, Sparkles } from 'lucide-react';
 import { Badge } from '@/app/components/ui/badge';
 import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import schoolLogo from '@/data/kcmsc-logo.png';
 
 interface HomeScreenProps {
-  onNavigate: (view: string, data?: any) => void; // Updated to accept data
+  onNavigate: (view: string, data?: any) => void;
 }
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
@@ -25,11 +26,9 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     { id: 'fees', label: 'Fees & Costs', icon: DollarSign, description: 'Tuition details' },
   ];
 
-  // Logic to handle search submission from Home
   const handleSearchSubmit = (e?: React.FormEvent) => {
     e?.preventDefault();
     if (searchQuery.trim()) {
-      // Navigates to search and passes the query state
       onNavigate('search', { initialQuery: searchQuery });
     } else {
       onNavigate('search');
@@ -60,15 +59,18 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
   return (
     <div className="pb-20 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
-      {/* 1. Header with Glow Effect */}
+      {/* 1. Header with Official Logo (No Box) */}
       <header className="relative bg-[#1a2e1c] px-6 py-8 border-b border-[#059669]/20 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[#059669]/10 via-transparent to-transparent opacity-50" />
         
         <div className="max-w-2xl mx-auto flex items-center justify-between relative z-10">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#0d1f0f] rounded-2xl flex items-center justify-center border border-[#059669]/30 shadow-lg">
-              <School className="w-7 h-7 text-[#059669]" />
-            </div>
+            {/* Logo with no surrounding box or border */}
+            <img 
+              src={schoolLogo} 
+              alt="KC Model School Logo" 
+              className="w-12 h-12 object-contain" 
+            />
             <div>
               <h1 className="text-[11px] font-black text-[#059669] uppercase tracking-[0.3em] mb-0.5">KC Model School & College</h1>
               <div className="flex items-center gap-1.5 mt-1.5">
@@ -126,7 +128,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
         </section>
 
-        {/* 3. Search Bar - NOW FUNCTIONAL */}
+        {/* 3. Search Bar */}
         <section className="px-6 py-6"> 
           <form onSubmit={handleSearchSubmit} className="relative group">
             <div className="absolute left-5 top-1/2 -translate-y-1/2 flex items-center gap-2">
@@ -153,9 +155,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         {/* 4. Explore Section */}
         <section className="px-6 py-6">
           <div className="mb-6 flex items-end justify-between">
-            <div>
-              <h2 className="text-xl font-black text-white tracking-tight">Explore Campus</h2>
-            </div>
+            <h2 className="text-xl font-black text-white tracking-tight">Explore Campus</h2>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
@@ -203,12 +203,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         <footer className="py-12 flex flex-col items-center gap-3">
           <div className="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#059669]/40 to-transparent"></div>
           <p className="text-[9px] font-black text-[#a0b5a3]/30 uppercase tracking-[0.5em]">
-            System by <span className="text-[#059669]">Glitched Technologies</span>
+            Built by <span className="text-[#059669]">Glitched Technologies</span>
           </p>
         </footer>
       </main>
 
-      {/* Modal - Optimized for Pro look */}
+      {/* Modal */}
       {selectedEvent && (
         <div className="fixed inset-0 bg-[#0d1f0f]/98 z-50 flex items-center justify-center p-6 backdrop-blur-md" onClick={() => setSelectedEvent(null)}>
           <div className="bg-[#1a2e1c] rounded-[2.5rem] max-w-md w-full border border-white/10 overflow-hidden shadow-2xl" onClick={(e) => e.stopPropagation()}>

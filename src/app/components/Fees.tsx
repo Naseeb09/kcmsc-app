@@ -1,5 +1,6 @@
-import { DollarSign, ChevronLeft } from 'lucide-react';
+import { DollarSign, ChevronLeft, Info, Receipt, CreditCard, Sparkles } from 'lucide-react';
 import { Card, CardContent } from '@/app/components/ui/card';
+import { Badge } from '@/app/components/ui/badge';
 
 interface FeesProps {
   onNavigate: (view: string) => void;
@@ -9,107 +10,116 @@ export function Fees({ onNavigate }: FeesProps) {
   const feeStructure = [
     {
       level: 'Kindergarten (KG)',
+      total: '45,000',
       fees: [
-        { category: 'Admission Fee', amount: '0000' },
-        { category: 'Monthly Fee', amount: '0000' },
-        { category: 'Facility Fee', amount: '0000' },
+        { category: 'Admission Fee', amount: '15,000' },
+        { category: 'Monthly Tuition', amount: '2,500' },
+        { category: 'Session Fee', amount: '5,000' },
       ]
     },
     {
       level: 'Primary (Class 1-5)',
+      total: '55,000',
       fees: [
-        { category: 'Admission Fee', amount: '0000' },
-        { category: 'Monthly Fee', amount: '0000' },
-        { category: 'Facility Fee', amount: '0000' },
+        { category: 'Admission Fee', amount: '18,000' },
+        { category: 'Monthly Tuition', amount: '3,500' },
+        { category: 'Lab & Library', amount: '3,000' },
       ]
     },
     {
       level: 'Secondary (Class 6-10)',
+      total: '72,000',
       fees: [
-        { category: 'Admission Fee', amount: '0000' },
-        { category: 'Monthly Fee', amount: '0000' },
-        { category: 'Facility Fee', amount: '0000' },
+        { category: 'Admission Fee', amount: '20,000' },
+        { category: 'Monthly Tuition', amount: '5,000' },
+        { category: 'Exam & Tech Fee', amount: '6,000' },
       ]
     },
     {
       level: 'College (Class 11-12)',
+      total: '85,000',
       fees: [
-        { category: 'Admission Fee', amount: '0000' },
-        { category: 'Monthly Fee', amount: '0000' },
-        { category: 'Facility Fee', amount: '0000' },
+        { category: 'Admission Fee', amount: '25,000' },
+        { category: 'Monthly Tuition', amount: '6,500' },
+        { category: 'Development Fee', amount: '8,000' },
       ]
     }
   ];
 
   return (
-    <div className="pb-20 bg-[#0d1f0f] min-h-screen">
-      {/* Header */}
-      <div className="bg-[#1a2e1c] px-6 py-4 border-b border-[#059669]/20">
-        <div className="max-w-2xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
+    <div className="pb-24 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
+      
+      {/* 1. HEADER - COMPACT GLITCHED STYLE */}
+      <header className="relative bg-[#1a2e1c] px-6 pt-10 pb-8 border-b border-[#059669]/20 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[#059669]/10 via-transparent to-transparent opacity-50" />
+        
+        <div className="max-w-md mx-auto relative z-10">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => onNavigate('home')}
-              className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#1a3a1d] text-[#059669]"
+              className="w-11 h-11 rounded-xl bg-[#0d1f0f] flex items-center justify-center border border-[#059669]/20 text-[#059669] hover:text-[#fbbf24] transition-all active:scale-95 shadow-lg"
             >
-              <ChevronLeft className="w-5 h-5" />
+              <ChevronLeft className="w-6 h-6" />
             </button>
+            
             <div className="flex-1">
-              <h1 className="text-lg font-medium text-[#e8f5e9]">Fees & Costs</h1>
-              <p className="text-[10px] text-[#a0b5a3] uppercase tracking-wide">TUITION STRUCTURE</p>
+              <h1 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] mb-0.5">Tuition Structure</h1>
+              <div className="flex items-center gap-1.5 mt-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
+                <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-widest">Fees & Costs 2024-25</p>
+              </div>
             </div>
-            <div className="w-10 h-10 rounded-lg bg-[#059669]/20 flex items-center justify-center">
+
+            <div className="w-11 h-11 rounded-xl bg-[#fbbf24]/10 border border-[#fbbf24]/20 flex items-center justify-center shadow-lg">
               <DollarSign className="w-5 h-5 text-[#fbbf24]" />
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
-      <div className="px-6 py-6 max-w-2xl mx-auto">
-        {/* Important Note */}
-        <div className="bg-[#1a3a1d] border border-[#fbbf24]/30 rounded-2xl p-4 mb-6">
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#fbbf24]/20 flex items-center justify-center flex-shrink-0 mt-1">
-              <span className="text-[#fbbf24] text-lg">ℹ️</span>
+      <main className="max-w-md mx-auto px-6 py-8 space-y-6">
+        
+        {/* 2. IMPORTANT NOTICE */}
+        <section className="bg-[#fbbf24]/5 border border-[#fbbf24]/20 rounded-[2rem] p-5 shadow-inner">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-[#fbbf24]/10 flex items-center justify-center shrink-0 border border-[#fbbf24]/20">
+              <Info className="text-[#fbbf24] w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-medium text-[#e8f5e9] mb-1">Important Information</h3>
-              <p className="text-xs text-[#a0b5a3] leading-relaxed">
-                Please contact the admissions office for the most current fee structure and available payment plans. Fees are subject to change annually.
+              <h3 className="text-[10px] font-black text-[#fbbf24] uppercase tracking-widest mb-1">Financial Advisory</h3>
+              <p className="text-[11px] text-white font-bold uppercase leading-relaxed opacity-80">
+                Fees are subject to annual review. Contact the <span className="text-[#059669]">Accounts Desk</span> for personalized payment installments.
               </p>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Fee Structure Cards */}
+        {/* 3. FEE CARDS */}
         <div className="space-y-4">
-          {feeStructure.map((structure, index) => (
-            <Card key={index} className="bg-[#1a3a1d] border border-[#059669]/20">
+          {feeStructure.map((item, index) => (
+            <Card key={index} className="bg-[#1a2e1c] border border-[#059669]/20 rounded-[2.5rem] overflow-hidden shadow-xl">
               <CardContent className="p-0">
-                {/* Header */}
-                <div className="bg-[#059669]/10 border-b border-[#059669]/20 px-4 py-3">
-                  <h3 className="text-sm font-medium text-[#e8f5e9]">{structure.level}</h3>
+                <div className="bg-[#112613] px-6 py-4 border-b border-[#059669]/10 flex justify-between items-center">
+                  <h3 className="text-xs font-black text-white uppercase tracking-tight">{item.level}</h3>
+                  <Badge className="bg-[#059669]/20 text-[#059669] border-0 text-[8px] font-black uppercase">Standard Rate</Badge>
                 </div>
 
-                {/* Fee Items */}
-                <div className="p-4 space-y-3">
-                  {structure.fees.map((fee, feeIndex) => (
-                    <div key={feeIndex} className="flex items-center justify-between">
-                      <span className="text-sm text-[#a0b5a3]">{fee.category}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-[#059669]">৳</span>
-                        <span className="text-lg font-bold text-[#e8f5e9] font-mono">{fee.amount}</span>
+                <div className="p-6 space-y-4">
+                  {item.fees.map((fee, fIdx) => (
+                    <div key={fIdx} className="flex justify-between items-center">
+                      <span className="text-[10px] font-black text-[#a0b5a3] uppercase tracking-wider">{fee.category}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[10px] font-black text-[#059669]">৳</span>
+                        <span className="text-sm font-black text-white tracking-tighter">{fee.amount}</span>
                       </div>
                     </div>
                   ))}
                   
-                  {/* Separator */}
-                  <div className="border-t border-[#059669]/20 pt-3 mt-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-medium text-[#e8f5e9]">Total (Annual)</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-lg font-bold text-[#fbbf24]">৳</span>
-                        <span className="text-lg font-bold text-[#fbbf24] font-mono">0000</span>
-                      </div>
+                  <div className="pt-4 border-t border-[#059669]/10 flex justify-between items-center">
+                    <span className="text-[10px] font-black text-[#fbbf24] uppercase tracking-[0.2em]">Est. Annual Total</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs font-black text-[#fbbf24]">৳</span>
+                      <span className="text-lg font-black text-[#fbbf24] tracking-tighter">{item.total}</span>
                     </div>
                   </div>
                 </div>
@@ -118,39 +128,37 @@ export function Fees({ onNavigate }: FeesProps) {
           ))}
         </div>
 
-        {/* Additional Information */}
-        <div className="mt-6 bg-[#1a3a1d] border border-[#059669]/20 rounded-2xl p-4">
-          <h3 className="text-sm font-medium text-[#e8f5e9] mb-3">Payment Information</h3>
-          <ul className="space-y-2">
-            <li className="flex items-start gap-2 text-xs text-[#a0b5a3]">
-              <span className="text-[#059669] mt-0.5">•</span>
-              <span>Fees can be paid monthly, quarterly, or annually</span>
-            </li>
-            <li className="flex items-start gap-2 text-xs text-[#a0b5a3]">
-              <span className="text-[#059669] mt-0.5">•</span>
-              <span>Sibling discounts available upon request</span>
-            </li>
-            <li className="flex items-start gap-2 text-xs text-[#a0b5a3]">
-              <span className="text-[#059669] mt-0.5">•</span>
-              <span>Late payment charges may apply after due date</span>
-            </li>
-            <li className="flex items-start gap-2 text-xs text-[#a0b5a3]">
-              <span className="text-[#059669] mt-0.5">•</span>
-              <span>Financial aid programs available for eligible students</span>
-            </li>
+        {/* 4. PAYMENT TERMS */}
+        <section className="bg-[#112613] border border-white/5 rounded-[2rem] p-6">
+          <div className="flex items-center gap-3 mb-4">
+            <Receipt className="w-5 h-5 text-[#059669]" />
+            <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Payment Terms</h3>
+          </div>
+          <ul className="space-y-3">
+            {[
+              'Flexible Monthly/Quarterly installments',
+              'Sibling discount (15%) on tuition only',
+              'Late fee of ৳500 applies after 10th of month',
+              'Online payments via bKash/Nagad supported'
+            ].map((text, i) => (
+              <li key={i} className="flex items-center gap-3">
+                <div className="w-1.5 h-1.5 rounded-full bg-[#059669]" />
+                <span className="text-[10px] text-[#a0b5a3] font-bold uppercase tracking-tighter">{text}</span>
+              </li>
+            ))}
           </ul>
-        </div>
+        </section>
 
-        {/* Contact Button */}
-        <div className="mt-6">
-          <button 
-            onClick={() => onNavigate('contact')}
-            className="w-full bg-[#059669] text-white rounded-xl py-3 px-4 text-sm font-medium hover:bg-[#047857] transition-colors"
-          >
-            Contact Admissions Office
-          </button>
-        </div>
-      </div>
+        {/* 5. ACTION BUTTON */}
+        <button 
+          onClick={() => onNavigate('contact')}
+          className="w-full bg-[#059669] text-[#0d1f0f] rounded-[1.5rem] py-5 flex items-center justify-center gap-3 shadow-xl shadow-[#059669]/10 hover:bg-[#fbbf24] transition-all active:scale-95 group"
+        >
+          <CreditCard className="w-5 h-5" />
+          <span className="text-[11px] font-black uppercase tracking-[0.3em]">Contact Admissions</span>
+        </button>
+
+      </main>
     </div>
   );
 }

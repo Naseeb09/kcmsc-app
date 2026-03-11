@@ -46,7 +46,7 @@ export const defaultNotices: Notice[] = [
 
 export const schoolInfo = {
   name: "KC Model School & College",
-  established: "2007", // Corrected established date
+  established: "2014", // Corrected established date
   about: "KC Model School & College is a premier educational institution in Dakshinkhan, providing quality education under the NCTB curriculum for both Primary and Secondary levels.",
   motto: "Education, Discipline, Progress",
   mission: "To provide a nurturing environment that fosters intellectual growth and character development.",
