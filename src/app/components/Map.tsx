@@ -13,25 +13,37 @@ export function Map({ onNavigate }: MapProps) {
   return (
     <div className="pb-24 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
       
-      {/* 1. HEADER - COMPACT & READABLE */}
-      <header className="relative bg-[#1a2e1c] px-6 pt-10 pb-8 border-b border-[#059669]/20 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[#059669]/10 via-transparent to-transparent opacity-50" />
+{/* 1. HEADER - CONTEXTUAL NAVIGATION */}
+      <header className="relative bg-[#1a2e1c] px-6 pt-10 pb-8 border-b border-[#059669]/30 overflow-hidden">
+        {/* Enhanced Ambient Glow */}
+        <div className="absolute top-0 right-0 w-64 h-64 bg-[#059669]/20 blur-[100px] rounded-full -mr-20 -mt-20 opacity-60" />
         
         <div className="max-w-md mx-auto relative z-10">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => onNavigate('home')}
-              className="w-11 h-11 rounded-xl bg-[#0d1f0f] flex items-center justify-center border border-[#059669]/20 text-[#059669] hover:text-[#fbbf24] transition-all active:scale-95 shadow-lg"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            
-            <div>
-              <h1 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] mb-0.5">Campus Location</h1>
-              <div className="flex items-center gap-1.5 mt-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
-                <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-widest">Find the Campus</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              {/* Rectangular Back Button */}
+              <button
+                onClick={() => onNavigate('home')}
+                className="w-11 h-11 rounded-xl bg-[#0d1f0f] flex items-center justify-center border border-[#059669]/40 text-[#059669] shadow-[0_0_15px_rgba(5,150,105,0.1)] active:scale-95 transition-all"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              
+              <div>
+                <h1 className="text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
+                  Campus <span className="text-[#059669]">Location</span>
+                </h1>
+                <div className="flex items-center gap-2">
+                  {/* Pulsing Status - Aligned with Fees Page style */}
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
+                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">Find the Campus</p>
+                </div>
               </div>
+            </div>
+
+            {/* Contextual Icon Container - Matches the Tuition Structure Style */}
+            <div className="w-12 h-12 rounded-2xl bg-[#fbbf24]/5 border border-[#fbbf24]/20 flex items-center justify-center shadow-2xl backdrop-blur-md transition-transform hover:rotate-12">
+                <MapPin className="w-6 h-6 text-[#fbbf24] drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]" />
             </div>
           </div>
         </div>
