@@ -9,21 +9,39 @@ interface FloorDetailProps {
 }
 
 export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
-  const { floors } = useAppContext();
+  const { floors, classes: dbClasses } = useAppContext();
   const [searchQuery, setSearchQuery] = useState('');
   const floor = floors.find(f => f.id === floorId);
 
+  // Merge static and DB classes
+  const allFloorClasses = useMemo(() => {
+    if (!floor) return [];
+    
+    // Start with local classes
+    const classesMap = new Map();
+    floor.classes.forEach(c => classesMap.set(c.room, c));
+
+    // Override or add from DB if they belong to this floor
+    dbClasses.forEach(c => {
+      if (c.floor_id === floorId || c.room.startsWith(floor.label)) {
+        classesMap.set(c.room, c);
+      }
+    });
+
+    // Sort by room number (ascending)
+    return Array.from(classesMap.values()).sort((a, b) => a.room.localeCompare(b.room));
+  }, [floor, dbClasses, floorId]);
+
   // OMNI-FILTER: Search Section, Teacher, Class Name, and Room No
   const filteredClasses = useMemo(() => {
-    if (!floor) return [];
     const query = searchQuery.toLowerCase();
-    return floor.classes.filter(c => 
+    return allFloorClasses.filter(c => 
       c.name.toLowerCase().includes(query) || 
       c.room.toLowerCase().includes(query) ||
       c.teacher.toLowerCase().includes(query) ||
       c.section.toLowerCase().includes(query)
     );
-  }, [floor, searchQuery]);
+  }, [allFloorClasses, searchQuery]);
 
   if (!floor) return null;
 
@@ -64,12 +82,12 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
               <CardContent className="p-0">
                 <div className="p-6 bg-white/5">
                   <div className="flex justify-between items-start mb-3">
-                    <div className="space-y-2.5"> {/* TAPPING THE SPACE HERE */}
+                    <div className="space-y-2.5">
                       <div className="flex items-center gap-2">
                         <span className="text-[9px] font-black text-[#fbbf24] bg-[#fbbf24]/10 border border-[#fbbf24]/20 px-3 py-1 rounded-full uppercase tracking-widest">
                           Room {classInfo.room}
                         </span>
-                        {classInfo.version !== 'N/A' && (
+                        {classInfo.version && classInfo.version !== 'N/A' && (
                           <span className="text-[9px] font-black text-[#059669] bg-[#059669]/10 border border-[#059669]/20 px-3 py-1 rounded-full uppercase tracking-widest">
                             {classInfo.version}
                           </span>
@@ -103,7 +121,7 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
                   </div>
                 </div>
 
-                {classInfo.teacherNumber !== 'N/A' && (
+                {classInfo.teacherNumber && classInfo.teacherNumber !== 'N/A' && (
                   <div className="p-4 bg-white/[0.02] border-t border-white/5">
                     <a href={`tel:${classInfo.teacherNumber}`} className="w-full flex items-center justify-center gap-2 bg-[#059669] text-[#0d1f0f] rounded-2xl py-4 text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#fbbf24] transition-all">
                       <Phone size={14} /> Call Representative

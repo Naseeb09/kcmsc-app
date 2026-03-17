@@ -1,6 +1,7 @@
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { campusData, FloorData as CampusFloorData } from '../data/campusData';
-import { defaultEvents, defaultNotices } from '../data/announcements';
+import { defaultNotices } from '../data/announcements';
+import { supabase } from '../lib/supabase';
 
 // Re-exporting for use in other files
 export type FloorData = CampusFloorData;
@@ -21,309 +22,311 @@ export interface Notice {
   priority: 'high' | 'medium' | 'low';
 }
 
+export interface StaffMember {
+  id: string;
+  name: string;
+  phone: string;
+  section: 'Junior' | 'Senior' | 'Admin' | 'admin' | 'junior' | 'senior';
+  subject?: string;
+  floor?: string;
+  isFormTeacher: boolean;
+  formTeacherOf?: string;
+  role?: string;
+  department?: string;
+  email?: string;
+  imageUrl?: string;
+}
+
+export interface Facility {
+  id: string;
+  name: string;
+  floor: string;
+  capacity: string;
+  icon: string;
+  description?: string;
+  timings?: string;
+}
+
 export interface ClassInfo {
+  id: string;
   name: string;
   room: string;
   section: string;
   version: string;
   teacher: string;
   teacherNumber: string;
+  floor_id?: string;
 }
 
-interface StaffMember {
-  id: string;
-  name: string;
-  role: string;
-  department: string;
-  phone: string;
-  email: string;
-  image: string;
-  section: 'Junior' | 'Senior' | 'Admin';
-  subject?: string;
-  formTeacherOf?: string;
-}
-
-interface Facility {
-  id: string;
-  name: string;
-  description: string;
-  floor: string;
-  capacity: string;
-  timings: string;
-  icon: string;
-}
+export interface Teacher extends StaffMember {}
 
 interface AppContextType {
   events: Event[];
   notices: Notice[];
   floors: FloorData[];
-  staff: StaffMember[];
+  teachers: Teacher[];
+  classes: ClassInfo[];
   facilities: Facility[];
+  isAdmin: boolean;
+  setIsAdmin: (isAdmin: boolean) => void;
   addEvent: (event: Omit<Event, 'id'>) => void;
-  addNotice: (notice: Omit<Notice, 'id'>) => void;
+  saveNotice: (notice: Partial<Notice>) => Promise<void>;
   updateEvent: (id: string, event: Omit<Event, 'id'>) => void;
-  updateNotice: (id: number, notice: Omit<Notice, 'id'>) => void;
-  deleteEvent: (id: string) => void;
-  deleteNotice: (id: number) => void;
+  deleteNotice: (id: number) => Promise<void>;
   addFloor: (floor: Omit<FloorData, 'id'>) => void;
   updateFloor: (id: string, floor: Omit<FloorData, 'id'>) => void;
   deleteFloor: (id: string) => void;
+  saveTeacher: (member: Partial<Teacher>) => Promise<void>;
+  deleteTeacher: (id: string) => Promise<void>;
+  saveClass: (classData: Partial<ClassInfo>) => Promise<void>;
+  deleteClass: (id: string) => Promise<void>;
+  saveFacility: (facility: Partial<Facility>) => Promise<void>;
+  deleteFacility: (id: string) => Promise<void>;
+  fetchInitialData: () => Promise<void>;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
-const initialStaff: StaffMember[] = [
-  // Executive Suite
-  {
-    id: 's1',
-    name: 'Brig Gen (Retd) Md. Anwar Hossain',
-    role: 'Principal',
-    department: 'Administration',
-    phone: '01711122233',
-    email: 'principal@kcmsc.edu.bd',
-    image: '',
-    section: 'Admin'
-  },
-  {
-    id: 's2',
-    name: 'Prof. Dr. M. A. Rashid',
-    role: 'Chief Advisor',
-    department: 'Administration',
-    phone: '01711122244',
-    email: 'advisor@kcmsc.edu.bd',
-    image: '',
-    section: 'Admin'
-  },
-  {
-    id: 's3',
-    name: 'Mrs. Ferdousi Begum',
-    role: 'Vice Principal',
-    department: 'Administration',
-    phone: '01711122255',
-    email: 'vp@kcmsc.edu.bd',
-    image: '',
-    section: 'Admin'
-  },
-  // Senior Section (Class 6-12)
-  {
-    id: 's4',
-    name: 'Masum Ahmed (MA)',
-    role: 'Senior Teacher',
-    department: 'Science',
-    phone: '01811122201',
-    email: 'masum@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'Physics',
-    formTeacherOf: 'Ten (EV)'
-  },
-  {
-    id: 's5',
-    name: 'Afrin Nahar (AN)',
-    role: 'Assistant Teacher',
-    department: 'English',
-    phone: '01811122202',
-    email: 'afrin@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'English',
-    formTeacherOf: 'Six (EV)'
-  },
-  {
-    id: 's6',
-    name: 'Samiul Arefin (SA)',
-    role: 'Assistant Teacher',
-    department: 'Mathematics',
-    phone: '01811122203',
-    email: 'samiul@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'Math',
-    formTeacherOf: 'Eight (EV)'
-  },
-  {
-    id: 's9',
-    name: 'Tahmina Akter Shifa (TAS)',
-    role: 'Assistant Teacher',
-    department: 'General',
-    phone: '01811122204',
-    email: 'tahmina@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'General Science',
-    formTeacherOf: 'Seven (EV)'
-  },
-  {
-    id: 's10',
-    name: 'Mohammad Mufakkir Alam (MMA)',
-    role: 'Senior Teacher',
-    department: 'General',
-    phone: '01811122205',
-    email: 'mufakkir@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'Humanities',
-    formTeacherOf: 'Nine (EV)'
-  },
-  {
-    id: 's11',
-    name: 'Tanjib Saifur Rahman (TSR)',
-    role: 'Assistant Teacher',
-    department: 'Bangla',
-    phone: '01811122206',
-    email: 'tanjib@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'Bangla',
-    formTeacherOf: 'Six (B-1)'
-  },
-  {
-    id: 's12',
-    name: 'SM Kamal (SMK)',
-    role: 'Assistant Teacher',
-    department: 'General',
-    phone: '01811122207',
-    email: 'kamal@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'Mathematics',
-    formTeacherOf: 'Six (B-2)'
-  },
-  {
-    id: 's13',
-    name: 'Farhana Faruk (FF)',
-    role: 'Assistant Teacher',
-    department: 'General',
-    phone: '01811122208',
-    email: 'farhana@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'Social Science',
-    formTeacherOf: 'Seven (B-1)'
-  },
-  {
-    id: 's14',
-    name: 'Ashraful Islam (AI)',
-    role: 'Assistant Teacher',
-    department: 'General',
-    phone: '01811122209',
-    email: 'ashraful@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'Religion',
-    formTeacherOf: 'Seven (B-2)'
-  },
-  {
-    id: 's15',
-    name: 'Mohidul Islam (MI)',
-    role: 'Assistant Teacher',
-    department: 'General',
-    phone: '01811122210',
-    email: 'mohidul@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'Science',
-    formTeacherOf: 'Eight (B-1)'
-  },
-  {
-    id: 's16',
-    name: 'Rezwana Binte Helal (RBH)',
-    role: 'Assistant Teacher',
-    department: 'General',
-    phone: '01811122211',
-    email: 'rezwana@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'ICT',
-    formTeacherOf: 'Eight (B-2)'
-  },
-  {
-    id: 's17',
-    name: 'Shawon (AHS)',
-    role: 'Senior Teacher',
-    department: 'Science',
-    phone: '01811122212',
-    email: 'shawon@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'Physics',
-    formTeacherOf: 'Nine (SB-1)'
-  },
-  {
-    id: 's18',
-    name: 'Robiul Islam (RI)',
-    role: 'Senior Teacher',
-    department: 'Science',
-    phone: '01811122213',
-    email: 'robiul@kcmsc.edu.bd',
-    image: '',
-    section: 'Senior',
-    subject: 'Chemistry',
-    formTeacherOf: 'Ten (SB)'
-  },
-  // Junior Section (Nursery-Class 5)
-  {
-    id: 's7',
-    name: 'Monika Asgar',
-    role: 'Junior Teacher',
-    department: 'General',
-    phone: '01911122201',
-    email: 'monika@kcmsc.edu.bd',
-    image: '',
-    section: 'Junior',
-    subject: 'Bangla',
-    formTeacherOf: 'Five (B)'
-  },
-  {
-    id: 's8',
-    name: 'Tania Akter',
-    role: 'Junior Teacher',
-    department: 'General',
-    phone: '01911122202',
-    email: 'tania@kcmsc.edu.bd',
-    image: '',
-    section: 'Junior',
-    subject: 'Mathematics',
-    formTeacherOf: 'Four (A)'
-  },
-  {
-    id: 's19',
-    name: 'Nasrin Sultana',
-    role: 'Junior Teacher',
-    department: 'General',
-    phone: '01911122203',
-    email: 'nasrin@kcmsc.edu.bd',
-    image: '',
-    section: 'Junior',
-    subject: 'English',
-    formTeacherOf: 'KG (Marigold)'
-  }
-];
-
 export function AppProvider({ children }: { children: ReactNode }) {
-  // Initializing state with imported data
-  const [events, setEvents] = useState<Event[]>(defaultEvents);
-  const [notices, setNotices] = useState<Notice[]>(defaultNotices);
+  const [events, setEvents] = useState<Event[]>([]);
+  const [notices, setNotices] = useState<Notice[]>([]);
   const [floors, setFloors] = useState<FloorData[]>(campusData);
-  const [staff] = useState<StaffMember[]>(initialStaff);
-  const [facilities] = useState<Facility[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [classes, setClasses] = useState<ClassInfo[]>([]);
+  const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  // Handlers
+  useEffect(() => {
+    fetchInitialData();
+    const channels = setupSubscriptions();
+    return () => {
+      channels.forEach(channel => supabase.removeChannel(channel));
+    };
+  }, []);
+
+  // Run migration if no data exists
+  useEffect(() => {
+    const checkAndMigrate = async () => {
+      const { count: classCount } = await supabase.from('classes').select('*', { count: 'exact', head: true });
+      const { count: teacherCount } = await supabase.from('teachers').select('*', { count: 'exact', head: true });
+      
+      if (classCount === 0 || teacherCount === 0) {
+        await runMigration();
+      }
+    };
+    checkAndMigrate();
+  }, []);
+
+  const runMigration = async () => {
+    console.log('🚀 Running initial data migration from campusData...');
+    
+    // Check existing counts
+    const { count: classCount } = await supabase.from('classes').select('*', { count: 'exact', head: true });
+    const { count: teacherCount } = await supabase.from('teachers').select('*', { count: 'exact', head: true });
+    const { count: noticeCount } = await supabase.from('notices').select('*', { count: 'exact', head: true });
+    const { count: facilityCount } = await supabase.from('facilities').select('*', { count: 'exact', head: true });
+
+    // 1. Migrate Classes
+    if (classCount === 0) {
+      const classesToInsert: any[] = [];
+      campusData.forEach(floor => {
+        floor.classes.forEach(c => {
+          classesToInsert.push({
+            name: c.name,
+            room: c.room,
+            section: c.section,
+            version: c.version,
+            teacher: c.teacher,
+            teacher_number: c.teacherNumber,
+            floor_id: floor.id
+          });
+        });
+      });
+
+      if (classesToInsert.length > 0) {
+        await supabase.from('classes').insert(classesToInsert);
+      }
+    }
+
+    // 2. Migrate Teachers (from classes where teacher is not N/A)
+    if (teacherCount === 0) {
+      const teachersMap = new Map();
+      
+      // Default Admin/Executive Faculty
+      const defaultAdmins = [
+        { name: 'Dr. Md. Abdul Khalek', role: 'Chairman', section: 'Admin', phone: 'N/A', is_form_teacher: false },
+        { name: 'Md. Abdul Quader', role: 'Principal', section: 'Admin', phone: 'N/A', is_form_teacher: false },
+        { name: 'Vice Principal (Junior)', role: 'Vice Principal', section: 'Admin', phone: 'N/A', is_form_teacher: false },
+        { name: 'Vice Principal (Senior)', role: 'Vice Principal', section: 'Admin', phone: 'N/A', is_form_teacher: false },
+        { name: 'Senior Co-ordinator', role: 'Co-ordinator', section: 'Admin', phone: 'N/A', is_form_teacher: false },
+      ];
+
+      defaultAdmins.forEach(admin => {
+        teachersMap.set(admin.name, admin);
+      });
+
+      campusData.forEach(floor => {
+        const floorNum = parseInt(floor.label);
+        const section = floorNum <= 3 ? 'Junior' : 'Senior';
+        
+        floor.classes.forEach(c => {
+          if (c.teacher && c.teacher !== 'N/A' && !teachersMap.has(c.teacher)) {
+            teachersMap.set(c.teacher, {
+              name: c.teacher,
+              section: section,
+              is_form_teacher: true,
+              form_teacher_of: `${c.name} (${c.section})`,
+              phone: c.teacher_number || 'N/A',
+              subject: 'General'
+            });
+          }
+        });
+      });
+
+      if (teachersMap.size > 0) {
+        await supabase.from('teachers').insert(Array.from(teachersMap.values()));
+      }
+    }
+
+    // 3. Migrate Notices
+    if (noticeCount === 0 && defaultNotices.length > 0) {
+      await supabase.from('notices').insert(defaultNotices.map(n => ({
+        title: n.title,
+        content: n.content,
+        priority: n.priority
+      })));
+    }
+
+    // 4. Migrate Facilities
+    if (facilityCount === 0) {
+      const facilitiesToInsert: any[] = [];
+      campusData.forEach(floor => {
+        floor.facilities.forEach(f => {
+          facilitiesToInsert.push({
+            name: f,
+            floor: floor.name,
+            capacity: '50',
+            icon: 'Building2'
+          });
+        });
+      });
+
+      if (facilitiesToInsert.length > 0) {
+        await supabase.from('facilities').insert(facilitiesToInsert);
+      }
+    }
+
+    await fetchInitialData();
+    console.log('✅ Migration complete!');
+  };
+
+  const fetchInitialData = async () => {
+    try {
+      const { data: nData } = await supabase.from('notices').select('*').order('created_at', { ascending: false });
+      if (nData) setNotices(nData.map((n: any) => ({ ...n, date: n.created_at?.split('T')[0] || '' })));
+
+      const { data: tData } = await supabase.from('teachers').select('*').order('name');
+      if (tData) setTeachers(tData.map((t: any) => ({ 
+        ...t, 
+        isFormTeacher: t.is_form_teacher, 
+        formTeacherOf: t.form_teacher_of,
+        imageUrl: t.image_url 
+      })));
+
+      const { data: cData } = await supabase.from('classes').select('*').order('room');
+      if (cData) setClasses(cData.map((c: any) => ({
+        ...c,
+        teacherNumber: c.teacher_number
+      })));
+
+      const { data: fData } = await supabase.from('facilities').select('*').order('name');
+      if (fData) setFacilities(fData);
+    } catch (error) {
+      console.error('FETCH_INITIAL_DATA_ERROR:', error);
+    }
+  };
+
+  const setupSubscriptions = () => {
+    return ['notices', 'teachers', 'classes', 'facilities'].map(table => 
+      supabase.channel(`${table}-changes`)
+        .on('postgres_changes', { event: '*', table, schema: 'public' }, () => { fetchInitialData(); })
+        .subscribe()
+    );
+  };
+
+  const saveNotice = async (notice: Partial<Notice>) => {
+    const { id, date, ...payload } = notice;
+    const { error } = await supabase.from('notices').upsert([id ? { id, ...payload } : payload]);
+    if (error) throw error;
+    await fetchInitialData();
+  };
+
+  const deleteNotice = async (id: number) => {
+    const { error } = await supabase.from('notices').delete().eq('id', id);
+    if (error) throw error;
+    setNotices(prev => prev.filter(item => item.id !== id));
+  };
+
+  const saveTeacher = async (member: Partial<Teacher>) => {
+    const { id, isFormTeacher, formTeacherOf, imageUrl, ...rest } = member;
+    const payload = { 
+      ...rest, 
+      is_form_teacher: isFormTeacher, 
+      form_teacher_of: formTeacherOf,
+      image_url: imageUrl 
+    };
+    const { error } = await supabase.from('teachers').upsert([id ? { id, ...payload } : payload]);
+    if (error) throw error;
+    await fetchInitialData();
+  };
+
+  const deleteTeacher = async (id: string) => {
+    const { error } = await supabase.from('teachers').delete().eq('id', id);
+    if (error) throw error;
+    setTeachers(prev => prev.filter(item => item.id !== id));
+  };
+
+  const saveClass = async (classData: Partial<ClassInfo>) => {
+    const { id, teacherNumber, ...rest } = classData;
+    const payload = { ...rest, teacher_number: teacherNumber };
+    const { error } = await supabase.from('classes').upsert([id ? { id, ...payload } : payload]);
+    if (error) throw error;
+    await fetchInitialData();
+  };
+
+  const deleteClass = async (id: string) => {
+    const { error } = await supabase.from('classes').delete().eq('id', id);
+    if (error) throw error;
+    setClasses(prev => prev.filter(item => item.id !== id));
+  };
+
+  const saveFacility = async (facility: Partial<Facility>) => {
+    const { id, ...payload } = facility;
+    const { error } = await supabase.from('facilities').upsert([id ? { id, ...payload } : payload]);
+    if (error) throw error;
+    await fetchInitialData();
+  };
+
+  const deleteFacility = async (id: string) => {
+    const { error } = await supabase.from('facilities').delete().eq('id', id);
+    if (error) throw error;
+    setFacilities(prev => prev.filter(item => item.id !== id));
+  };
+
   const addEvent = (event: Omit<Event, 'id'>) => setEvents(prev => [...prev, { ...event, id: Date.now().toString() }]);
-  const addNotice = (notice: Omit<Notice, 'id'>) => setNotices(prev => [...prev, { ...notice, id: Date.now() }]);
   const updateEvent = (id: string, event: Omit<Event, 'id'>) => setEvents(prev => prev.map(e => e.id === id ? { ...event, id } : e));
-  const updateNotice = (id: number, notice: Omit<Notice, 'id'>) => setNotices(prev => prev.map(n => n.id === id ? { ...notice, id } : n));
-  const deleteEvent = (id: string) => setEvents(prev => prev.filter(e => e.id !== id));
-  const deleteNotice = (id: number) => setNotices(prev => prev.filter(n => n.id !== id));
   const addFloor = (floor: Omit<FloorData, 'id'>) => setFloors(prev => [...prev, { ...floor, id: Date.now().toString() }]);
   const updateFloor = (id: string, floor: Omit<FloorData, 'id'>) => setFloors(prev => prev.map(f => f.id === id ? { ...floor, id } : f));
   const deleteFloor = (id: string) => setFloors(prev => prev.filter(f => f.id !== id));
 
   return (
     <AppContext.Provider value={{ 
-      events, notices, floors, staff, facilities,
-      addEvent, addNotice, updateEvent, updateNotice, deleteEvent, deleteNotice,
-      addFloor, updateFloor, deleteFloor
+      events, notices, floors, teachers, classes, facilities, isAdmin, setIsAdmin,
+      addEvent, saveNotice, updateEvent, deleteNotice,
+      addFloor, updateFloor, deleteFloor,
+      saveTeacher, deleteTeacher, 
+      saveClass, deleteClass,
+      saveFacility, deleteFacility, fetchInitialData
     }}>
       {children}
     </AppContext.Provider>

@@ -9,7 +9,7 @@ interface ClassSearchProps {
 }
 
 export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
-  const { floors } = useAppContext();
+  const { floors, classes: dbClasses } = useAppContext();
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
   
   // Initialize with the query passed from HomeScreen if available
@@ -25,16 +25,38 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
 
   // 2. Flatten all rooms for global search
   const allRooms = useMemo(() => {
-    return floors.flatMap(f => 
-      f.classes.map(c => ({ 
-        ...c, 
-        floorName: f.name, 
-        floorId: f.id,
-        floorLabel: f.label,
-        searchSlug: `${c.name} ${c.room} ${c.teacher} ${c.section} ${c.version} ${f.name}`.toLowerCase()
-      }))
-    );
-  }, [floors]);
+    // Start with local data
+    const roomsMap = new Map();
+
+    floors.forEach(f => {
+      f.classes.forEach(c => {
+        roomsMap.set(c.room, {
+          ...c,
+          floorName: f.name,
+          floorId: f.id,
+          floorLabel: f.label,
+          searchSlug: `${c.name} ${c.room} ${c.teacher} ${c.section} ${c.version} ${f.name}`.toLowerCase()
+        });
+      });
+    });
+
+    // Override with DB data
+    dbClasses.forEach(c => {
+      // Try to find the floor by floor_id or room prefix
+      const floor = floors.find(f => f.id === c.floor_id) || 
+                   floors.find(f => c.room.startsWith(f.label));
+      
+      roomsMap.set(c.room, {
+        ...c,
+        floorName: floor?.name || 'Unknown Floor',
+        floorId: floor?.id || 'unknown',
+        floorLabel: floor?.label || '?',
+        searchSlug: `${c.name} ${c.room} ${c.teacher} ${c.section} ${c.version} ${floor?.name || ''}`.toLowerCase()
+      });
+    });
+
+    return Array.from(roomsMap.values());
+  }, [floors, dbClasses]);
 
   // 3. Search & Filter Logic
   const filteredResults = useMemo(() => {

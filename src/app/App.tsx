@@ -17,11 +17,16 @@ import { ManageNotices } from '@/app/components/ManageNotices';
 import { ManageFloors } from '@/app/components/ManageFloors';
 import { MoreScreen } from '@/app/components/MoreScreen';
 import { BottomNavigation } from '@/app/components/BottomNavigation';
-import { AppProvider } from '@/context/AppContext';
+import { AdminLogin } from '@/app/components/AdminLogin';
+import { Dashboard } from '@/app/components/Dashboard';
+import { AppProvider, useAppContext } from '@/context/AppContext';
+
+import { Toaster } from '@/app/components/ui/sonner';
 
 function AppContent() {
   const [currentView, setCurrentView] = useState('home');
   const [navigationData, setNavigationData] = useState<any>(null);
+  const { isAdmin } = useAppContext();
 
   const handleNavigate = (view: string, data?: any) => {
     setNavigationData(data || null);
@@ -77,6 +82,10 @@ function AppContent() {
         return <ManageFloors onNavigate={handleNavigate} />;
       case 'more':
         return <MoreScreen onNavigate={handleNavigate} />;
+      case 'admin-login':
+        return <AdminLogin onNavigate={handleNavigate} />;
+      case 'admin-dashboard':
+        return isAdmin ? <Dashboard onNavigate={handleNavigate} /> : <AdminLogin onNavigate={handleNavigate} />;
       default:
         return <HomeScreen onNavigate={handleNavigate} />;
     }
@@ -92,11 +101,16 @@ function AppContent() {
         </div>
 
         {/* Bottom Navigation */}
-        <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
+        {!['admin-login', 'admin-dashboard'].includes(currentView) && (
+          <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
+        )}
+
+        <Toaster position="top-center" expand={false} richColors />
       </div>
     </div>
   );
 }
+
 
 export default function App() {
   return (

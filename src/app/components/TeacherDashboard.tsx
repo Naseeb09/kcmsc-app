@@ -143,14 +143,14 @@ export function TeacherDashboard({ onNavigate, onLogout, teacherName }: TeacherD
           </div>
         </div>
 
-        {/* Staff Management */}
+        {/* Faculty Management */}
         <div className="mb-6">
           <h2 className="text-sm font-medium text-[#e8f5e9] mb-3 flex items-center gap-2">
             <UsersIcon className="w-4 h-4" />
-            Staff Directory
+            Faculty Directory
           </h2>
           <div className="space-y-2">
-            <button 
+            <button
               onClick={() => onNavigate('add-staff')}
               className="w-full bg-[#1a3a1d] border border-[#059669]/20 rounded-xl p-3 flex items-center justify-between hover:border-[#059669]/40 transition-all"
             >
@@ -158,12 +158,12 @@ export function TeacherDashboard({ onNavigate, onLogout, teacherName }: TeacherD
                 <div className="w-8 h-8 rounded-lg bg-[#059669]/20 flex items-center justify-center">
                   <UsersIcon className="w-4 h-4 text-[#fbbf24]" />
                 </div>
-                <span className="text-sm font-medium text-[#e8f5e9]">Add Staff Member</span>
+                <span className="text-sm font-medium text-[#e8f5e9]">Add Faculty Member</span>
               </div>
               <Plus className="w-4 h-4 text-[#059669]" />
             </button>
 
-            <button 
+            <button
               onClick={() => onNavigate('manage-staff')}
               className="w-full bg-[#1a3a1d] border border-[#059669]/20 rounded-xl p-3 flex items-center justify-between hover:border-[#059669]/40 transition-all"
             >
@@ -171,13 +171,12 @@ export function TeacherDashboard({ onNavigate, onLogout, teacherName }: TeacherD
                 <div className="w-8 h-8 rounded-lg bg-[#059669]/20 flex items-center justify-center">
                   <Edit className="w-4 h-4 text-[#fbbf24]" />
                 </div>
-                <span className="text-sm font-medium text-[#e8f5e9]">Manage Staff</span>
+                <span className="text-sm font-medium text-[#e8f5e9]">Manage Faculty</span>
               </div>
               <span className="text-[#059669]">→</span>
             </button>
           </div>
         </div>
-
         {/* Facility Management */}
         <div className="mb-6">
           <h2 className="text-sm font-medium text-[#e8f5e9] mb-3 flex items-center gap-2">

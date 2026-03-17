@@ -9,15 +9,15 @@ interface StaffDirectoryProps {
 }
 
 export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
-  const { staff } = useAppContext();
+  const { teachers } = useAppContext();
   const [activeSection, setActiveSection] = useState<'Junior' | 'Senior'>('Senior');
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const admins = staff.filter(s => s.section === 'Admin');
-  const filteredTeachers = staff.filter(s => s.section === activeSection);
+  const admins = teachers.filter(t => t.section?.toLowerCase() === 'admin');
+  const filteredTeachers = teachers.filter(t => t.section?.toLowerCase() === activeSection.toLowerCase());
 
   const getInitials = (name: string) => {
     const parts = name.split(' ').filter(part => part.length > 0);
@@ -48,11 +48,11 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
               <div>
                 {/* Bolder Dual-Tone Title */}
                 <h1 className="text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                  Staff <span className="text-[#059669]">Directory</span>
+                  Faculty <span className="text-[#059669]">Directory</span>
                 </h1>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">Our Faculty & Admin</p>
+                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">Our Teachers & Admin</p>
                 </div>
               </div>
             </div>
@@ -68,40 +68,42 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
       <div className="px-6 py-8 max-w-2xl mx-auto space-y-8">
         
         {/* EXECUTIVE SUITE */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 mb-2">
-            <Star className="w-4 h-4 text-[#fbbf24] fill-[#fbbf24]" />
-            <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">Executive Suite</h2>
-          </div>
-          
-          <div className="space-y-4">
-            {admins.map((admin) => (
-              <Card key={admin.id} className="bg-gradient-to-br from-[#1a3a1d] to-[#0d1f0f] border border-[#fbbf24]/30 rounded-[2rem] overflow-hidden shadow-2xl relative group">
-                <div className="absolute top-0 right-0 p-4">
-                  <Award className="w-6 h-6 text-[#fbbf24]/20" />
-                </div>
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-5">
-                    <div className="w-16 h-16 rounded-2xl bg-[#0d1f0f] border-2 border-[#fbbf24]/40 flex items-center justify-center text-[#fbbf24] text-xl font-black shadow-inner">
-                      {admin.image ? (
-                        <img src={admin.image} alt={admin.name} className="w-full h-full object-cover rounded-2xl" />
-                      ) : (
-                        getInitials(admin.name)
-                      )}
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-black text-white leading-tight">{admin.name}</h3>
-                      <p className="text-[#fbbf24] text-xs font-bold uppercase tracking-widest mt-1">{admin.role}</p>
-                      <p className="text-[#a0b5a3] text-[10px] mt-2 font-bold uppercase tracking-widest">
-                        Phone Number: <span className="text-[#e8f5e9]">{admin.phone || 'N/A'}</span>
-                      </p>
-                    </div>
+        {admins.length > 0 && (
+          <section className="space-y-4">
+            <div className="flex items-center gap-2 mb-2">
+              <Star className="w-4 h-4 text-[#fbbf24] fill-[#fbbf24]" />
+              <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">Executive Suite</h2>
+            </div>
+            
+            <div className="space-y-4">
+              {admins.map((admin) => (
+                <Card key={admin.id} className="bg-gradient-to-br from-[#1a3a1d] to-[#0d1f0f] border border-[#fbbf24]/30 rounded-[2rem] overflow-hidden shadow-2xl relative group">
+                  <div className="absolute top-0 right-0 p-4">
+                    <Award className="w-6 h-6 text-[#fbbf24]/20" />
                   </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </section>
+                  <CardContent className="p-6">
+                    <div className="flex items-center gap-5">
+                      <div className="w-16 h-16 rounded-2xl bg-[#0d1f0f] border-2 border-[#fbbf24]/40 flex items-center justify-center text-[#fbbf24] text-xl font-black shadow-inner">
+                        {admin.imageUrl ? (
+                          <img src={admin.imageUrl} alt={admin.name} className="w-full h-full object-cover rounded-2xl" />
+                        ) : (
+                          getInitials(admin.name)
+                        )}
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-black text-white leading-tight">{admin.name}</h3>
+                        <p className="text-[#fbbf24] text-xs font-bold uppercase tracking-widest mt-1">{admin.role || 'Administration'}</p>
+                        <p className="text-[#a0b5a3] text-[10px] mt-2 font-bold uppercase tracking-widest">
+                          Contact: <span className="text-[#e8f5e9]">{admin.phone || 'N/A'}</span>
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </section>
+        )}
 
         {/* SEGMENTED CONTROL */}
         <div className="bg-[#1a2e1c] p-1.5 rounded-2xl flex gap-1.5 border border-[#059669]/20 shadow-2xl">
@@ -145,8 +147,8 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
                 <CardContent className="p-5">
                   <div className="flex items-start gap-4">
                     <div className="w-14 h-14 rounded-xl bg-[#0d1f0f] border border-[#059669]/30 flex items-center justify-center text-[#059669] text-sm font-black flex-shrink-0">
-                      {teacher.image ? (
-                        <img src={teacher.image} alt={teacher.name} className="w-full h-full object-cover rounded-xl" />
+                      {teacher.imageUrl ? (
+                        <img src={teacher.imageUrl} alt={teacher.name} className="w-full h-full object-cover rounded-xl" />
                       ) : (
                         getInitials(teacher.name)
                       )}
