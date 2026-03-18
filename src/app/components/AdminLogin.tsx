@@ -65,7 +65,7 @@ export function AdminLogin({ onNavigate }: AdminLoginProps) {
           
           <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-[#059669] uppercase tracking-widest ml-1">Identity (Email)</label>
+              <label className="text-[10px] font-black text-[#059669] uppercase tracking-widest ml-1">Identity</label>
               <div className="relative group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a0b5a3] group-focus-within:text-[#fbbf24] transition-colors">
                   <User className="w-4 h-4" />
@@ -82,7 +82,7 @@ export function AdminLogin({ onNavigate }: AdminLoginProps) {
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-[#059669] uppercase tracking-widest ml-1">Access Key (Password)</label>
+              <label className="text-[10px] font-black text-[#059669] uppercase tracking-widest ml-1">Access Key</label>
               <div className="relative group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-[#a0b5a3] group-focus-within:text-[#fbbf24] transition-colors">
                   <Lock className="w-4 h-4" />
