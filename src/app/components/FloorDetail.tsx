@@ -108,7 +108,7 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-[#059669]">
                       <Users className="w-4 h-4" />
-                      <span className="text-[9px] font-black uppercase tracking-widest">Faculty</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest">Teachers</span>
                     </div>
                     <p className="text-sm font-bold text-[#e8f5e9] truncate">{classInfo.teacher}</p>
                   </div>

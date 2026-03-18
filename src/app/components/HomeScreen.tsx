@@ -20,7 +20,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
   const menuItems = [
     { id: 'floors', label: 'Floor Navigation', icon: MapPin, description: 'Browse by levels' },
-    { id: 'staff', label: 'Faculty Directory', icon: Users, description: 'Meet our faculty' },
+    { id: 'staff', label: 'Teacher Directory', icon: Users, description: 'Meet our teachers' },
     { id: 'facilities', label: 'Facilities', icon: Building2, description: 'Campus amenities' },
     { id: 'about', label: 'About School', icon: BookOpen, description: 'History & Mission' },
     { id: 'fees', label: 'Fees & Costs', icon: DollarSign, description: 'Tuition details' },

@@ -217,7 +217,7 @@ function RoomCard({ room, onNavigate }: { room: any, onNavigate: (v: string, d?:
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-[#059669]">
               <Users className="w-3.5 h-3.5" />
-              <span className="text-[9px] font-black uppercase tracking-[0.1em]">Faculty</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.1em]">Teachers</span>
             </div>
             <p className="text-[13px] font-bold text-[#e8f5e9] leading-tight truncate">{room.teacher}</p>
           </div>

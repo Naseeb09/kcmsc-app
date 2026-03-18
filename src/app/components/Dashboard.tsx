@@ -3,7 +3,7 @@ import { useAppContext, Teacher, ClassInfo, Notice, Facility } from '@/context/A
 import { 
   Megaphone, Users, Building2, Plus, Trash2, Edit2, 
   ChevronRight, ArrowLeft, Eye, EyeOff, Save, X,
-  LayoutDashboard, Star, GraduationCap, MapPin, Loader2, BookOpen
+  LayoutDashboard, Star, GraduationCap, MapPin, Loader2, BookOpen, Search
 } from 'lucide-react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
@@ -13,7 +13,7 @@ interface DashboardProps {
   onNavigate: (view: string) => void;
 }
 
-type TabType = 'notices' | 'faculty' | 'classes' | 'facilities';
+type TabType = 'notices' | 'teachers' | 'classes' | 'facilities';
 
 export function Dashboard({ onNavigate }: DashboardProps) {
   const { 
@@ -31,6 +31,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [deletingId, setDeletingId] = useState<string | number | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Form States
   const [noticeForm, setNoticeForm] = useState<Omit<Notice, 'id' | 'date'>>({ title: '', content: '', priority: 'medium' });
@@ -47,7 +48,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   useEffect(() => {
     if (editingItem) {
       if (activeTab === 'notices') setNoticeForm({ title: editingItem.title, content: editingItem.content, priority: editingItem.priority });
-      if (activeTab === 'faculty') setStaffForm({ 
+      if (activeTab === 'teachers') setStaffForm({ 
         name: editingItem.name, phone: editingItem.phone, section: editingItem.section, 
         subject: editingItem.subject || '', floor: editingItem.floor || '', 
         isFormTeacher: editingItem.isFormTeacher || false, formTeacherOf: editingItem.formTeacherOf || '',
@@ -76,11 +77,11 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
   const handleSave = async () => {
     setIsProcessing(true);
-    const label = activeTab === 'faculty' ? 'Faculty Member' : activeTab.slice(0, -1);
+    const label = activeTab === 'teachers' ? 'Teacher' : activeTab.slice(0, -1);
     try {
       if (activeTab === 'notices') {
         await saveNotice({ ...noticeForm, id: editingItem?.id });
-      } else if (activeTab === 'faculty') {
+      } else if (activeTab === 'teachers') {
         await saveTeacher({ ...staffForm, id: editingItem?.id });
       } else if (activeTab === 'classes') {
         await saveClass({ ...classForm, id: editingItem?.id });
@@ -102,10 +103,10 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   const handleDelete = async (id: any) => {
     if (!window.confirm('Are you sure you want to delete this item? This action cannot be undone.')) return;
     setDeletingId(id);
-    const label = activeTab === 'faculty' ? 'Faculty Member' : activeTab.slice(0, -1);
+    const label = activeTab === 'teachers' ? 'Teacher' : activeTab.slice(0, -1);
     try {
       if (activeTab === 'notices') await deleteNotice(id);
-      else if (activeTab === 'faculty') await deleteTeacher(id);
+      else if (activeTab === 'teachers') await deleteTeacher(id);
       else if (activeTab === 'classes') await deleteClass(id);
       else if (activeTab === 'facilities') await deleteFacility(id);
       toast.success(`${label} deleted successfully!`);
@@ -122,6 +123,13 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     if (parts.length >= 2) return parts[0][0] + parts[parts.length - 1][0];
     return parts[0]?.slice(0, 2).toUpperCase() || '??';
   };
+
+  // Filter Data
+  const query = searchQuery.toLowerCase();
+  const filteredNotices = notices.filter(n => n.title.toLowerCase().includes(query) || n.content.toLowerCase().includes(query));
+  const filteredTeachers = teachers.filter(t => t.name.toLowerCase().includes(query) || (t.subject || '').toLowerCase().includes(query) || (t.section || '').toLowerCase().includes(query));
+  const filteredClasses = classes.filter(c => c.name.toLowerCase().includes(query) || c.room.toLowerCase().includes(query) || c.section.toLowerCase().includes(query) || c.teacher?.toLowerCase().includes(query));
+  const filteredFacilities = facilities.filter(f => f.name.toLowerCase().includes(query) || (f.description || '').toLowerCase().includes(query) || f.floor.toLowerCase().includes(query));
 
   // Preview Components
   const NoticePreview = ({ item }: { item: any }) => (
@@ -179,6 +187,36 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     </Card>
   );
 
+  const ClassPreview = ({ item }: { item: any }) => (
+    <Card className="bg-[#1a3a1d] border border-[#059669]/20 w-full animate-in fade-in zoom-in-95">
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between gap-4">
+          <div className="w-12 h-12 rounded-xl bg-[#0d1f0f] border border-[#059669]/30 flex items-center justify-center">
+            <GraduationCap className="w-6 h-6 text-[#fbbf24]" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-xs font-black text-white uppercase tracking-wider truncate">Class {item.name || 'Name'} - {item.section || 'Sec'}</h3>
+            <p className="text-[10px] text-[#059669] font-bold mt-0.5 uppercase tracking-widest">Room {item.room || '000'} • {item.version || 'Version'}</p>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const FacilityPreview = ({ item }: { item: any }) => (
+    <Card className="bg-[#1a3a1d] border border-[#059669]/20 w-full animate-in fade-in zoom-in-95">
+      <CardContent className="p-4 flex items-center gap-4">
+        <div className="w-12 h-12 rounded-xl bg-[#fbbf24]/10 border border-[#fbbf24]/30 flex items-center justify-center text-[#fbbf24]">
+          <Building2 className="w-6 h-6" />
+        </div>
+        <div>
+          <h3 className="text-xs font-black text-white uppercase tracking-widest">{item.name || 'Facility'}</h3>
+          <p className="text-[10px] text-[#059669] font-bold uppercase tracking-widest mt-0.5">Floor {item.floor || 'N/A'} • {item.capacity || '0'} Capacity</p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+
   return (
     <div className="min-h-screen bg-[#0d1f0f] pb-12 font-sans">
       {/* Header */}
@@ -204,11 +242,11 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
       <main className="max-w-md mx-auto px-6 py-8">
         {/* Segmented Control */}
-        <div className="bg-[#1a2e1c] p-1 rounded-2xl flex flex-wrap gap-1 border border-[#059669]/20 mb-8">
-          {(['notices', 'faculty', 'classes', 'facilities'] as const).map((tab) => (
+        <div className="bg-[#1a2e1c] p-1 rounded-2xl flex flex-wrap gap-1 border border-[#059669]/20 mb-6">
+          {(['notices', 'teachers', 'classes', 'facilities'] as const).map((tab) => (
             <button
               key={tab}
-              onClick={() => { setActiveTab(tab); setEditingItem(null); setIsAdding(false); }}
+              onClick={() => { setActiveTab(tab); setEditingItem(null); setIsAdding(false); setSearchQuery(''); }}
               className={`flex-1 min-w-[70px] py-2.5 rounded-xl text-[8px] font-black uppercase tracking-widest transition-all ${
                 activeTab === tab ? 'bg-[#059669] text-white shadow-lg' : 'text-[#a0b5a3]'
               }`}
@@ -216,6 +254,18 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               {tab}
             </button>
           ))}
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative mb-6">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#059669]" />
+          <input 
+            type="text"
+            placeholder={`Search ${activeTab}...`}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-[#1a2e1c] border border-[#059669]/20 rounded-xl pl-11 pr-4 py-3 text-xs text-white focus:outline-none focus:border-[#fbbf24] transition-all"
+          />
         </div>
 
         {/* Action Bar */}
@@ -253,7 +303,9 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               <div className="p-4 bg-white/5 rounded-3xl border border-dashed border-white/10 mb-6">
                 <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest mb-3 text-center">Student View Preview</p>
                 {activeTab === 'notices' && <NoticePreview item={noticeForm} />}
-                {(activeTab === 'faculty') && <StaffPreview item={staffForm} />}
+                {activeTab === 'teachers' && <StaffPreview item={staffForm} />}
+                {activeTab === 'classes' && <ClassPreview item={classForm} />}
+                {activeTab === 'facilities' && <FacilityPreview item={facilityForm} />}
               </div>
             )}
 
@@ -286,7 +338,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                 </>
               )}
 
-              {activeTab === 'faculty' && (
+              {activeTab === 'teachers' && (
                 <>
                   <input 
                     placeholder="Full Name" 
@@ -321,10 +373,10 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                           }
                         }}
                         className="hidden" 
-                        id="faculty-image-upload"
+                        id="teacher-image-upload"
                       />
                       <label 
-                        htmlFor="faculty-image-upload"
+                        htmlFor="teacher-image-upload"
                         className="w-full bg-[#059669]/10 border border-dashed border-[#059669]/40 rounded-xl p-4 flex items-center justify-center gap-2 cursor-pointer hover:bg-[#059669]/20 transition-all"
                       >
                         <Plus className="w-4 h-4 text-[#059669]" />
@@ -506,9 +558,17 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
         {/* List View */}
         {!isAdding && !editingItem && (
-          <div className="space-y-4">
-            <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] mb-4">Existing Records</h2>
-            {activeTab === 'notices' && notices.map(notice => (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between mb-2">
+              <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">Existing Records</h2>
+              <Badge className="bg-[#059669]/10 text-[#059669] border-0 text-[9px] font-black">
+                {activeTab === 'notices' ? filteredNotices.length : 
+                 activeTab === 'teachers' ? filteredTeachers.length :
+                 activeTab === 'classes' ? filteredClasses.length : filteredFacilities.length} Items
+              </Badge>
+            </div>
+
+            {activeTab === 'notices' && filteredNotices.map(notice => (
               <div key={notice.id} className="bg-[#1a2e1c] border border-white/5 rounded-2xl p-4 flex items-center justify-between group">
                 <div className="flex-1 pr-4">
                   <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">{notice.title}</h3>
@@ -523,37 +583,76 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               </div>
             ))}
 
-            {activeTab === 'faculty' && teachers.map(member => (
-              <div key={member.id} className="bg-[#1a2e1c] border border-white/5 rounded-2xl p-4 flex items-center justify-between group">
-                <div className="flex-1 pr-4">
-                  <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">{member.name}</h3>
-                  <p className="text-[9px] text-[#059669] font-bold uppercase tracking-widest mt-1">{member.subject || member.section}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => setEditingItem(member)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#a0b5a3] hover:text-[#fbbf24] transition-colors disabled:opacity-50"><Edit2 className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => handleDelete(member.id)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50">
-                    {deletingId === member.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                  </button>
-                </div>
+            {activeTab === 'teachers' && (
+              <div className="space-y-8">
+                {['Admin', 'Senior', 'Junior'].map(section => {
+                  const sectionTeachers = filteredTeachers.filter(t => (t.section || 'Senior').toLowerCase() === section.toLowerCase());
+                  if (sectionTeachers.length === 0) return null;
+                  return (
+                    <div key={section} className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-px flex-1 bg-[#059669]/20"></div>
+                        <span className="text-[9px] font-black text-[#fbbf24] uppercase tracking-[0.2em] px-2">{section} Section</span>
+                        <div className="h-px flex-1 bg-[#059669]/20"></div>
+                      </div>
+                      {sectionTeachers.map(member => (
+                        <div key={member.id} className="bg-[#1a2e1c] border border-white/5 rounded-2xl p-4 flex items-center justify-between group">
+                          <div className="flex items-center gap-3 flex-1 min-w-0 pr-4">
+                            <div className="w-10 h-10 rounded-xl bg-[#0d1f0f] border border-[#059669]/20 flex items-center justify-center text-[#059669] text-xs font-black flex-shrink-0">
+                              {member.imageUrl ? <img src={member.imageUrl} className="w-full h-full object-cover rounded-xl" /> : getInitials(member.name)}
+                            </div>
+                            <div className="min-w-0">
+                              <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">{member.name}</h3>
+                              <p className="text-[9px] text-[#059669] font-bold uppercase tracking-widest mt-1">{member.subject || member.role}</p>
+                            </div>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => setEditingItem(member)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#a0b5a3] hover:text-[#fbbf24] transition-colors disabled:opacity-50"><Edit2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => handleDelete(member.id)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50">
+                              {deletingId === member.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
-            ))}
+            )}
 
-            {activeTab === 'classes' && classes.map(cls => (
-              <div key={cls.id} className="bg-[#1a2e1c] border border-white/5 rounded-2xl p-4 flex items-center justify-between group">
-                <div className="flex-1 pr-4">
-                  <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">Class {cls.name} - {cls.section}</h3>
-                  <p className="text-[9px] text-[#059669] font-bold uppercase tracking-widest mt-1">Room {cls.room} • {cls.version}</p>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => setEditingItem(cls)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#a0b5a3] hover:text-[#fbbf24] transition-colors disabled:opacity-50"><Edit2 className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => handleDelete(cls.id)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50">
-                    {deletingId === cls.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                  </button>
-                </div>
+            {activeTab === 'classes' && (
+              <div className="space-y-8">
+                {floors.map(floor => {
+                  const floorClasses = filteredClasses.filter(c => c.floor_id === floor.id);
+                  if (floorClasses.length === 0) return null;
+                  return (
+                    <div key={floor.id} className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <div className="h-px flex-1 bg-[#059669]/20"></div>
+                        <span className="text-[9px] font-black text-[#fbbf24] uppercase tracking-[0.2em] px-2">{floor.name}</span>
+                        <div className="h-px flex-1 bg-[#059669]/20"></div>
+                      </div>
+                      {floorClasses.map(cls => (
+                        <div key={cls.id} className="bg-[#1a2e1c] border border-white/5 rounded-2xl p-4 flex items-center justify-between group">
+                          <div className="flex-1 pr-4 min-w-0">
+                            <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">Class {cls.name} - {cls.section}</h3>
+                            <p className="text-[9px] text-[#059669] font-bold uppercase tracking-widest mt-1">Room {cls.room} • {cls.version}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => setEditingItem(cls)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#a0b5a3] hover:text-[#fbbf24] transition-colors disabled:opacity-50"><Edit2 className="w-3.5 h-3.5" /></button>
+                            <button onClick={() => handleDelete(cls.id)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50">
+                              {deletingId === cls.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
-            ))}
+            )}
 
-            {activeTab === 'facilities' && facilities.map(fac => (
+            {activeTab === 'facilities' && filteredFacilities.map(fac => (
               <div key={fac.id} className="bg-[#1a2e1c] border border-white/5 rounded-2xl p-4 flex items-center justify-between group">
                 <div className="flex-1 pr-4">
                   <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">{fac.name}</h3>
