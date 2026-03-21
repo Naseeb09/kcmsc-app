@@ -69,10 +69,10 @@ interface AppContextType {
   facilities: Facility[];
   isAdmin: boolean;
   setIsAdmin: (isAdmin: boolean) => void;
-  addEvent: (event: Omit<Event, 'id'>) => void;
   saveNotice: (notice: Partial<Notice>) => Promise<void>;
-  updateEvent: (id: string, event: Omit<Event, 'id'>) => void;
   deleteNotice: (id: number) => Promise<void>;
+  saveEvent: (event: Partial<Event>) => Promise<void>;
+  deleteEvent: (id: string) => Promise<void>;
   addFloor: (floor: Omit<FloorData, 'id'>) => void;
   updateFloor: (id: string, floor: Omit<FloorData, 'id'>) => void;
   deleteFloor: (id: string) => void;
@@ -83,6 +83,8 @@ interface AppContextType {
   saveFacility: (facility: Partial<Facility>) => Promise<void>;
   deleteFacility: (id: string) => Promise<void>;
   fetchInitialData: () => Promise<void>;
+  addEvent: (event: Omit<Event, 'id'>) => void;
+  updateEvent: (id: string, event: Omit<Event, 'id'>) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -125,6 +127,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const { count: teacherCount } = await supabase.from('teachers').select('*', { count: 'exact', head: true });
     const { count: noticeCount } = await supabase.from('notices').select('*', { count: 'exact', head: true });
     const { count: facilityCount } = await supabase.from('facilities').select('*', { count: 'exact', head: true });
+    const { count: eventCount } = await supabase.from('events').select('*', { count: 'exact', head: true });
 
     // 1. Migrate Classes
     if (classCount === 0) {
@@ -216,12 +219,28 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }
     }
 
+    // 5. Migrate Events
+    if (eventCount === 0) {
+      const { defaultEvents } = await import('../data/announcements');
+      if (defaultEvents.length > 0) {
+        await supabase.from('events').insert(defaultEvents.map(e => ({
+          title: e.title,
+          description: e.description,
+          image: e.image,
+          date: e.date
+        })));
+      }
+    }
+
     await fetchInitialData();
     console.log('✅ Migration complete!');
   };
 
   const fetchInitialData = async () => {
     try {
+      const { data: eData } = await supabase.from('events').select('*').order('created_at', { ascending: false });
+      if (eData) setEvents(eData);
+
       const { data: nData } = await supabase.from('notices').select('*').order('created_at', { ascending: false });
       if (nData) setNotices(nData.map((n: any) => ({ ...n, date: n.created_at?.split('T')[0] || '' })));
 
@@ -247,7 +266,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const setupSubscriptions = () => {
-    return ['notices', 'teachers', 'classes', 'facilities'].map(table => 
+    return ['notices', 'events', 'teachers', 'classes', 'facilities'].map(table => 
       supabase.channel(`${table}-changes`)
         .on('postgres_changes', { event: '*', table, schema: 'public' }, () => { fetchInitialData(); })
         .subscribe()
@@ -265,6 +284,19 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const { error } = await supabase.from('notices').delete().eq('id', id);
     if (error) throw error;
     setNotices(prev => prev.filter(item => item.id !== id));
+  };
+
+  const saveEvent = async (event: Partial<Event>) => {
+    const { id, ...payload } = event;
+    const { error } = await supabase.from('events').upsert([id ? { id, ...payload } : payload]);
+    if (error) throw error;
+    await fetchInitialData();
+  };
+
+  const deleteEvent = async (id: string) => {
+    const { error } = await supabase.from('events').delete().eq('id', id);
+    if (error) throw error;
+    setEvents(prev => prev.filter(item => item.id !== id));
   };
 
   const saveTeacher = async (member: Partial<Teacher>) => {
@@ -322,11 +354,12 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={{ 
       events, notices, floors, teachers, classes, facilities, isAdmin, setIsAdmin,
-      addEvent, saveNotice, updateEvent, deleteNotice,
+      saveNotice, deleteNotice, saveEvent, deleteEvent,
       addFloor, updateFloor, deleteFloor,
       saveTeacher, deleteTeacher, 
       saveClass, deleteClass,
-      saveFacility, deleteFacility, fetchInitialData
+      saveFacility, deleteFacility, fetchInitialData,
+      addEvent, updateEvent
     }}>
       {children}
     </AppContext.Provider>

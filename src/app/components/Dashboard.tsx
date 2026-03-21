@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useAppContext, Teacher, ClassInfo, Notice, Facility } from '@/context/AppContext';
+import { useAppContext, Teacher, ClassInfo, Notice, Facility, Event } from '@/context/AppContext';
 import { 
   Megaphone, Users, Building2, Plus, Trash2, Edit2, 
   ChevronRight, ArrowLeft, Eye, EyeOff, Save, X,
@@ -13,12 +13,13 @@ interface DashboardProps {
   onNavigate: (view: string) => void;
 }
 
-type TabType = 'notices' | 'teachers' | 'classes' | 'facilities';
+type TabType = 'notices' | 'events' | 'teachers' | 'classes' | 'facilities';
 
 export function Dashboard({ onNavigate }: DashboardProps) {
   const { 
-    notices, teachers, classes, facilities, floors,
+    notices, events, teachers, classes, facilities, floors,
     saveNotice, deleteNotice,
+    saveEvent, deleteEvent,
     saveTeacher, deleteTeacher,
     saveClass, deleteClass,
     saveFacility, deleteFacility,
@@ -35,6 +36,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
   // Form States
   const [noticeForm, setNoticeForm] = useState<Omit<Notice, 'id' | 'date'>>({ title: '', content: '', priority: 'medium' });
+  const [eventForm, setEventForm] = useState<Omit<Event, 'id'>>({ title: '', description: '', image: '', date: '' });
   const [staffForm, setStaffForm] = useState<any>({ 
     name: '', phone: '', section: 'Senior', subject: '', floor: '', isFormTeacher: false, formTeacherOf: '', imageUrl: '' 
   });
@@ -47,7 +49,9 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
   useEffect(() => {
     if (editingItem) {
+      setIsPreviewMode(true);
       if (activeTab === 'notices') setNoticeForm({ title: editingItem.title, content: editingItem.content, priority: editingItem.priority });
+      if (activeTab === 'events') setEventForm({ title: editingItem.title, description: editingItem.description, image: editingItem.image || '', date: editingItem.date || '' });
       if (activeTab === 'teachers') setStaffForm({ 
         name: editingItem.name, phone: editingItem.phone, section: editingItem.section, 
         subject: editingItem.subject || '', floor: editingItem.floor || '', 
@@ -70,6 +74,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
 
   const resetForms = () => {
     setNoticeForm({ title: '', content: '', priority: 'medium' });
+    setEventForm({ title: '', description: '', image: '', date: '' });
     setStaffForm({ name: '', phone: '', section: 'Senior', subject: '', floor: '', isFormTeacher: false, formTeacherOf: '', imageUrl: '' });
     setClassForm({ name: '', room: '', section: '', version: '', teacher: '', teacherNumber: '', floor_id: '' });
     setFacilityForm({ name: '', floor: '', capacity: '', icon: 'BookOpen', description: '' });
@@ -81,6 +86,8 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     try {
       if (activeTab === 'notices') {
         await saveNotice({ ...noticeForm, id: editingItem?.id });
+      } else if (activeTab === 'events') {
+        await saveEvent({ ...eventForm, id: editingItem?.id });
       } else if (activeTab === 'teachers') {
         await saveTeacher({ ...staffForm, id: editingItem?.id });
       } else if (activeTab === 'classes') {
@@ -106,6 +113,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
     const label = activeTab === 'teachers' ? 'Teacher' : activeTab.slice(0, -1);
     try {
       if (activeTab === 'notices') await deleteNotice(id);
+      else if (activeTab === 'events') await deleteEvent(id);
       else if (activeTab === 'teachers') await deleteTeacher(id);
       else if (activeTab === 'classes') await deleteClass(id);
       else if (activeTab === 'facilities') await deleteFacility(id);
@@ -127,6 +135,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
   // Filter Data
   const query = searchQuery.toLowerCase();
   const filteredNotices = notices.filter(n => n.title.toLowerCase().includes(query) || n.content.toLowerCase().includes(query));
+  const filteredEvents = events.filter(e => e.title.toLowerCase().includes(query) || e.description.toLowerCase().includes(query));
   const filteredTeachers = teachers.filter(t => t.name.toLowerCase().includes(query) || (t.subject || '').toLowerCase().includes(query) || (t.section || '').toLowerCase().includes(query));
   const filteredClasses = classes.filter(c => c.name.toLowerCase().includes(query) || c.room.toLowerCase().includes(query) || c.section.toLowerCase().includes(query) || c.teacher?.toLowerCase().includes(query));
   const filteredFacilities = facilities.filter(f => f.name.toLowerCase().includes(query) || (f.description || '').toLowerCase().includes(query) || f.floor.toLowerCase().includes(query));
@@ -146,6 +155,25 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         </div>
         <p className="text-xs text-[#a0b5a3] mb-2">{new Date().toISOString().split('T')[0]}</p>
         <p className="text-xs text-[#a0b5a3] line-clamp-2">{item.content || 'Notice content will appear here...'}</p>
+      </CardContent>
+    </Card>
+  );
+
+  const EventPreview = ({ item }: { item: any }) => (
+    <Card className="bg-[#1a3a1d] border border-[#059669]/20 w-full overflow-hidden animate-in fade-in zoom-in-95">
+      <div className="aspect-video w-full bg-[#0d1f0f] relative">
+        {item.image ? (
+          <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <Calendar className="w-8 h-8 text-[#059669]/20" />
+          </div>
+        )}
+      </div>
+      <CardContent className="p-4">
+        <h3 className="text-sm font-black text-white uppercase tracking-tight mb-1">{item.title || 'Event Title'}</h3>
+        <p className="text-[10px] text-[#fbbf24] font-bold uppercase mb-2">{item.date || 'Date TBD'}</p>
+        <p className="text-xs text-[#a0b5a3] line-clamp-2">{item.description || 'Event description...'}</p>
       </CardContent>
     </Card>
   );
@@ -243,7 +271,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
       <main className="max-w-md mx-auto px-6 py-8">
         {/* Segmented Control */}
         <div className="bg-[#1a2e1c] p-1 rounded-2xl flex flex-wrap gap-1 border border-[#059669]/20 mb-6">
-          {(['notices', 'teachers', 'classes', 'facilities'] as const).map((tab) => (
+          {(['notices', 'events', 'teachers', 'classes', 'facilities'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => { setActiveTab(tab); setEditingItem(null); setIsAdding(false); setSearchQuery(''); }}
@@ -271,7 +299,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
         {/* Action Bar */}
         {!isAdding && !editingItem && (
           <button 
-            onClick={() => setIsAdding(true)}
+            onClick={() => { setIsAdding(true); setIsPreviewMode(true); }}
             className="w-full bg-[#059669]/10 border border-[#059669]/30 rounded-2xl p-5 flex items-center justify-center gap-3 group active:scale-95 transition-all mb-6"
           >
             <div className="w-8 h-8 rounded-lg bg-[#059669] flex items-center justify-center text-[#0d1f0f]">
@@ -303,6 +331,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               <div className="p-4 bg-white/5 rounded-3xl border border-dashed border-white/10 mb-6">
                 <p className="text-[8px] font-bold text-white/30 uppercase tracking-widest mb-3 text-center">Student View Preview</p>
                 {activeTab === 'notices' && <NoticePreview item={noticeForm} />}
+                {activeTab === 'events' && <EventPreview item={eventForm} />}
                 {activeTab === 'teachers' && <StaffPreview item={staffForm} />}
                 {activeTab === 'classes' && <ClassPreview item={classForm} />}
                 {activeTab === 'facilities' && <FacilityPreview item={facilityForm} />}
@@ -335,6 +364,39 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                     <option value="medium">Medium Priority</option>
                     <option value="high">High Priority</option>
                   </select>
+                </>
+              )}
+
+              {activeTab === 'events' && (
+                <>
+                  <input 
+                    placeholder="Event Title" 
+                    value={eventForm.title} 
+                    onChange={e => setEventForm({...eventForm, title: e.target.value})}
+                    className="w-full bg-[#0d1f0f] border border-[#059669]/20 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-[#fbbf24]"
+                    autoComplete="off"
+                  />
+                  <input 
+                    placeholder="Event Date (e.g. May 12, 2026)" 
+                    value={eventForm.date} 
+                    onChange={e => setEventForm({...eventForm, date: e.target.value})}
+                    className="w-full bg-[#0d1f0f] border border-[#059669]/20 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-[#fbbf24]"
+                    autoComplete="off"
+                  />
+                  <textarea 
+                    placeholder="Event Description" 
+                    value={eventForm.description} 
+                    onChange={e => setEventForm({...eventForm, description: e.target.value})}
+                    className="w-full bg-[#0d1f0f] border border-[#059669]/20 rounded-xl p-4 text-sm text-white h-32 focus:outline-none focus:border-[#fbbf24]"
+                    autoComplete="off"
+                  />
+                  <input 
+                    placeholder="Image URL (Unsplash or direct link)" 
+                    value={eventForm.image} 
+                    onChange={e => setEventForm({...eventForm, image: e.target.value})}
+                    className="w-full bg-[#0d1f0f] border border-[#059669]/20 rounded-xl p-4 text-sm text-white focus:outline-none focus:border-[#fbbf24]"
+                    autoComplete="off"
+                  />
                 </>
               )}
 
@@ -563,6 +625,7 @@ export function Dashboard({ onNavigate }: DashboardProps) {
               <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">Existing Records</h2>
               <Badge className="bg-[#059669]/10 text-[#059669] border-0 text-[9px] font-black">
                 {activeTab === 'notices' ? filteredNotices.length : 
+                 activeTab === 'events' ? filteredEvents.length :
                  activeTab === 'teachers' ? filteredTeachers.length :
                  activeTab === 'classes' ? filteredClasses.length : filteredFacilities.length} Items
               </Badge>
@@ -578,6 +641,26 @@ export function Dashboard({ onNavigate }: DashboardProps) {
                   <button onClick={() => setEditingItem(notice)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#a0b5a3] hover:text-[#fbbf24] transition-colors disabled:opacity-50"><Edit2 className="w-3.5 h-3.5" /></button>
                   <button onClick={() => handleDelete(notice.id)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50">
                     {deletingId === notice.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {activeTab === 'events' && filteredEvents.map(event => (
+              <div key={event.id} className="bg-[#1a2e1c] border border-white/5 rounded-2xl p-4 flex items-center justify-between group">
+                <div className="flex items-center gap-3 flex-1 min-w-0 pr-4">
+                  <div className="w-10 h-10 rounded-xl bg-[#0d1f0f] border border-[#059669]/20 flex items-center justify-center overflow-hidden flex-shrink-0">
+                    {event.image ? <img src={event.image} className="w-full h-full object-cover" /> : <Calendar className="w-4 h-4 text-[#059669]" />}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="text-xs font-black text-white uppercase tracking-tight truncate">{event.title}</h3>
+                    <p className="text-[9px] text-[#fbbf24] font-bold uppercase tracking-widest mt-1">{event.date || 'No Date'}</p>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button onClick={() => setEditingItem(event)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-[#a0b5a3] hover:text-[#fbbf24] transition-colors disabled:opacity-50"><Edit2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => handleDelete(event.id)} disabled={!!deletingId} className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-50">
+                    {deletingId === event.id ? <Loader2 className="w-3 h-3 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
                   </button>
                 </div>
               </div>

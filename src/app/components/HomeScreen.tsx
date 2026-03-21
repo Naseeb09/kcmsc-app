@@ -1,4 +1,4 @@
-import { MapPin, Users, Building2, BookOpen, Phone, Search, DollarSign, ChevronRight, Sparkles } from 'lucide-react';
+import { MapPin, Users, Building2, BookOpen, Phone, Search, DollarSign, ChevronRight, Sparkles, Megaphone, AlertCircle } from 'lucide-react';
 import { Badge } from '@/app/components/ui/badge';
 import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
@@ -9,14 +9,15 @@ interface HomeScreenProps {
 }
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
-  const { events } = useAppContext();
+  const { events, notices } = useAppContext();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   
   const [activeIndex, setActiveIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  const displayEvents = events.length >= 6 ? events.slice(0, 6) : [...events, ...events].slice(0, 6);
+  const displayEvents = events.length === 0 ? [] : (events.length >= 6 ? events.slice(0, 6) : [...events, ...events].slice(0, 6));
+  const latestNotices = notices.slice(0, 3);
 
   const menuItems = [
     { id: 'floors', label: 'Floor Navigation', icon: MapPin, description: 'Browse by levels' },
@@ -36,6 +37,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   };
 
   useEffect(() => {
+    if (displayEvents.length === 0) return;
     const timer = setInterval(() => {
       if (!scrollRef.current) return;
       const nextIndex = (activeIndex + 1) % displayEvents.length;
@@ -115,40 +117,49 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               <Sparkles className="w-3 h-3 text-[#fbbf24]" />
               Latest Events
             </h2>
-            <button onClick={() => onNavigate('events')} className="text-[10px] text-[#059669] font-black uppercase tracking-widest hover:text-[#fbbf24] transition-colors">See All</button>
           </div>
           
           <div className="relative">
-            <div 
-              ref={scrollRef}
-              onScroll={handleScroll}
-              className="flex gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar px-[calc(50%-140px)] pb-6"
-            >
-              {displayEvents.map((event, index) => (
+            {displayEvents.length > 0 ? (
+              <>
                 <div 
-                  key={index}
-                  onClick={() => setSelectedEvent(event)}
-                  className={`snap-center shrink-0 w-[280px] aspect-[16/10] rounded-[2rem] overflow-hidden relative border transition-all duration-500 cursor-pointer ${
-                    index === activeIndex ? 'border-[#059669] scale-100 shadow-2xl shadow-black/40' : 'border-white/5 scale-90 opacity-40 grayscale'
-                  } bg-[#1a2e1c]`}
+                  ref={scrollRef}
+                  onScroll={handleScroll}
+                  className="flex gap-5 overflow-x-auto snap-x snap-mandatory no-scrollbar px-[calc(50%-140px)] pb-6"
                 >
-                  <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0d1f0f] via-transparent to-transparent opacity-80" />
-                  <div className="absolute bottom-6 left-6 right-6">
-                    <h3 className="text-white text-xs font-black uppercase tracking-wider leading-tight line-clamp-1">{event.title}</h3>
-                  </div>
+                  {displayEvents.map((event, index) => (
+                    <div 
+                      key={index}
+                      onClick={() => setSelectedEvent(event)}
+                      className={`snap-center shrink-0 w-[280px] aspect-[16/10] rounded-[2rem] overflow-hidden relative border transition-all duration-500 cursor-pointer ${
+                        index === activeIndex ? 'border-[#059669] scale-100 shadow-2xl shadow-black/40' : 'border-white/5 scale-90 opacity-40 grayscale'
+                      } bg-[#1a2e1c]`}
+                    >
+                      <img src={event.image} alt={event.title} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#0d1f0f] via-transparent to-transparent opacity-80" />
+                      <div className="absolute bottom-6 left-6 right-6">
+                        <h3 className="text-white text-xs font-black uppercase tracking-wider leading-tight line-clamp-1">{event.title}</h3>
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <div className="flex justify-center gap-2.5 mt-2">
-              {displayEvents.map((_, i) => (
-                <div 
-                  key={i} 
-                  className={`h-1 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-8 bg-[#fbbf24]' : 'w-2 bg-white/10'}`} 
-                />
-              ))}
-            </div>
+                <div className="flex justify-center gap-2.5 mt-2">
+                  {displayEvents.map((_, i) => (
+                    <div 
+                      key={i} 
+                      className={`h-1 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-8 bg-[#fbbf24]' : 'w-2 bg-white/10'}`} 
+                    />
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="px-6">
+                <div className="w-full aspect-[16/6] bg-[#1a2e1c] rounded-[2rem] border border-white/5 flex items-center justify-center">
+                  <p className="text-[10px] font-black text-[#a0b5a3] uppercase tracking-[0.2em]">No Active Events</p>
+                </div>
+              </div>
+            )}
           </div>
         </section>
 
