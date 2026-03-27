@@ -59,25 +59,6 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     if (newIndex !== activeIndex) setActiveIndex(newIndex);
   };
 
-  const [logoTaps, setLogoTaps] = useState(0);
-  const tapTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleLogoTap = () => {
-    if (tapTimeoutRef.current) clearTimeout(tapTimeoutRef.current);
-    
-    const newTaps = logoTaps + 1;
-    if (newTaps === 5) {
-      setLogoTaps(0);
-      if (navigator.vibrate) navigator.vibrate(50);
-      onNavigate('admin-login');
-    } else {
-      setLogoTaps(newTaps);
-      tapTimeoutRef.current = setTimeout(() => {
-        setLogoTaps(0);
-      }, 3000);
-    }
-  };
-
   return (
     <div className="pb-20 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
       {/* 1. Header with Official Logo (No Box) */}
@@ -87,15 +68,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         <div className="max-w-2xl mx-auto flex items-center justify-between relative z-10">
           <div className="flex items-center gap-4">
             {/* Logo with no surrounding box or border */}
-            <div onClick={handleLogoTap} className="cursor-pointer active:scale-95 transition-transform relative">
+            <div className="relative">
               <img 
                 src={schoolLogo} 
                 alt="KC Model School Logo" 
                 className="w-12 h-12 object-contain" 
               />
-              {logoTaps === 4 && (
-                <div className="absolute inset-0 bg-[#fbbf24] rounded-full animate-ping opacity-20" />
-              )}
             </div>
             <div>
               <h1 className="text-[11px] font-black text-[#059669] uppercase tracking-[0.3em] mb-0.5">KC Model School & College</h1>

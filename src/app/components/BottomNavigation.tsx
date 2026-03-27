@@ -1,4 +1,4 @@
-import { Home, Search, Map, Info, User } from 'lucide-react';
+import { Home, Search, Map, Info, Phone } from 'lucide-react';
 
 interface BottomNavigationProps {
   currentView: string;
@@ -11,12 +11,13 @@ export function BottomNavigation({ currentView, onNavigate }: BottomNavigationPr
     { id: 'search', label: 'Explore', icon: Search },
     { id: 'map', label: 'Map', icon: Map },
     { id: 'about', label: 'Notice', icon: Info },
+    { id: 'contact', label: 'Contact', icon: Phone },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-[#1a2e1c] border-t border-[#059669]/20 z-50 safe-area-bottom">
       <div className="max-w-2xl mx-auto px-2 py-2">
-        <div className="grid grid-cols-4 gap-1">
+        <div className="grid grid-cols-5 gap-1">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = currentView === item.id;

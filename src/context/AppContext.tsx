@@ -106,7 +106,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // Run migration if no data exists
+  // Run migration if no data exists - DISABLED for Read-Only App
+  /*
   useEffect(() => {
     const checkAndMigrate = async () => {
       const { count: classCount } = await supabase.from('classes').select('*', { count: 'exact', head: true });
@@ -118,122 +119,14 @@ export function AppProvider({ children }: { children: ReactNode }) {
     };
     checkAndMigrate();
   }, []);
+  */
 
   const runMigration = async () => {
+    console.warn('Migration attempted but disabled in student-only build.');
+    /*
     console.log('🚀 Running initial data migration from campusData...');
-    
-    // Check existing counts
-    const { count: classCount } = await supabase.from('classes').select('*', { count: 'exact', head: true });
-    const { count: teacherCount } = await supabase.from('teachers').select('*', { count: 'exact', head: true });
-    const { count: noticeCount } = await supabase.from('notices').select('*', { count: 'exact', head: true });
-    const { count: facilityCount } = await supabase.from('facilities').select('*', { count: 'exact', head: true });
-    const { count: eventCount } = await supabase.from('events').select('*', { count: 'exact', head: true });
-
-    // 1. Migrate Classes
-    if (classCount === 0) {
-      const classesToInsert: any[] = [];
-      campusData.forEach(floor => {
-        floor.classes.forEach(c => {
-          classesToInsert.push({
-            name: c.name,
-            room: c.room,
-            section: c.section,
-            version: c.version,
-            teacher: c.teacher,
-            teacher_number: c.teacherNumber,
-            floor_id: floor.id
-          });
-        });
-      });
-
-      if (classesToInsert.length > 0) {
-        await supabase.from('classes').insert(classesToInsert);
-      }
-    }
-
-    // 2. Migrate Teachers (from classes where teacher is not N/A)
-    if (teacherCount === 0) {
-      const teachersMap = new Map();
-      
-      // Default Admin/Executive Faculty
-      const defaultAdmins = [
-        { name: 'Dr. Md. Abdul Khalek', role: 'Chairman', section: 'Admin', phone: 'N/A', is_form_teacher: false },
-        { name: 'Md. Abdul Quader', role: 'Principal', section: 'Admin', phone: 'N/A', is_form_teacher: false },
-        { name: 'Vice Principal (Junior)', role: 'Vice Principal', section: 'Admin', phone: 'N/A', is_form_teacher: false },
-        { name: 'Vice Principal (Senior)', role: 'Vice Principal', section: 'Admin', phone: 'N/A', is_form_teacher: false },
-        { name: 'Senior Co-ordinator', role: 'Co-ordinator', section: 'Admin', phone: 'N/A', is_form_teacher: false },
-      ];
-
-      defaultAdmins.forEach(admin => {
-        teachersMap.set(admin.name, admin);
-      });
-
-      campusData.forEach(floor => {
-        const floorNum = parseInt(floor.label);
-        const section = floorNum <= 3 ? 'Junior' : 'Senior';
-        
-        floor.classes.forEach(c => {
-          if (c.teacher && c.teacher !== 'N/A' && !teachersMap.has(c.teacher)) {
-            teachersMap.set(c.teacher, {
-              name: c.teacher,
-              section: section,
-              is_form_teacher: true,
-              form_teacher_of: `${c.name} (${c.section})`,
-              phone: c.teacher_number || 'N/A',
-              subject: 'General'
-            });
-          }
-        });
-      });
-
-      if (teachersMap.size > 0) {
-        await supabase.from('teachers').insert(Array.from(teachersMap.values()));
-      }
-    }
-
-    // 3. Migrate Notices
-    if (noticeCount === 0 && defaultNotices.length > 0) {
-      await supabase.from('notices').insert(defaultNotices.map(n => ({
-        title: n.title,
-        content: n.content,
-        priority: n.priority
-      })));
-    }
-
-    // 4. Migrate Facilities
-    if (facilityCount === 0) {
-      const facilitiesToInsert: any[] = [];
-      campusData.forEach(floor => {
-        floor.facilities.forEach(f => {
-          facilitiesToInsert.push({
-            name: f,
-            floor: floor.name,
-            capacity: '50',
-            icon: 'Building2'
-          });
-        });
-      });
-
-      if (facilitiesToInsert.length > 0) {
-        await supabase.from('facilities').insert(facilitiesToInsert);
-      }
-    }
-
-    // 5. Migrate Events
-    if (eventCount === 0) {
-      const { defaultEvents } = await import('../data/announcements');
-      if (defaultEvents.length > 0) {
-        await supabase.from('events').insert(defaultEvents.map(e => ({
-          title: e.title,
-          description: e.description,
-          image: e.image,
-          date: e.date
-        })));
-      }
-    }
-
-    await fetchInitialData();
-    console.log('✅ Migration complete!');
+    ...
+    */
   };
 
   const fetchInitialData = async () => {
@@ -274,82 +167,50 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const saveNotice = async (notice: Partial<Notice>) => {
-    const { id, date, ...payload } = notice;
-    const { error } = await supabase.from('notices').upsert([id ? { id, ...payload } : payload]);
-    if (error) throw error;
-    await fetchInitialData();
+    console.warn('Write operations are disabled in this build.');
   };
 
   const deleteNotice = async (id: number) => {
-    const { error } = await supabase.from('notices').delete().eq('id', id);
-    if (error) throw error;
-    setNotices(prev => prev.filter(item => item.id !== id));
+    console.warn('Write operations are disabled in this build.');
   };
 
   const saveEvent = async (event: Partial<Event>) => {
-    const { id, ...payload } = event;
-    const { error } = await supabase.from('events').upsert([id ? { id, ...payload } : payload]);
-    if (error) throw error;
-    await fetchInitialData();
+    console.warn('Write operations are disabled in this build.');
   };
 
   const deleteEvent = async (id: string) => {
-    const { error } = await supabase.from('events').delete().eq('id', id);
-    if (error) throw error;
-    setEvents(prev => prev.filter(item => item.id !== id));
+    console.warn('Write operations are disabled in this build.');
   };
 
   const saveTeacher = async (member: Partial<Teacher>) => {
-    const { id, isFormTeacher, formTeacherOf, imageUrl, ...rest } = member;
-    const payload = { 
-      ...rest, 
-      is_form_teacher: isFormTeacher, 
-      form_teacher_of: formTeacherOf,
-      image_url: imageUrl 
-    };
-    const { error } = await supabase.from('teachers').upsert([id ? { id, ...payload } : payload]);
-    if (error) throw error;
-    await fetchInitialData();
+    console.warn('Write operations are disabled in this build.');
   };
 
   const deleteTeacher = async (id: string) => {
-    const { error } = await supabase.from('teachers').delete().eq('id', id);
-    if (error) throw error;
-    setTeachers(prev => prev.filter(item => item.id !== id));
+    console.warn('Write operations are disabled in this build.');
   };
 
   const saveClass = async (classData: Partial<ClassInfo>) => {
-    const { id, teacherNumber, ...rest } = classData;
-    const payload = { ...rest, teacher_number: teacherNumber };
-    const { error } = await supabase.from('classes').upsert([id ? { id, ...payload } : payload]);
-    if (error) throw error;
-    await fetchInitialData();
+    console.warn('Write operations are disabled in this build.');
   };
 
   const deleteClass = async (id: string) => {
-    const { error } = await supabase.from('classes').delete().eq('id', id);
-    if (error) throw error;
-    setClasses(prev => prev.filter(item => item.id !== id));
+    console.warn('Write operations are disabled in this build.');
   };
 
   const saveFacility = async (facility: Partial<Facility>) => {
-    const { id, ...payload } = facility;
-    const { error } = await supabase.from('facilities').upsert([id ? { id, ...payload } : payload]);
-    if (error) throw error;
-    await fetchInitialData();
+    console.warn('Write operations are disabled in this build.');
   };
 
   const deleteFacility = async (id: string) => {
-    const { error } = await supabase.from('facilities').delete().eq('id', id);
-    if (error) throw error;
-    setFacilities(prev => prev.filter(item => item.id !== id));
+    console.warn('Write operations are disabled in this build.');
   };
 
-  const addEvent = (event: Omit<Event, 'id'>) => setEvents(prev => [...prev, { ...event, id: Date.now().toString() }]);
-  const updateEvent = (id: string, event: Omit<Event, 'id'>) => setEvents(prev => prev.map(e => e.id === id ? { ...event, id } : e));
-  const addFloor = (floor: Omit<FloorData, 'id'>) => setFloors(prev => [...prev, { ...floor, id: Date.now().toString() }]);
-  const updateFloor = (id: string, floor: Omit<FloorData, 'id'>) => setFloors(prev => prev.map(f => f.id === id ? { ...floor, id } : f));
-  const deleteFloor = (id: string) => setFloors(prev => prev.filter(f => f.id !== id));
+  const addEvent = (event: Omit<Event, 'id'>) => console.warn('Write operations are disabled in this build.');
+  const updateEvent = (id: string, event: Omit<Event, 'id'>) => console.warn('Write operations are disabled in this build.');
+  const addFloor = (floor: Omit<FloorData, 'id'>) => console.warn('Write operations are disabled in this build.');
+  const updateFloor = (id: string, floor: Omit<FloorData, 'id'>) => console.warn('Write operations are disabled in this build.');
+  const deleteFloor = (id: string) => console.warn('Write operations are disabled in this build.');
 
   return (
     <AppContext.Provider value={{ 

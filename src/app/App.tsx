@@ -10,23 +10,15 @@ import { Contact } from '@/app/components/Contact';
 import { Fees } from '@/app/components/Fees';
 import { Map } from '@/app/components/Map';
 import { Profile } from '@/app/components/Profile';
-import { AddEvent } from '@/app/components/AddEvent';
-import { AddNotice } from '@/app/components/AddNotice';
-import { ManageEvents } from '@/app/components/ManageEvents';
-import { ManageNotices } from '@/app/components/ManageNotices';
-import { ManageFloors } from '@/app/components/ManageFloors';
 import { MoreScreen } from '@/app/components/MoreScreen';
 import { BottomNavigation } from '@/app/components/BottomNavigation';
-import { AdminLogin } from '@/app/components/AdminLogin';
-import { Dashboard } from '@/app/components/Dashboard';
-import { AppProvider, useAppContext } from '@/context/AppContext';
+import { AppProvider } from '@/context/AppContext';
 
 import { Toaster } from '@/app/components/ui/sonner';
 
 function AppContent() {
   const [currentView, setCurrentView] = useState('home');
   const [navigationData, setNavigationData] = useState<any>(null);
-  const { isAdmin } = useAppContext();
 
   const handleNavigate = (view: string, data?: any) => {
     setNavigationData(data || null);
@@ -70,22 +62,8 @@ function AppContent() {
         return <Map onNavigate={handleNavigate} />;
       case 'profile':
         return <Profile onNavigate={handleNavigate} />;
-      case 'add-event':
-        return <AddEvent onNavigate={handleNavigate} />;
-      case 'add-notice':
-        return <AddNotice onNavigate={handleNavigate} />;
-      case 'manage-events':
-        return <ManageEvents onNavigate={handleNavigate} />;
-      case 'manage-notices':
-        return <ManageNotices onNavigate={handleNavigate} />;
-      case 'manage-floors':
-        return <ManageFloors onNavigate={handleNavigate} />;
       case 'more':
         return <MoreScreen onNavigate={handleNavigate} />;
-      case 'admin-login':
-        return <AdminLogin onNavigate={handleNavigate} />;
-      case 'admin-dashboard':
-        return isAdmin ? <Dashboard onNavigate={handleNavigate} /> : <AdminLogin onNavigate={handleNavigate} />;
       default:
         return <HomeScreen onNavigate={handleNavigate} />;
     }
@@ -101,9 +79,7 @@ function AppContent() {
         </div>
 
         {/* Bottom Navigation */}
-        {!['admin-login', 'admin-dashboard'].includes(currentView) && (
-          <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
-        )}
+        <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
 
         <Toaster position="top-center" expand={false} richColors />
       </div>
