@@ -12,11 +12,13 @@ import { Map } from '@/app/components/Map';
 import { Profile } from '@/app/components/Profile';
 import { MoreScreen } from '@/app/components/MoreScreen';
 import { BottomNavigation } from '@/app/components/BottomNavigation';
-import { AppProvider } from '@/context/AppContext';
+import { LoadingScreen } from '@/app/components/LoadingScreen';
+import { AppProvider, useAppContext } from '@/context/AppContext';
 
 import { Toaster } from '@/app/components/ui/sonner';
 
 function AppContent() {
+  const { isLoading } = useAppContext();
   const [currentView, setCurrentView] = useState('home');
   const [navigationData, setNavigationData] = useState<any>(null);
 
@@ -33,6 +35,10 @@ function AppContent() {
       setNavigationData(null);
     }
   }, [currentView, navigationData]);
+
+  if (isLoading) {
+    return <LoadingScreen />;
+  }
 
   const renderView = () => {
     // Check if it's a floor detail view
@@ -72,9 +78,9 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-[#0d1f0f]">
       {/* Mobile Container */}
-      <div className="max-w-md mx-auto bg-[#0d1f0f] min-h-screen relative">
+      <div className="max-w-md mx-auto bg-[#0d1f0f] min-h-screen relative flex flex-col">
         {/* Main Content Area */}
-        <div className="relative pb-24">
+        <div className="flex-1 pb-32">
           {renderView()}
         </div>
 

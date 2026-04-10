@@ -43,7 +43,7 @@ export function Contact({ onNavigate }: ContactProps) {
   }
 
   return (
-    <div className="pb-20 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
+    <div className="pb-40 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
       
 {/* 1. HEADER - COMPACT HEIGHT VERSION */}
       <header className="relative bg-[#1a2e1c] px-6 pt-10 pb-8 border-b border-[#059669]/20 overflow-hidden">
@@ -79,35 +79,41 @@ export function Contact({ onNavigate }: ContactProps) {
       <main className="max-w-md mx-auto px-6 py-10 space-y-10">
         
         {/* 2. DIRECT LINES */}
-        <section className="space-y-4">
-          <div className="flex items-center gap-2 mb-2">
+        <section className="space-y-3">
+          <div className="flex items-center gap-2 mb-2 ml-1">
             <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-            <h3 className="text-[10px] font-black text-white/90 uppercase tracking-[0.3em]">Communication Channels</h3>
+            <h3 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">Direct Channels</h3>
           </div>
           
-          <div className="grid gap-4">
+          <div className="grid gap-3">
             {/* Phone Card */}
-            <a href={`tel:${contactInfo.phone}`} className="group bg-[#1a2e1c] border border-white/5 p-6 rounded-[2rem] flex items-center gap-5 active:scale-[0.98] transition-all">
-              <div className="w-14 h-14 bg-[#0d1f0f] border border-[#059669]/20 rounded-2xl flex items-center justify-center text-[#fbbf24] group-hover:border-[#fbbf24]/40 transition-colors shadow-inner">
-                <Phone size={24} />
+            <a href={`tel:${contactInfo.phone}`} className="group bg-gradient-to-br from-[#1a2e1c] to-[#0d1f0f] border border-white/5 p-5 rounded-[1.8rem] flex items-center gap-4 active:scale-[0.98] transition-all shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[#fbbf24]/5 blur-3xl rounded-full -mr-10 -mt-10" />
+              <div className="w-12 h-12 bg-[#0d1f0f] border border-[#059669]/20 rounded-2xl flex items-center justify-center text-[#fbbf24] group-active:border-[#fbbf24]/40 transition-colors shadow-inner shrink-0 relative z-10">
+                <Phone size={20} />
               </div>
-              <div className="flex-1">
-                <p className="text-[9px] uppercase tracking-widest text-[#059669] font-black mb-0.5">Primary Desk</p>
-                <p className="text-[#e8f5e9] font-black text-lg tracking-tight">{contactInfo.phone}</p>
+              <div className="flex-1 min-w-0 relative z-10">
+                <p className="text-[8px] uppercase tracking-[0.2em] text-[#059669] font-black mb-1">Institutional Desk</p>
+                <p className="text-[#e8f5e9] font-black text-sm tracking-tight leading-tight">{contactInfo.phone}</p>
               </div>
-              <ArrowUpRight className="w-5 h-5 text-[#059669]/40 group-hover:text-[#fbbf24] transition-colors" />
+              <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0 group-active:bg-[#fbbf24]/10">
+                <ArrowUpRight className="w-4 h-4 text-[#059669]/40 group-active:text-[#fbbf24]" />
+              </div>
             </a>
 
             {/* Email Card */}
-            <a href={`mailto:${contactInfo.email}`} className="group bg-[#1a2e1c] border border-white/5 p-6 rounded-[2rem] flex items-center gap-5 active:scale-[0.98] transition-all">
-              <div className="w-14 h-14 bg-[#0d1f0f] border border-[#059669]/20 rounded-2xl flex items-center justify-center text-[#fbbf24] group-hover:border-[#fbbf24]/40 transition-colors shadow-inner">
-                <Mail size={24} />
+            <a href={`mailto:${contactInfo.email}`} className="group bg-gradient-to-br from-[#1a2e1c] to-[#0d1f0f] border border-white/5 p-5 rounded-[1.8rem] flex items-center gap-4 active:scale-[0.98] transition-all shadow-xl relative overflow-hidden">
+              <div className="absolute bottom-0 right-0 w-24 h-24 bg-[#059669]/5 blur-3xl rounded-full -mr-10 -mb-10" />
+              <div className="w-12 h-12 bg-[#0d1f0f] border border-[#059669]/20 rounded-2xl flex items-center justify-center text-[#fbbf24] group-active:border-[#fbbf24]/40 transition-colors shadow-inner shrink-0 relative z-10">
+                <Mail size={20} />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-[9px] uppercase tracking-widest text-[#059669] font-black mb-0.5">Admin Mail</p>
-                <p className="text-[#e8f5e9] font-black text-sm truncate uppercase tracking-tight">{contactInfo.email}</p>
+              <div className="flex-1 min-w-0 relative z-10">
+                <p className="text-[8px] uppercase tracking-[0.2em] text-[#059669] font-black mb-1">Official Inquiry</p>
+                <p className="text-[#e8f5e9] font-black text-[13px] tracking-tight truncate">{contactInfo.email}</p>
               </div>
-              <ArrowUpRight className="w-5 h-5 text-[#059669]/40 group-hover:text-[#fbbf24] transition-colors" />
+              <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0 group-active:bg-[#fbbf24]/10">
+                <ArrowUpRight className="w-4 h-4 text-[#059669]/40 group-active:text-[#fbbf24]" />
+              </div>
             </a>
           </div>
         </section>
@@ -147,12 +153,12 @@ export function Contact({ onNavigate }: ContactProps) {
           <div className="bg-[#450a0a]/20 border border-red-500/20 rounded-[2rem] p-6 relative overflow-hidden group">
             <div className="absolute -right-4 -bottom-4 w-24 h-24 bg-red-500/5 rounded-full blur-2xl group-hover:bg-red-500/10 transition-all duration-700" />
             <div className="flex items-center gap-5 relative z-10">
-              <div className="w-14 h-14 bg-[#450a0a] rounded-2xl flex items-center justify-center text-red-500 border border-red-500/30 shadow-2xl shadow-red-500/10">
-                <ShieldAlert size={28} className="animate-pulse" />
+              <div className="w-12 h-12 xs:w-14 xs:h-14 bg-[#450a0a] rounded-2xl flex items-center justify-center text-red-500 border border-red-500/30 shadow-2xl shadow-red-500/10 shrink-0">
+                <ShieldAlert size={24} className="animate-pulse" />
               </div>
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 <h4 className="text-[9px] font-black text-red-500 uppercase tracking-[0.3em] mb-1">Emergency SOS</h4>
-                <a href={`tel:${contactInfo.emergencyContact}`} className="text-2xl font-black text-white hover:text-red-400 transition-colors tracking-tighter">
+                <a href={`tel:${contactInfo.emergencyContact}`} className="text-xl xs:text-2xl font-black text-white hover:text-red-400 transition-colors tracking-tighter truncate block">
                   {contactInfo.emergencyContact}
                 </a>
               </div>
@@ -161,19 +167,19 @@ export function Contact({ onNavigate }: ContactProps) {
         </section>
 
         {/* 5. AUXILIARY TOOLS */}
-        <section className="grid grid-cols-2 gap-4">
-          <div className="bg-[#1a2e1c]/40 border border-white/5 p-5 rounded-2xl flex flex-col gap-3">
+        <section className="grid grid-cols-2 gap-3 xs:gap-4">
+          <div className="bg-[#1a2e1c]/40 border border-white/5 p-4 xs:p-5 rounded-2xl flex flex-col gap-3">
              <Printer className="w-4 h-4 text-[#059669]" />
-             <div>
-               <p className="text-[8px] text-[#059669] uppercase font-black tracking-widest">Fax Line</p>
-               <p className="text-[#e8f5e9] text-[10px] font-bold uppercase">{contactInfo.fax || "N/A"}</p>
+             <div className="min-w-0">
+               <p className="text-[8px] text-[#059669] uppercase font-black tracking-widest truncate">Fax Line</p>
+               <p className="text-[#e8f5e9] text-[10px] font-bold uppercase truncate">{contactInfo.fax || "N/A"}</p>
              </div>
           </div>
-          <a href={contactInfo.website} target="_blank" rel="noreferrer" className="bg-[#1a2e1c]/40 border border-white/5 p-5 rounded-2xl flex flex-col gap-3 group active:scale-95 transition-all">
+          <a href={contactInfo.website} target="_blank" rel="noreferrer" className="bg-[#1a2e1c]/40 border border-white/5 p-4 xs:p-5 rounded-2xl flex flex-col gap-3 group active:scale-95 transition-all min-w-0">
              <Globe className="w-4 h-4 text-[#fbbf24]" />
-             <div>
-               <p className="text-[8px] text-[#059669] uppercase font-black tracking-widest group-hover:text-[#fbbf24]">Official Web</p>
-               <p className="text-[#e8f5e9] text-[10px] font-bold uppercase flex items-center gap-1">kcmsc.edu.bd <Navigation size={8} className="rotate-45" /></p>
+             <div className="min-w-0">
+               <p className="text-[8px] text-[#059669] uppercase font-black tracking-widest group-hover:text-[#fbbf24] truncate">Official Web</p>
+               <p className="text-[#e8f5e9] text-[10px] font-bold uppercase flex items-center gap-1 truncate">kcmsc.edu.bd <Navigation size={8} className="rotate-45" /></p>
              </div>
           </a>
         </section>

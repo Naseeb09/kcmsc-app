@@ -46,7 +46,7 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
   if (!schoolData) return <div className="min-h-screen bg-[#0d1f0f]" />;
 
   return (
-    <div className="pb-20 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
+    <div className="pb-40 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
       
       {/* 1. HEADER - STANDOUT RECTANGULAR STYLE */}
       <header className="relative bg-[#1a2e1c] px-6 pt-10 pb-8 border-b border-[#059669]/30 overflow-hidden">

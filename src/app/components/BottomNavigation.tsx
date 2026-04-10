@@ -26,10 +26,10 @@ export function BottomNavigation({ currentView, onNavigate }: BottomNavigationPr
               <button
                 key={item.id}
                 onClick={() => onNavigate(item.id)}
-                className={`flex flex-col items-center justify-center py-2 px-1 rounded-lg transition-all ${
+                className={`flex flex-col items-center justify-center py-2 px-1 rounded-lg transition-all active:scale-90 ${
                   isActive
-                    ? 'text-[#059669]'
-                    : 'text-[#a0b5a3] hover:text-[#059669]/70'
+                    ? 'text-[#059669] drop-shadow-[0_0_8px_rgba(5,150,105,0.4)]'
+                    : 'text-[#a0b5a3]'
                 }`}
               >
                 <Icon className={`w-5 h-5 mb-1 ${isActive ? 'stroke-[2.5]' : 'stroke-[2]'}`} />

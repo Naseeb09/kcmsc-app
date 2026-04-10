@@ -46,10 +46,11 @@ export const defaultNotices: Notice[] = [
 
 export const schoolInfo = {
   name: "KC Model School & College",
-  established: "2014", // Corrected established date
-  about: "KC Model School & College is a premier educational institution in Dakshinkhan, providing quality education under the NCTB curriculum for both Primary and Secondary levels.",
+  established: "2014",
+  founder: "Al-Hajj Md. Khashru Chowdhury (CIP)",
+  about: "Founded in 2014 by Al-Hajj Md. Khashru Chowdhury (CIP), KC Model School & College is a premier educational institution in Dakshinkhan, providing quality education under the NCTB curriculum.",
   motto: "Education, Discipline, Progress",
-  mission: "To provide a nurturing environment that fosters intellectual growth and character development.",
+  mission: "To enable students to explore their full potential and produce 21st-century global citizens.",
   vision: "To produce future leaders equipped with modern skills and ethical values.",
   values: ["Academic Excellence", "Integrity", "Respect", "Innovation"],
   grades: "Nursery - Class 12",
@@ -59,13 +60,23 @@ export const schoolInfo = {
 };
 
 export const contactInfo = {
-  address: "Dakshinkhan Dhaka Prembagan 1230", // Matches the address in your screenshot
-  phone: "(555) 555555", // Matches the number in your screenshot
-  email: "kcmsc@gmail.com", // Matches the email in your screenshot
-  officeHours: "8:00 AM - 3:30 PM", // Matches your screenshot
-  emergencyContact: "(555) 676767", // Matches your screenshot
+  address: "275, Prembagan, Dakshinkhan, Dhaka-1230",
+  phone: "02 8999685, 01793 560 466",
+  email: "kcmodelcollege@gmail.com",
+  officeHours: "8:00 AM - 3:30 PM",
+  emergencyContact: "01793 560 466",
   socials: {
     facebook: "https://facebook.com/kcmsc",
     youtube: "https://youtube.com/@kcmsc"
   }
-};
+  };
+
+  export const verifiedFacilities = [
+  { id: 'fac1', name: 'Physics Lab', description: 'Well-equipped laboratory for practical physics experiments.', floor: '7th Floor', icon: 'Microscope' },
+  { id: 'fac2', name: 'Chemistry Lab', description: 'Advanced chemistry lab with modern safety equipment.', floor: '7th Floor', icon: 'FlaskConical' },
+  { id: 'fac3', name: 'Biology Lab', description: 'Comprehensive biology lab for life sciences study.', floor: '7th Floor', icon: 'Dna' },
+  { id: 'fac4', name: 'ICT Lab', description: 'Modern computer lab with high-speed internet.', floor: '7th Floor', icon: 'Monitor' },
+  { id: 'fac5', name: 'Multi-media Classrooms', description: 'Digital classrooms with projection systems.', floor: 'Various', icon: 'Projector' },
+  { id: 'fac6', name: 'Rich Library', description: 'Extensive collection of academic and reference books.', floor: '7th Floor', icon: 'Library' },
+  { id: 'fac7', name: 'Wi-Fi Campus', description: 'High-speed internet connectivity across the campus.', floor: 'Global', icon: 'Wifi' }
+  ];

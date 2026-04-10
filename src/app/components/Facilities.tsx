@@ -2,7 +2,8 @@ import React, { useEffect } from 'react'; // Added useEffect
 import { 
   ChevronLeft, BookOpen, FlaskConical, MonitorCheck, Trophy, 
   Presentation, MapPin, Clock, Users as UsersIcon, ArrowUpDown, 
-  Sparkles, Building2, Wifi, ShieldCheck, Coffee 
+  Sparkles, Building2, Wifi, ShieldCheck, Coffee, Microscope,
+  Dna, Monitor, Projector, Library
 } from 'lucide-react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
@@ -17,7 +18,13 @@ const iconMap: Record<string, any> = {
   FlaskConical,
   MonitorCheck,
   Trophy,
-  Presentation
+  Presentation,
+  Microscope,
+  Dna,
+  Monitor,
+  Projector,
+  Library,
+  Wifi
 };
 
 export function Facilities({ onNavigate }: FacilitiesProps) {
@@ -40,7 +47,7 @@ export function Facilities({ onNavigate }: FacilitiesProps) {
   };
 
   return (
-    <div className="pb-24 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
+    <div className="pb-40 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
       
       {/* 1. HEADER - STANDOUT INFRASTRUCTURE STYLE */}
       <header className="relative bg-[#1a2e1c] px-6 pt-10 pb-8 border-b border-[#059669]/30 overflow-hidden">

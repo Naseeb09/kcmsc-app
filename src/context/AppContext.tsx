@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { campusData, FloorData as CampusFloorData } from '../data/campusData';
-import { defaultNotices } from '../data/announcements';
+import { defaultNotices, verifiedFacilities } from '../data/announcements';
 import { supabase } from '../lib/supabase';
 
 // Re-exporting for use in other files
@@ -68,6 +68,7 @@ interface AppContextType {
   classes: ClassInfo[];
   facilities: Facility[];
   isAdmin: boolean;
+  isLoading: boolean;
   setIsAdmin: (isAdmin: boolean) => void;
   saveNotice: (notice: Partial<Notice>) => Promise<void>;
   deleteNotice: (id: number) => Promise<void>;
@@ -95,11 +96,17 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [floors, setFloors] = useState<FloorData[]>(campusData);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [classes, setClasses] = useState<ClassInfo[]>([]);
-  const [facilities, setFacilities] = useState<Facility[]>([]);
+  const [facilities, setFacilities] = useState<Facility[]>(verifiedFacilities as any);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchInitialData();
+    const init = async () => {
+      setIsLoading(true);
+      await fetchInitialData();
+      setIsLoading(false);
+    };
+    init();
     const channels = setupSubscriptions();
     return () => {
       channels.forEach(channel => supabase.removeChannel(channel));
@@ -214,7 +221,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   return (
     <AppContext.Provider value={{ 
-      events, notices, floors, teachers, classes, facilities, isAdmin, setIsAdmin,
+      events, notices, floors, teachers, classes, facilities, isAdmin, isLoading, setIsAdmin,
       saveNotice, deleteNotice, saveEvent, deleteEvent,
       addFloor, updateFloor, deleteFloor,
       saveTeacher, deleteTeacher, 

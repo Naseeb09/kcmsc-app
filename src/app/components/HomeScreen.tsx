@@ -60,7 +60,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   };
 
   return (
-    <div className="pb-20 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
+    <div className="pb-40 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
       {/* 1. Header with Official Logo (No Box) */}
       <header className="relative bg-[#1a2e1c] px-6 py-8 border-b border-[#059669]/20 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-[#059669]/10 via-transparent to-transparent opacity-50" />
@@ -178,17 +178,17 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 <button
                   key={item.id}
                   onClick={() => onNavigate(item.id)}
-                  className="group bg-gradient-to-r from-[#1a2e1c] to-[#112613] border border-white/5 rounded-[1.5rem] p-5 flex items-center gap-5 active:scale-[0.98] transition-all hover:border-[#fbbf24]/20"
+                  className="group bg-gradient-to-r from-[#1a2e1c] to-[#112613] border border-white/5 rounded-[1.5rem] p-5 flex items-center gap-5 active:scale-[0.98] transition-all"
                 >
-                  <div className="w-14 h-14 rounded-2xl bg-[#0d1f0f] flex items-center justify-center border border-[#059669]/20 group-hover:border-[#fbbf24]/40 transition-all shadow-inner">
+                  <div className="w-14 h-14 rounded-2xl bg-[#0d1f0f] flex items-center justify-center border border-[#059669]/20 group-active:border-[#fbbf24]/40 transition-all shadow-inner">
                     <Icon className="w-7 h-7 text-[#fbbf24]" />
                   </div>
                   <div className="flex-1 text-left">
-                    <h3 className="text-sm font-black text-[#e8f5e9] uppercase tracking-wide group-hover:text-[#fbbf24] transition-colors">{item.label}</h3>
+                    <h3 className="text-sm font-black text-[#e8f5e9] uppercase tracking-wide group-active:text-[#fbbf24] transition-colors">{item.label}</h3>
                     <p className="text-[10px] text-[#a0b5a3] font-medium mt-0.5">{item.description}</p>
                   </div>
-                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-[#fbbf24] transition-all">
-                    <ChevronRight className="w-4 h-4 text-[#a0b5a3] group-hover:text-[#0d1f0f]" />
+                  <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center group-active:bg-[#fbbf24] transition-all">
+                    <ChevronRight className="w-4 h-4 text-[#a0b5a3] group-active:text-[#0d1f0f]" />
                   </div>
                 </button>
               );
