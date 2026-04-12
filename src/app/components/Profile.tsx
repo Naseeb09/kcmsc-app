@@ -135,6 +135,14 @@ export function Profile({ onNavigate }: ProfileProps) {
             </button>
           </p>
         </div>
+        <div className="mt-8 pt-8 border-t border-white/5 text-center">
+          <button 
+            onClick={() => onNavigate('admin-login')}
+            className="text-[10px] font-black text-[#a0b5a3]/20 uppercase tracking-[0.4em] hover:text-[#059669] transition-colors"
+          >
+            Admin Portal
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -11,6 +11,8 @@ import { Fees } from '@/app/components/Fees';
 import { Map } from '@/app/components/Map';
 import { Profile } from '@/app/components/Profile';
 import { MoreScreen } from '@/app/components/MoreScreen';
+import { AdminLogin } from '@/app/components/AdminLogin';
+import { Dashboard } from '@/app/components/Dashboard';
 import { BottomNavigation } from '@/app/components/BottomNavigation';
 import { LoadingScreen } from '@/app/components/LoadingScreen';
 import { AppProvider, useAppContext } from '@/context/AppContext';
@@ -18,7 +20,7 @@ import { AppProvider, useAppContext } from '@/context/AppContext';
 import { Toaster } from '@/app/components/ui/sonner';
 
 function AppContent() {
-  const { isLoading } = useAppContext();
+  const { isLoading, isAdmin } = useAppContext();
   const [currentView, setCurrentView] = useState('home');
   const [navigationData, setNavigationData] = useState<any>(null);
 
@@ -70,6 +72,10 @@ function AppContent() {
         return <Profile onNavigate={handleNavigate} />;
       case 'more':
         return <MoreScreen onNavigate={handleNavigate} />;
+      case 'admin-login':
+        return <AdminLogin onNavigate={handleNavigate} />;
+      case 'admin-dashboard':
+        return isAdmin ? <Dashboard onNavigate={handleNavigate} /> : <AdminLogin onNavigate={handleNavigate} />;
       default:
         return <HomeScreen onNavigate={handleNavigate} />;
     }
