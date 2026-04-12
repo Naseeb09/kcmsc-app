@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { campusData, FloorData as CampusFloorData } from '../data/campusData';
-import { defaultNotices, verifiedFacilities } from '../data/announcements';
+import { defaultNotices, verifiedFacilities, defaultEvents } from '../data/announcements';
 import { supabase } from '../lib/supabase';
 
 // Re-exporting for use in other files
@@ -91,8 +91,8 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-  const [events, setEvents] = useState<Event[]>([]);
-  const [notices, setNotices] = useState<Notice[]>([]);
+  const [events, setEvents] = useState<Event[]>(defaultEvents);
+  const [notices, setNotices] = useState<Notice[]>(defaultNotices);
   const [floors, setFloors] = useState<FloorData[]>(campusData);
   const [teachers, setTeachers] = useState<Teacher[]>([]);
   const [classes, setClasses] = useState<ClassInfo[]>([]);
@@ -156,36 +156,53 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const fetchInitialData = async () => {
     try {
+      console.log('📡 Fetching initial data from Supabase...');
+      
       const { data: eData, error: eError } = await supabase.from('events').select('*').order('created_at', { ascending: false });
       if (eError) console.error('Error fetching events:', eError);
-      if (eData) setEvents(eData);
+      if (eData && eData.length > 0) {
+        console.log(`✅ Loaded ${eData.length} events`);
+        setEvents(eData);
+      }
 
       const { data: nData, error: nError } = await supabase.from('notices').select('*').order('created_at', { ascending: false });
       if (nError) console.error('Error fetching notices:', nError);
-      if (nData) setNotices(nData.map((n: any) => ({ ...n, date: n.created_at?.split('T')[0] || '' })));
+      if (nData && nData.length > 0) {
+        console.log(`✅ Loaded ${nData.length} notices`);
+        setNotices(nData.map((n: any) => ({ ...n, date: n.created_at?.split('T')[0] || '' })));
+      }
 
       const { data: tData, error: tError } = await supabase.from('teachers').select('*').order('name');
       if (tError) console.error('Error fetching teachers:', tError);
-      if (tData) setTeachers(tData.map((t: any) => ({ 
-        ...t, 
-        isFormTeacher: t.is_form_teacher || false, 
-        formTeacherOf: t.form_teacher_of || '',
-        imageUrl: t.image_url || ''
-      })));
+      if (tData && tData.length > 0) {
+        console.log(`✅ Loaded ${tData.length} teachers`);
+        setTeachers(tData.map((t: any) => ({ 
+          ...t, 
+          isFormTeacher: t.is_form_teacher || false, 
+          formTeacherOf: t.form_teacher_of || '',
+          imageUrl: t.image_url || ''
+        })));
+      }
 
       const { data: cData, error: cError } = await supabase.from('classes').select('*').order('room');
       if (cError) console.error('Error fetching classes:', cError);
-      if (cData) setClasses(cData.map((c: any) => ({
-        ...c,
-        teacher: c.teacher || 'N/A',
-        section: c.section || 'N/A',
-        version: c.version || 'N/A',
-        teacherNumber: c.teacher_number || 'N/A'
-      })));
+      if (cData && cData.length > 0) {
+        console.log(`✅ Loaded ${cData.length} classes`);
+        setClasses(cData.map((c: any) => ({
+          ...c,
+          teacher: c.teacher || 'N/A',
+          section: c.section || 'N/A',
+          version: c.version || 'N/A',
+          teacherNumber: c.teacher_number || 'N/A'
+        })));
+      }
 
       const { data: fData, error: fError } = await supabase.from('facilities').select('*').order('name');
       if (fError) console.error('Error fetching facilities:', fError);
-      if (fData) setFacilities(fData);
+      if (fData && fData.length > 0) {
+        console.log(`✅ Loaded ${fData.length} facilities`);
+        setFacilities(fData);
+      }
     } catch (error) {
       console.error('FETCH_INITIAL_DATA_ERROR:', error);
     } finally {
