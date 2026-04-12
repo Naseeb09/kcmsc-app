@@ -103,13 +103,31 @@ export function AppProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const init = async () => {
       setIsLoading(true);
-      await fetchInitialData();
-      setIsLoading(false);
+      try {
+        await fetchInitialData();
+      } catch (error) {
+        console.error('INIT_ERROR:', error);
+        setIsLoading(false);
+      }
     };
     init();
-    const channels = setupSubscriptions();
+    
+    // Safety check for setupSubscriptions
+    let channels: any[] = [];
+    try {
+      channels = setupSubscriptions();
+    } catch (error) {
+      console.warn('SUBSCRIPTION_SETUP_FAILED:', error);
+    }
+
     return () => {
-      channels.forEach(channel => supabase.removeChannel(channel));
+      try {
+        channels.forEach(channel => {
+          if (channel) supabase.removeChannel(channel);
+        });
+      } catch (error) {
+        console.error('SUBSCRIPTION_CLEANUP_FAILED:', error);
+      }
     };
   }, []);
 
@@ -138,30 +156,40 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const fetchInitialData = async () => {
     try {
-      const { data: eData } = await supabase.from('events').select('*').order('created_at', { ascending: false });
+      const { data: eData, error: eError } = await supabase.from('events').select('*').order('created_at', { ascending: false });
+      if (eError) console.error('Error fetching events:', eError);
       if (eData) setEvents(eData);
 
-      const { data: nData } = await supabase.from('notices').select('*').order('created_at', { ascending: false });
+      const { data: nData, error: nError } = await supabase.from('notices').select('*').order('created_at', { ascending: false });
+      if (nError) console.error('Error fetching notices:', nError);
       if (nData) setNotices(nData.map((n: any) => ({ ...n, date: n.created_at?.split('T')[0] || '' })));
 
-      const { data: tData } = await supabase.from('teachers').select('*').order('name');
+      const { data: tData, error: tError } = await supabase.from('teachers').select('*').order('name');
+      if (tError) console.error('Error fetching teachers:', tError);
       if (tData) setTeachers(tData.map((t: any) => ({ 
         ...t, 
-        isFormTeacher: t.is_form_teacher, 
-        formTeacherOf: t.form_teacher_of,
-        imageUrl: t.image_url 
+        isFormTeacher: t.is_form_teacher || false, 
+        formTeacherOf: t.form_teacher_of || '',
+        imageUrl: t.image_url || ''
       })));
 
-      const { data: cData } = await supabase.from('classes').select('*').order('room');
+      const { data: cData, error: cError } = await supabase.from('classes').select('*').order('room');
+      if (cError) console.error('Error fetching classes:', cError);
       if (cData) setClasses(cData.map((c: any) => ({
         ...c,
-        teacherNumber: c.teacher_number
+        teacher: c.teacher || 'N/A',
+        section: c.section || 'N/A',
+        version: c.version || 'N/A',
+        teacherNumber: c.teacher_number || 'N/A'
       })));
 
-      const { data: fData } = await supabase.from('facilities').select('*').order('name');
+      const { data: fData, error: fError } = await supabase.from('facilities').select('*').order('name');
+      if (fError) console.error('Error fetching facilities:', fError);
       if (fData) setFacilities(fData);
     } catch (error) {
       console.error('FETCH_INITIAL_DATA_ERROR:', error);
+    } finally {
+      setIsLoading(false);
     }
   };
 

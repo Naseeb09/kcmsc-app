@@ -30,12 +30,19 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
 
     floors.forEach(f => {
       f.classes.forEach(c => {
-        roomsMap.set(c.room, {
+        const name = c.name || '';
+        const room = c.room || '';
+        const teacher = c.teacher || '';
+        const section = c.section || '';
+        const version = c.version || '';
+        const floorName = f.name || '';
+        
+        roomsMap.set(room, {
           ...c,
-          floorName: f.name,
+          floorName,
           floorId: f.id,
           floorLabel: f.label,
-          searchSlug: `${c.name} ${c.room} ${c.teacher} ${c.section} ${c.version} ${f.name}`.toLowerCase()
+          searchSlug: `${name} ${room} ${teacher} ${section} ${version} ${floorName}`.toLowerCase()
         });
       });
     });
@@ -44,14 +51,21 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
     dbClasses.forEach(c => {
       // Try to find the floor by floor_id or room prefix
       const floor = floors.find(f => f.id === c.floor_id) || 
-                   floors.find(f => c.room.startsWith(f.label));
+                   floors.find(f => c.room && f.label && c.room.startsWith(f.label));
       
-      roomsMap.set(c.room, {
+      const name = c.name || '';
+      const room = c.room || '';
+      const teacher = c.teacher || '';
+      const section = c.section || '';
+      const version = c.version || '';
+      const floorName = floor?.name || 'Unknown Floor';
+
+      roomsMap.set(room, {
         ...c,
-        floorName: floor?.name || 'Unknown Floor',
+        floorName,
         floorId: floor?.id || 'unknown',
         floorLabel: floor?.label || '?',
-        searchSlug: `${c.name} ${c.room} ${c.teacher} ${c.section} ${c.version} ${floor?.name || ''}`.toLowerCase()
+        searchSlug: `${name} ${room} ${teacher} ${section} ${version} ${floorName}`.toLowerCase()
       });
     });
 

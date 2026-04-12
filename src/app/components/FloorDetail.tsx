@@ -36,10 +36,10 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
   const filteredClasses = useMemo(() => {
     const query = searchQuery.toLowerCase();
     return allFloorClasses.filter(c => 
-      c.name.toLowerCase().includes(query) || 
-      c.room.toLowerCase().includes(query) ||
-      c.teacher.toLowerCase().includes(query) ||
-      c.section.toLowerCase().includes(query)
+      (c.name && c.name.toLowerCase().includes(query)) || 
+      (c.room && c.room.toLowerCase().includes(query)) ||
+      (c.teacher && c.teacher.toLowerCase().includes(query)) ||
+      (c.section && c.section.toLowerCase().includes(query))
     );
   }, [allFloorClasses, searchQuery]);
 
