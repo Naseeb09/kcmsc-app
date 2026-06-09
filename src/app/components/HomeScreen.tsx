@@ -1,4 +1,4 @@
-import { MapPin, Users, Building2, BookOpen, Phone, Search, DollarSign, ChevronRight, Sparkles, Megaphone, AlertCircle } from 'lucide-react';
+import { MapPin, Users, Building2, BookOpen, Phone, Search, DollarSign, ChevronRight, Sparkles, Megaphone, AlertCircle, ShieldAlert } from 'lucide-react';
 import { Badge } from '@/app/components/ui/badge';
 import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
@@ -28,6 +28,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     { id: 'facilities', label: t('facilities'), icon: Building2, description: t('campus_amenities') },
     { id: 'about', label: t('about_school'), icon: BookOpen, description: t('history_mission') },
     { id: 'fees', label: t('fees_costs'), icon: DollarSign, description: t('tuition_details') },
+    { id: 'smart-complaint', label: t('smart_complaint'), icon: ShieldAlert, description: t('file_complaint') },
   ];
 
   const handleSearchSubmit = (e?: React.FormEvent) => {

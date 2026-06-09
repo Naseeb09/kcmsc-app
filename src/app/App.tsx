@@ -13,6 +13,7 @@ import { Profile } from '@/app/components/Profile';
 import { MoreScreen } from '@/app/components/MoreScreen';
 import { AdminLogin } from '@/app/components/AdminLogin';
 import { Dashboard } from '@/app/components/Dashboard';
+import { SmartComplaint } from '@/app/components/SmartComplaint';
 import { BottomNavigation } from '@/app/components/BottomNavigation';
 import { LoadingScreen } from '@/app/components/LoadingScreen';
 import { AppProvider, useAppContext } from '@/context/AppContext';
@@ -73,6 +74,8 @@ function AppContent() {
         return <Profile onNavigate={handleNavigate} />;
       case 'more':
         return <MoreScreen onNavigate={handleNavigate} />;
+      case 'smart-complaint':
+        return <SmartComplaint onNavigate={handleNavigate} />;
       case 'admin-login':
         return <AdminLogin onNavigate={handleNavigate} />;
       case 'admin-dashboard':

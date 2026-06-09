@@ -90,6 +90,54 @@ export const translations: Record<string, { en: string; bn: string }> = {
     en: 'Tuition details',
     bn: 'টিউশন ফি এর বিস্তারিত'
   },
+  'smart_complaint': {
+    en: 'Smart Complaint',
+    bn: 'স্মার্ট অভিযোগ'
+  },
+  'file_complaint': {
+    en: 'File a complaint privately',
+    bn: 'গোপনে অভিযোগ দাখিল করুন'
+  },
+  'complaint_description': {
+    en: 'Report harassment, bullying, or any incident.',
+    bn: 'হয়রানি, বুলিং বা যেকোনো ঘটনার অভিযোগ করুন।'
+  },
+  'student_name': {
+    en: 'Student Name',
+    bn: 'শিক্ষার্থীর নাম'
+  },
+  'roll_no': {
+    en: 'Roll No',
+    bn: 'রোল নম্বর'
+  },
+  'class': {
+    en: 'Class',
+    bn: 'শ্রেণী'
+  },
+  'section_label': {
+    en: 'Section',
+    bn: 'শাখা'
+  },
+  'incident_location': {
+    en: 'Incident Location / Floor',
+    bn: 'ঘটনাস্থল / তলা'
+  },
+  'description_placeholder': {
+    en: 'Describe what happened, where, how, and by whom...',
+    bn: 'কী ঘটেছিল, কোথায়, কীভাবে এবং কার দ্বারা - বিস্তারিত লিখুন...'
+  },
+  'submit_complaint': {
+    en: 'Submit Complaint',
+    bn: 'অভিযোগ জমা দিন'
+  },
+  'complaint_submitted': {
+    en: 'Submitted Successfully',
+    bn: 'সফলভাবে জমা দেওয়া হয়েছে'
+  },
+  'complaint_privacy_notice': {
+    en: 'Your complaint has been sent to the admins. It will remain private and they will look after it.',
+    bn: 'আপনার অভিযোগটি অ্যাডমিনদের কাছে পাঠানো হয়েছে। এটি গোপন থাকবে এবং তারা এটি দেখবে।'
+  },
 
   // Bottom Nav
   'nav_home': {
