@@ -65,11 +65,14 @@
 
 ## 👨‍💻 Credits
 
-**Founder & Lead Engineer**  
+**Lead Developer**  
 [Khan Jariff Al Naseeb](https://khan-jariff.vercel.app)
 
 **Team**  
-Glitched Technologies
+Nazim Uddin Sayem
+Tahmid Hossein Zarif
+Mosharoff Mithun
+
 
 </div>
 <br>
