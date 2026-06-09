@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react';
 import { ChevronLeft, Users, ArrowUpDown, DoorOpen, Phone, Layers, Search, MapPin } from 'lucide-react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { useAppContext } from '@/context/AppContext';
+import { useTranslation } from '@/hooks/useTranslation';
+import { LanguageToggle } from '@/app/components/LanguageToggle';
 
 interface FloorDetailProps {
   onNavigate: (view: string, data?: any) => void;
@@ -10,6 +12,7 @@ interface FloorDetailProps {
 
 export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
   const { floors, classes: dbClasses } = useAppContext();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const floor = floors.find(f => f.id === floorId);
 
@@ -57,9 +60,10 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
               {floor.label}
             </div>
             <div className="flex-1">
-              <h1 className="text-lg font-black text-[#e8f5e9] tracking-tight uppercase leading-tight">{floor.name}</h1>
-              <p className="text-[10px] text-[#059669] font-black uppercase tracking-widest">{floor.purpose}</p>
+              <h1 className="text-lg font-black text-[#e8f5e9] tracking-tight uppercase leading-tight">{t(floor.name)}</h1>
+              <p className="text-[10px] text-[#059669] font-black uppercase tracking-widest">{t(floor.purpose)}</p>
             </div>
+            <LanguageToggle />
           </div>
 
           <div className="relative pb-2">
@@ -68,7 +72,7 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search section, teacher, or room..."
+              placeholder={t('Search section, teacher, or room...')}
               className="w-full bg-[#0d1f0f] border border-[#059669]/30 rounded-2xl py-4 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-[#fbbf24]/50 transition-all shadow-2xl"
             />
           </div>
@@ -85,16 +89,16 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
                     <div className="space-y-2.5">
                       <div className="flex items-center gap-2">
                         <span className="text-[9px] font-black text-[#fbbf24] bg-[#fbbf24]/10 border border-[#fbbf24]/20 px-3 py-1 rounded-full uppercase tracking-widest">
-                          Room {classInfo.room}
+                          {t('Room')} {classInfo.room}
                         </span>
                         {classInfo.version && classInfo.version !== 'N/A' && (
                           <span className="text-[9px] font-black text-[#059669] bg-[#059669]/10 border border-[#059669]/20 px-3 py-1 rounded-full uppercase tracking-widest">
-                            {classInfo.version}
+                            {t(classInfo.version)}
                           </span>
                         )}
                       </div>
                       <h3 className="text-xl font-black text-white group-hover:text-[#fbbf24] transition-colors">
-                        {classInfo.name !== 'N/A' ? `Class ${classInfo.name}` : classInfo.section}
+                        {classInfo.name !== 'N/A' ? `${t('Class')} ${t(classInfo.name)}` : t(classInfo.section)}
                       </h3>
                     </div>
                     <div className="p-2.5 bg-[#0d1f0f] rounded-2xl border border-white/5">
@@ -108,23 +112,23 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-[#059669]">
                       <Users className="w-4 h-4" />
-                      <span className="text-[9px] font-black uppercase tracking-widest">Teachers</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest">{t('teacher')}</span>
                     </div>
-                    <p className="text-sm font-bold text-[#e8f5e9] truncate">{classInfo.teacher}</p>
+                    <p className="text-sm font-bold text-[#e8f5e9] truncate">{t(classInfo.teacher)}</p>
                   </div>
                   <div className="space-y-1.5 pl-4">
                     <div className="flex items-center gap-2 text-[#059669]">
                       <Layers className="w-4 h-4" />
-                      <span className="text-[9px] font-black uppercase tracking-widest">Section</span>
+                      <span className="text-[9px] font-black uppercase tracking-widest">{t('section')}</span>
                     </div>
-                    <p className="text-sm font-bold text-[#e8f5e9]">{classInfo.section}</p>
+                    <p className="text-sm font-bold text-[#e8f5e9]">{t(classInfo.section)}</p>
                   </div>
                 </div>
 
                 {classInfo.teacherNumber && classInfo.teacherNumber !== 'N/A' && (
                   <div className="p-4 bg-white/[0.02] border-t border-white/5">
                     <a href={`tel:${classInfo.teacherNumber}`} className="w-full flex items-center justify-center gap-2 bg-[#059669] text-[#0d1f0f] rounded-2xl py-4 text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#fbbf24] transition-all">
-                      <Phone size={14} /> Call Representative
+                      <Phone size={14} /> {t('Call Representative')}
                     </a>
                   </div>
                 )}

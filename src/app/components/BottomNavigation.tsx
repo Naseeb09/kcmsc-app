@@ -1,4 +1,5 @@
 import { Home, Search, Map, Info, Phone } from 'lucide-react';
+import { useTranslation } from '@/hooks/useTranslation';
 
 interface BottomNavigationProps {
   currentView: string;
@@ -6,12 +7,14 @@ interface BottomNavigationProps {
 }
 
 export function BottomNavigation({ currentView, onNavigate }: BottomNavigationProps) {
+  const { t } = useTranslation();
+  
   const navItems = [
-    { id: 'home', label: 'Home', icon: Home },
-    { id: 'search', label: 'Explore', icon: Search },
-    { id: 'map', label: 'Map', icon: Map },
-    { id: 'about', label: 'Notice', icon: Info },
-    { id: 'contact', label: 'Contact', icon: Phone },
+    { id: 'home', label: t('nav_home'), icon: Home },
+    { id: 'search', label: t('nav_explore'), icon: Search },
+    { id: 'map', label: t('nav_map'), icon: Map },
+    { id: 'about', label: t('nav_notice'), icon: Info },
+    { id: 'contact', label: t('nav_contact'), icon: Phone },
   ];
 
   return (

@@ -18,6 +18,7 @@ import { LoadingScreen } from '@/app/components/LoadingScreen';
 import { AppProvider, useAppContext } from '@/context/AppContext';
 
 import { Toaster } from '@/app/components/ui/sonner';
+import { LanguageToggle } from '@/app/components/LanguageToggle';
 
 function AppContent() {
   const { isLoading, isAdmin } = useAppContext();

@@ -2,12 +2,15 @@ import { MapPin, ChevronLeft, Navigation, Globe, Compass, Info, Building2, Car, 
 import { Badge } from '@/app/components/ui/badge';
 import { contactInfo } from "@/data/announcements";
 import buildingImg from "@/data/KCMSC Building.jpg";
+import { useTranslation } from '@/hooks/useTranslation';
+import { LanguageToggle } from '@/app/components/LanguageToggle';
 
 interface MapProps {
   onNavigate: (view: string) => void;
 }
 
 export function Map({ onNavigate }: MapProps) {
+  const { t } = useTranslation();
   const pinterestUrl = "https://www.pinterest.com/kcmscofficial/";
 
   return (
@@ -31,19 +34,22 @@ export function Map({ onNavigate }: MapProps) {
               
               <div>
                 <h1 className="text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                  Campus <span className="text-[#059669]">Location</span>
+                  {t('Campus')} <span className="text-[#059669]">{t('Location')}</span>
                 </h1>
                 <div className="flex items-center gap-2">
                   {/* Pulsing Status - Aligned with Fees Page style */}
                   <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">Find the Campus</p>
+                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">{t('find_the_campus')}</p>
                 </div>
               </div>
             </div>
 
-            {/* Contextual Icon Container - Matches the Tuition Structure Style */}
-            <div className="w-12 h-12 rounded-2xl bg-[#fbbf24]/5 border border-[#fbbf24]/20 flex items-center justify-center shadow-2xl backdrop-blur-md transition-transform hover:rotate-12">
-                <MapPin className="w-6 h-6 text-[#fbbf24] drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]" />
+            <div className="flex items-center gap-3">
+              <LanguageToggle />
+              {/* Contextual Icon Container - Matches the Tuition Structure Style */}
+              <div className="w-12 h-12 rounded-2xl bg-[#fbbf24]/5 border border-[#fbbf24]/20 flex items-center justify-center shadow-2xl backdrop-blur-md transition-transform hover:rotate-12">
+                  <MapPin className="w-6 h-6 text-[#fbbf24] drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]" />
+              </div>
             </div>
           </div>
         </div>
@@ -63,7 +69,7 @@ export function Map({ onNavigate }: MapProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-[#0d1f0f] via-transparent to-transparent opacity-80" />
               
               <div className="absolute bottom-6 left-6 right-6">
-                <Badge className="bg-[#fbbf24] text-[#0d1f0f] border-0 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest mb-2 shadow-lg">Main Campus</Badge>
+                <Badge className="bg-[#fbbf24] text-[#0d1f0f] border-0 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest mb-2 shadow-lg">{t('main_campus')}</Badge>
                 <h3 className="text-2xl font-black text-white uppercase tracking-tight leading-none">KC Model School <br/>& College</h3>
               </div>
             </div>
@@ -71,7 +77,7 @@ export function Map({ onNavigate }: MapProps) {
             <div className="p-5 bg-[#112613] flex items-center justify-between border-t border-[#059669]/20">
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-[#059669] shadow-[0_0_8px_#059669]" />
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest">Premises Active</span>
+                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{t('premises_active')}</span>
                 </div>
                 <a 
                   href={pinterestUrl} 
@@ -79,7 +85,7 @@ export function Map({ onNavigate }: MapProps) {
                   rel="noopener noreferrer"
                   className="text-[10px] font-black text-[#fbbf24] uppercase tracking-widest flex items-center gap-1.5 hover:underline"
                 >
-                    View Gallery <ExternalLink size={12} />
+                    {t('view_gallery')} <ExternalLink size={12} />
                 </a>
             </div>
           </div>
@@ -92,13 +98,13 @@ export function Map({ onNavigate }: MapProps) {
                     <MapPin className="w-6 h-6 text-[#fbbf24]" />
                 </div>
                 <div>
-                    <p className="text-[10px] font-black text-[#059669] uppercase tracking-widest mb-1">Physical Address</p>
-                    <p className="text-sm font-bold text-white uppercase leading-tight">{contactInfo.address}</p>
+                    <p className="text-[10px] font-black text-[#059669] uppercase tracking-widest mb-1">{t('physical_address')}</p>
+                    <p className="text-sm font-bold text-white uppercase leading-tight">{t(contactInfo.address)}</p>
                 </div>
             </div>
             <button className="w-full bg-[#059669] text-[#0d1f0f] py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 active:scale-95">
                 <Navigation className="w-4 h-4 fill-current" />
-                Open Maps Navigation
+                {t('open_maps_navigation')}
             </button>
         </div>
 
@@ -106,34 +112,34 @@ export function Map({ onNavigate }: MapProps) {
         <div className="grid grid-cols-2 gap-4">
             <div className="bg-[#1a2e1c] border border-white/5 rounded-[2rem] p-5">
                 <Clock className="w-5 h-5 text-[#fbbf24] mb-3" />
-                <p className="text-[9px] font-black text-[#059669] uppercase tracking-widest mb-1">Office Hours</p>
-                <p className="text-xs text-white font-bold uppercase">{contactInfo.officeHours}</p>
+                <p className="text-[9px] font-black text-[#059669] uppercase tracking-widest mb-1">{t('office_hours')}</p>
+                <p className="text-xs text-white font-bold uppercase">{t(contactInfo.officeHours)}</p>
             </div>
             <div className="bg-[#1a2e1c] border border-white/5 rounded-[2rem] p-5">
                 <PhoneCall className="w-5 h-5 text-[#059669] mb-3" />
-                <p className="text-[9px] font-black text-[#059669] uppercase tracking-widest mb-1">Contact Office</p>
+                <p className="text-[9px] font-black text-[#059669] uppercase tracking-widest mb-1">{t('contact_office')}</p>
                 <p className="text-xs text-white font-bold uppercase">{contactInfo.phone}</p>
-                <button onClick={() => onNavigate('contact')} className="text-[9px] font-black text-[#fbbf24] uppercase mt-2 block">Support Info →</button>
+                <button onClick={() => onNavigate('contact')} className="text-[9px] font-black text-[#fbbf24] uppercase mt-2 block">{t('support_info')} →</button>
             </div>
         </div>
 
         {/* 5. Context Section */}
         <section className="space-y-3">
-            <h4 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] ml-2">Area Context</h4>
+            <h4 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] ml-2">{t('area_context')}</h4>
             <div className="space-y-3">
                 <div className="bg-[#112613] border border-white/5 rounded-2xl p-4 flex items-center gap-4">
                     <Building2 size={20} className="text-[#059669]" />
                     <div>
-                        <p className="text-xs font-black text-white uppercase">Prembagan Landmark</p>
-                        <p className="text-[10px] text-[#a0b5a3] font-bold uppercase opacity-60">Easily accessible from main road.</p>
+                        <p className="text-xs font-black text-white uppercase">{t('prembagan_landmark')}</p>
+                        <p className="text-[10px] text-[#a0b5a3] font-bold uppercase opacity-60">{t('landmark_desc')}</p>
                     </div>
                 </div>
 
                 <div className="bg-[#112613] border border-white/5 rounded-2xl p-4 flex items-center gap-4">
                     <TrainFront size={20} className="text-[#fbbf24]" />
                     <div>
-                        <p className="text-xs font-black text-white uppercase">Public Connectivity</p>
-                        <p className="text-[10px] text-[#a0b5a3] font-bold uppercase opacity-60">Stops directly at the gate.</p>
+                        <p className="text-xs font-black text-white uppercase">{t('public_connectivity')}</p>
+                        <p className="text-[10px] text-[#a0b5a3] font-bold uppercase opacity-60">{t('connectivity_desc')}</p>
                     </div>
                 </div>
             </div>
@@ -144,8 +150,8 @@ export function Map({ onNavigate }: MapProps) {
           <div className="flex items-start gap-3">
             <Info className="text-[#fbbf24] w-5 h-5 shrink-0" />
             <p className="text-[11px] text-white leading-relaxed font-bold uppercase">
-              <span className="text-[#fbbf24] font-black mr-1">Visitor Info:</span> 
-              New visitors check in at the <span className="text-[#059669]">Main Desk</span>. For rooms, use the <button onClick={() => onNavigate('floors')} className="underline">Floor Navigator</button>.
+              <span className="text-[#fbbf24] font-black mr-1">{t('visitor_info_title')}:</span> 
+              {t('visitor_info_desc')}
             </p>
           </div>
         </div>

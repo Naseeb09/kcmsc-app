@@ -3,6 +3,8 @@ import { ChevronLeft, Users, Star, Award, GraduationCap, Search, X } from 'lucid
 import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { useAppContext } from '@/context/AppContext';
+import { useTranslation } from '@/hooks/useTranslation';
+import { LanguageToggle } from '@/app/components/LanguageToggle';
 
 interface StaffDirectoryProps {
   onNavigate: (view: string) => void;
@@ -10,6 +12,7 @@ interface StaffDirectoryProps {
 
 export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
   const { teachers } = useAppContext();
+  const { t } = useTranslation();
   const [activeSection, setActiveSection] = useState<'Junior' | 'Senior'>('Senior');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -26,7 +29,7 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
       
       const getRank = (role: string) => {
         if (role.includes('advisor')) return 0;
-        if (role.includes('vice principal')) return 2; // Check VP before Principal to avoid partial match
+        if (role.includes('vice principal')) return 2; 
         if (role.includes('principal')) return 1;
         if (role.includes('co-ordinator') || role.includes('coordinator')) return 3;
         return 4;
@@ -35,12 +38,12 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
       return getRank(roleA) - getRank(roleB);
     });
   
-  const filteredTeachers = teachers.filter(t => {
-    const isNotAdmin = t.section?.toLowerCase() !== 'admin';
-    const matchesSection = t.section?.toLowerCase() === activeSection.toLowerCase();
-    const matchesSearch = t.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         (t.subject || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (t.role || '').toLowerCase().includes(searchQuery.toLowerCase());
+  const filteredTeachers = teachers.filter(te => {
+    const isNotAdmin = te.section?.toLowerCase() !== 'admin';
+    const matchesSection = te.section?.toLowerCase() === activeSection.toLowerCase();
+    const matchesSearch = te.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         (te.subject || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (te.role || '').toLowerCase().includes(searchQuery.toLowerCase());
     
     if (searchQuery) return matchesSearch;
     return isNotAdmin && matchesSection && matchesSearch;
@@ -73,16 +76,17 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
               
               <div>
                 <h1 className="text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                  Teacher <span className="text-[#059669]">Directory</span>
+                  {t('Teacher')} <span className="text-[#059669]">{t('Directory')}</span>
                 </h1>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">Our Teachers & Admin</p>
+                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">{t('teachers_admin')}</p>
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2">
+              <LanguageToggle />
               <button 
                 onClick={() => setIsSearching(!isSearching)}
                 className={`w-11 h-11 rounded-xl flex items-center justify-center border transition-all ${isSearching ? 'bg-[#fbbf24] border-[#fbbf24] text-[#0d1f0f]' : 'bg-[#1a2e1c] border-[#059669]/40 text-[#fbbf24]'}`}
@@ -101,7 +105,7 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#059669]" />
                 <input 
                   type="text"
-                  placeholder="Search by name, subject or role..."
+                  placeholder={t('search_by_name')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-[#0d1f0f] border border-[#059669]/40 rounded-xl pl-11 pr-4 py-3.5 text-sm text-white focus:outline-none focus:border-[#fbbf24] transition-all shadow-inner"
@@ -120,7 +124,7 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
           <section className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
               <Star className="w-4 h-4 text-[#fbbf24] fill-[#fbbf24]" />
-              <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">Executive Suite</h2>
+              <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">{t('executive_suite')}</h2>
             </div>
             
             <div className="space-y-4">
@@ -131,7 +135,6 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
                   </div>
                   <CardContent className="p-6">
                     <div className="flex items-center gap-5">
-                      {/* IMPROVED PFP BOX KEPT */}
                       <div className="w-20 h-20 rounded-[1.5rem] bg-[#0d1f0f] border-2 border-[#fbbf24]/40 flex-shrink-0 overflow-hidden shadow-inner">
                         {admin.imageUrl ? (
                           <img src={admin.imageUrl} alt={admin.name} className="w-full h-full object-cover" />
@@ -142,10 +145,10 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-black text-white leading-tight mb-1">{admin.name}</h3>
-                        <p className="text-[#fbbf24] text-xs font-bold uppercase tracking-widest">{admin.role || 'Administration'}</p>
+                        <h3 className="text-lg font-black text-white leading-tight mb-1">{t(admin.name)}</h3>
+                        <p className="text-[#fbbf24] text-xs font-bold uppercase tracking-widest">{t(admin.role || 'Administration')}</p>
                         <p className="text-[#a0b5a3] text-[10px] mt-2 font-bold uppercase tracking-widest">
-                          Contact: <span className="text-[#e8f5e9]">{admin.phone || 'N/A'}</span>
+                          {t('phone_number')}: <span className="text-[#e8f5e9]">{admin.phone || 'N/A'}</span>
                         </p>
                       </div>
                     </div>
@@ -167,7 +170,7 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
                 : 'text-[#a0b5a3] hover:text-[#e8f5e9]'
               }`}
             >
-              Junior Section
+              {t('junior_section')}
             </button>
             <button
               onClick={() => setActiveSection('Senior')}
@@ -177,7 +180,7 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
                 : 'text-[#a0b5a3] hover:text-[#e8f5e9]'
               }`}
             >
-              Senior Section
+              {t('senior_section')}
             </button>
           </div>
         )}
@@ -188,48 +191,48 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
             <div className="flex items-center gap-2">
               <GraduationCap className="w-4 h-4 text-[#059669]" />
               <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">
-                {searchQuery ? 'Search Results' : 'Faculty Members'}
+                {searchQuery ? t('search_results') : t('faculty_members')}
               </h2>
             </div>
             <span className="text-[9px] font-black text-[#a0b5a3] bg-white/5 px-2 py-1 rounded-full">
-              {filteredTeachers.length} Members
+              {filteredTeachers.length} {t('members')}
             </span>
           </div>
 
           <div className="grid gap-4">
-            {filteredTeachers.map((teacher) => (
-              <Card key={teacher.id} className="bg-[#1a3a1d]/40 border border-[#059669]/20 rounded-[1.5rem] hover:border-[#059669]/40 transition-all overflow-hidden">
+            {filteredTeachers.map((te) => (
+              <Card key={te.id} className="bg-[#1a3a1d]/40 border border-[#059669]/20 rounded-[1.5rem] hover:border-[#059669]/40 transition-all overflow-hidden">
                 <CardContent className="p-5">
                   <div className="flex items-start gap-4">
                     <div className="w-14 h-14 rounded-xl bg-[#0d1f0f] border border-[#059669]/30 flex-shrink-0 overflow-hidden flex items-center justify-center">
-                      {teacher.imageUrl ? (
-                        <img src={teacher.imageUrl} alt={teacher.name} className="w-full h-full object-cover" />
+                      {te.imageUrl ? (
+                        <img src={te.imageUrl} alt={te.name} className="w-full h-full object-cover" />
                       ) : (
                         <div className="text-[#059669] text-sm font-black">
-                          {getInitials(teacher.name)}
+                          {getInitials(te.name)}
                         </div>
                       )}
                     </div>
                     
                     <div className="flex-1 min-w-0">
                       <h3 className="text-sm font-black text-white truncate uppercase tracking-tight">
-                        {teacher.name}
+                        {t(te.name)}
                       </h3>
                       <p className="text-[10px] text-[#059669] font-bold uppercase tracking-wider mt-0.5">
-                        {teacher.subject || 'Teacher'} • {teacher.section || activeSection}
+                        {t(te.subject || 'Teacher')} • {t(te.section || activeSection)}
                       </p>
                       
-                      {teacher.formTeacherOf && (
+                      {te.formTeacherOf && (
                         <div className="mt-2 inline-flex items-center bg-[#fbbf24]/10 border border-[#fbbf24]/20 rounded-lg px-2 py-0.5">
                           <p className="text-[9px] text-[#fbbf24] font-black uppercase tracking-widest">
-                            Form Teacher of {teacher.formTeacherOf}
+                            {t('form_teacher_of')} {t(te.formTeacherOf)}
                           </p>
                         </div>
                       )}
 
                       <div className="mt-4 pt-4 border-t border-[#059669]/10">
                         <p className="text-[10px] text-[#a0b5a3] font-bold uppercase tracking-[0.1em]">
-                          Phone Number: <span className="text-[#fbbf24]">{teacher.phone || 'N/A'}</span>
+                          {t('phone_number')}: <span className="text-[#fbbf24]">{te.phone || 'N/A'}</span>
                         </p>
                       </div>
                     </div>
@@ -242,7 +245,7 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
           {filteredTeachers.length === 0 && (
             <div className="py-20 text-center">
               <Search className="w-10 h-10 text-[#059669]/20 mx-auto mb-4" />
-              <p className="text-[#a0b5a3] text-[10px] font-black uppercase tracking-widest">No members found</p>
+              <p className="text-[#a0b5a3] text-[10px] font-black uppercase tracking-widest">{t('no_members_found')}</p>
             </div>
           )}
         </div>

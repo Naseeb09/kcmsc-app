@@ -1,6 +1,8 @@
 import { ChevronLeft, Info, Search, Building2, ArrowRight } from 'lucide-react';
 import { useState, useMemo } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useTranslation } from '@/hooks/useTranslation';
+import { LanguageToggle } from '@/app/components/LanguageToggle';
 
 interface FloorMapsProps {
   onNavigate: (view: string, data?: any) => void;
@@ -8,6 +10,7 @@ interface FloorMapsProps {
 
 export function FloorMaps({ onNavigate }: FloorMapsProps) {
   const { floors } = useAppContext();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
 
   // Deep filter for floors
@@ -29,16 +32,17 @@ export function FloorMaps({ onNavigate }: FloorMapsProps) {
               <ChevronLeft className="w-6 h-6" />
             </button>
             <div className="flex-1">
-              <h1 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">Building Map</h1>
-              <h2 className="text-sm font-bold text-[#e8f5e9]">Campus Directory</h2>
+              <h1 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">{t('Building Map')}</h1>
+              <h2 className="text-sm font-bold text-[#e8f5e9]">{t('Campus Directory')}</h2>
             </div>
+            <LanguageToggle />
           </div>
           
           <div className="relative pb-2">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#059669]" />
             <input
               type="text"
-              placeholder="Search floors or sections..."
+              placeholder={t('Search floors or sections...')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-[#0d1f0f] border border-[#059669]/30 rounded-2xl py-4 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-[#fbbf24]/50 transition-all"
@@ -54,7 +58,7 @@ export function FloorMaps({ onNavigate }: FloorMapsProps) {
             <Building2 size={20} className="text-[#fbbf24]" />
           </div>
           <p className="text-[11px] text-[#a0b5a3] leading-tight uppercase tracking-tight font-medium">
-            Basement to 7th Floor • <span className="text-[#059669]">KG to College Sections</span>
+            {t('Basement to 8th Floor')} • <span className="text-[#059669]">{t('KG to College Sections')}</span>
           </p>
         </div>
 
@@ -66,8 +70,8 @@ export function FloorMaps({ onNavigate }: FloorMapsProps) {
                   {floor.label}
                 </div>
                 <div>
-                  <h3 className="text-sm font-bold text-[#e8f5e9] group-hover:text-[#fbbf24] transition-colors">{floor.name}</h3>
-                  <p className="text-[9px] text-[#059669] font-black uppercase tracking-widest">{floor.purpose}</p>
+                  <h3 className="text-sm font-bold text-[#e8f5e9] group-hover:text-[#fbbf24] transition-colors">{t(floor.name)}</h3>
+                  <p className="text-[9px] text-[#059669] font-black uppercase tracking-widest">{t(floor.purpose)}</p>
                 </div>
               </div>
               <ArrowRight className="w-4 h-4 text-[#059669]" />

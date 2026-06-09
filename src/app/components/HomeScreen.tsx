@@ -2,6 +2,8 @@ import { MapPin, Users, Building2, BookOpen, Phone, Search, DollarSign, ChevronR
 import { Badge } from '@/app/components/ui/badge';
 import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
+import { useTranslation } from '@/hooks/useTranslation';
+import { LanguageToggle } from '@/app/components/LanguageToggle';
 import schoolLogo from '@/data/kcmsc-logo.png';
 
 interface HomeScreenProps {
@@ -10,6 +12,7 @@ interface HomeScreenProps {
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const { events, notices } = useAppContext();
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   
@@ -20,11 +23,11 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const latestNotices = notices.slice(0, 3);
 
   const menuItems = [
-    { id: 'floors', label: 'Floor Navigation', icon: MapPin, description: 'Browse by levels' },
-    { id: 'staff', label: 'Teacher Directory', icon: Users, description: 'Meet our teachers' },
-    { id: 'facilities', label: 'Facilities', icon: Building2, description: 'Campus amenities' },
-    { id: 'about', label: 'About School', icon: BookOpen, description: 'History & Mission' },
-    { id: 'fees', label: 'Fees & Costs', icon: DollarSign, description: 'Tuition details' },
+    { id: 'floors', label: t('floor_navigation'), icon: MapPin, description: t('browse_by_levels') },
+    { id: 'staff', label: t('teacher_directory'), icon: Users, description: t('meet_our_teachers') },
+    { id: 'facilities', label: t('facilities'), icon: Building2, description: t('campus_amenities') },
+    { id: 'about', label: t('about_school'), icon: BookOpen, description: t('history_mission') },
+    { id: 'fees', label: t('fees_costs'), icon: DollarSign, description: t('tuition_details') },
   ];
 
   const handleSearchSubmit = (e?: React.FormEvent) => {
@@ -79,11 +82,14 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               <h1 className="text-[11px] font-black text-[#059669] uppercase tracking-[0.3em] mb-0.5">KC Model School & College</h1>
               <div className="flex items-center gap-1.5 mt-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
-                <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-widest">Dhaka, Bangladesh</p>
+                <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-widest">{t('dhaka_bangladesh')}</p>
               </div>
             </div>
           </div>
-          <Badge className="bg-[#fbbf24] text-[#0d1f0f] border-0 px-3 py-1.5 rounded-xl text-[10px] font-black shadow-lg shadow-[#fbbf24]/10">EST. 2014</Badge>
+          <div className="flex flex-col items-end gap-2">
+            <Badge className="bg-[#fbbf24] text-[#0d1f0f] border-0 px-3 py-1.5 rounded-xl text-[10px] font-black shadow-lg shadow-[#fbbf24]/10">{t('est_2014')}</Badge>
+            <LanguageToggle />
+          </div>
         </div>
       </header>
 
@@ -93,7 +99,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           <div className="flex items-center justify-between mb-6 px-6">
             <h2 className="text-[10px] font-black text-white/90 uppercase tracking-[0.3em] flex items-center gap-2">
               <Sparkles className="w-3 h-3 text-[#fbbf24]" />
-              Latest Events
+              {t('latest_events')}
             </h2>
           </div>
           
@@ -134,7 +140,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             ) : (
               <div className="px-6">
                 <div className="w-full aspect-[16/6] bg-[#1a2e1c] rounded-[2rem] border border-white/5 flex items-center justify-center">
-                  <p className="text-[10px] font-black text-[#a0b5a3] uppercase tracking-[0.2em]">No Active Events</p>
+                  <p className="text-[10px] font-black text-[#a0b5a3] uppercase tracking-[0.2em]">{t('no_active_events')}</p>
                 </div>
               </div>
             )}
@@ -149,7 +155,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             </div>
             <input
               type="text"
-              placeholder="Search rooms, staff, or info..."
+              placeholder={t('search_placeholder')}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit()}
@@ -160,7 +166,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               onClick={handleSearchSubmit}
               className="absolute right-3 top-1/2 -translate-y-1/2 bg-[#059669] text-[#0d1f0f] px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#fbbf24] transition-all active:scale-95"
             >
-              Search
+              {t('search_button')}
             </button>
           </form>
         </section>
@@ -168,7 +174,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         {/* 4. Explore Section */}
         <section className="px-6 py-6">
           <div className="mb-6 flex items-end justify-between">
-            <h2 className="text-xl font-black text-white tracking-tight">Explore Campus</h2>
+            <h2 className="text-xl font-black text-white tracking-tight">{t('explore_campus')}</h2>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
@@ -204,8 +210,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 <Phone className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-white uppercase tracking-widest">Campus Hotline</h3>
-                <p className="text-[10px] text-white/60 font-medium">Available during school hours</p>
+                <h3 className="text-sm font-black text-white uppercase tracking-widest">{t('campus_hotline')}</h3>
+                <p className="text-[10px] text-white/60 font-medium">{t('available_during_hours')}</p>
               </div>
             </div>
             <div className="text-3xl font-black text-[#0d1f0f] bg-white/90 px-4 py-1 rounded-2xl">505</div>
@@ -216,7 +222,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         <footer className="py-12 flex flex-col items-center gap-3">
           <div className="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#059669]/40 to-transparent"></div>
           <p className="text-[9px] font-black text-[#a0b5a3]/30 uppercase tracking-[0.5em]">
-            Built by <span className="text-[#059669]">Glitched Technologies</span>
+            {t('built_by')} <span className="text-[#059669]">Glitched Technologies</span>
           </p>
         </footer>
       </main>
@@ -232,7 +238,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             <div className="p-8">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-2 h-2 rounded-full bg-[#fbbf24] animate-ping" />
-                <span className="text-[10px] font-black text-[#059669] uppercase tracking-widest">Active Event</span>
+                <span className="text-[10px] font-black text-[#059669] uppercase tracking-widest">{t('active_event')}</span>
               </div>
               <h3 className="text-2xl font-black text-white mb-4 tracking-tight uppercase leading-tight">{selectedEvent.title}</h3>
               <p className="text-sm text-[#a0b5a3] leading-relaxed font-medium">{selectedEvent.description}</p>
@@ -240,7 +246,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 onClick={() => setSelectedEvent(null)}
                 className="w-full mt-8 py-5 bg-[#059669] text-[#0d1f0f] text-[11px] font-black uppercase tracking-[0.3em] rounded-2xl hover:bg-[#fbbf24] transition-all active:scale-95 shadow-lg shadow-[#059669]/10"
               >
-                Return to Campus
+                {t('return_to_campus')}
               </button>
             </div>
           </div>

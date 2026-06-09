@@ -17,12 +17,16 @@ import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { Separator } from '@/app/components/ui/separator';
 import { contactInfo } from "@/data/announcements";
+import { useTranslation } from '@/hooks/useTranslation';
+import { LanguageToggle } from '@/app/components/LanguageToggle';
 
 interface ContactProps {
   onNavigate: (view: string) => void;
 }
 
 export function Contact({ onNavigate }: ContactProps) {
+  const { t } = useTranslation();
+
   // Error Guard
   if (!contactInfo) {
     return (
@@ -61,16 +65,18 @@ export function Contact({ onNavigate }: ContactProps) {
             </button>
             
             <div className="flex-1">
-              <h1 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.4em] mb-0.5">Get in touch</h1>
+              <h1 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.4em] mb-0.5">{t('get_in_touch')}</h1>
               <div className="flex items-center gap-1.5 mt-1">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
-                <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-widest opacity-60">Support Center</p>
+                <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-widest opacity-60">{t('support_center')}</p>
               </div>
             </div>
 
-            {/* Optional: Keeping the icon but keeping the height small */}
-            <div className="w-11 h-11 rounded-xl bg-[#fbbf24]/5 border border-[#fbbf24]/10 flex items-center justify-center">
-              <Headphones className="w-5 h-5 text-[#fbbf24] opacity-50" />
+            <div className="flex items-center gap-3">
+              <LanguageToggle />
+              <div className="w-11 h-11 rounded-xl bg-[#fbbf24]/5 border border-[#fbbf24]/10 flex items-center justify-center">
+                <Headphones className="w-5 h-5 text-[#fbbf24] opacity-50" />
+              </div>
             </div>
           </div>
         </div>
@@ -82,7 +88,7 @@ export function Contact({ onNavigate }: ContactProps) {
         <section className="space-y-3">
           <div className="flex items-center gap-2 mb-2 ml-1">
             <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-            <h3 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">Direct Channels</h3>
+            <h3 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">{t('direct_channels')}</h3>
           </div>
           
           <div className="grid gap-3">
@@ -93,7 +99,7 @@ export function Contact({ onNavigate }: ContactProps) {
                 <Phone size={20} />
               </div>
               <div className="flex-1 min-w-0 relative z-10">
-                <p className="text-[8px] uppercase tracking-[0.2em] text-[#059669] font-black mb-1">Institutional Desk</p>
+                <p className="text-[8px] uppercase tracking-[0.2em] text-[#059669] font-black mb-1">{t('institutional_desk')}</p>
                 <p className="text-[#e8f5e9] font-black text-sm tracking-tight leading-tight">{contactInfo.phone}</p>
               </div>
               <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0 group-active:bg-[#fbbf24]/10">
@@ -108,7 +114,7 @@ export function Contact({ onNavigate }: ContactProps) {
                 <Mail size={20} />
               </div>
               <div className="flex-1 min-w-0 relative z-10">
-                <p className="text-[8px] uppercase tracking-[0.2em] text-[#059669] font-black mb-1">Official Inquiry</p>
+                <p className="text-[8px] uppercase tracking-[0.2em] text-[#059669] font-black mb-1">{t('official_inquiry')}</p>
                 <p className="text-[#e8f5e9] font-black text-[13px] tracking-tight truncate">{contactInfo.email}</p>
               </div>
               <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center shrink-0 group-active:bg-[#fbbf24]/10">
@@ -123,17 +129,17 @@ export function Contact({ onNavigate }: ContactProps) {
           <div className="bg-[#112613] border border-[#059669]/10 rounded-[2rem] p-7 space-y-6">
             <div className="flex items-center gap-3">
               <Clock className="w-5 h-5 text-[#fbbf24]" />
-              <span className="text-[10px] font-black text-white uppercase tracking-widest">Operating Hours</span>
+              <span className="text-[10px] font-black text-white uppercase tracking-widest">{t('operating_hours')}</span>
             </div>
             
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[9px] text-[#059669] uppercase font-black tracking-widest">Academic Dept</p>
+                  <p className="text-[9px] text-[#059669] uppercase font-black tracking-widest">{t('academic_dept')}</p>
                   <p className="text-sm font-black text-[#e8f5e9] uppercase">{contactInfo.hours?.weekdays || "08:00 - 14:00"}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[9px] text-[#059669] uppercase font-black tracking-widest">Admin Office</p>
+                  <p className="text-[9px] text-[#059669] uppercase font-black tracking-widest">{t('admin_office')}</p>
                   <p className="text-sm font-black text-[#e8f5e9] uppercase">{contactInfo.hours?.office || "09:00 - 16:00"}</p>
                 </div>
               </div>
@@ -141,7 +147,7 @@ export function Contact({ onNavigate }: ContactProps) {
               <div className="flex items-center gap-4">
                 <MapPin className="w-4 h-4 text-[#059669]" />
                 <p className="text-[11px] text-[#a0b5a3] font-medium leading-relaxed uppercase">
-                  {contactInfo.address}
+                  {t(contactInfo.address)}
                 </p>
               </div>
             </div>
@@ -157,7 +163,7 @@ export function Contact({ onNavigate }: ContactProps) {
                 <ShieldAlert size={24} className="animate-pulse" />
               </div>
               <div className="flex-1 min-w-0">
-                <h4 className="text-[9px] font-black text-red-500 uppercase tracking-[0.3em] mb-1">Emergency SOS</h4>
+                <h4 className="text-[9px] font-black text-red-500 uppercase tracking-[0.3em] mb-1">{t('emergency_sos')}</h4>
                 <a href={`tel:${contactInfo.emergencyContact}`} className="text-xl xs:text-2xl font-black text-white hover:text-red-400 transition-colors tracking-tighter truncate block">
                   {contactInfo.emergencyContact}
                 </a>
@@ -171,14 +177,14 @@ export function Contact({ onNavigate }: ContactProps) {
           <div className="bg-[#1a2e1c]/40 border border-white/5 p-4 xs:p-5 rounded-2xl flex flex-col gap-3">
              <Printer className="w-4 h-4 text-[#059669]" />
              <div className="min-w-0">
-               <p className="text-[8px] text-[#059669] uppercase font-black tracking-widest truncate">Fax Line</p>
+               <p className="text-[8px] text-[#059669] uppercase font-black tracking-widest truncate">{t('fax_line')}</p>
                <p className="text-[#e8f5e9] text-[10px] font-bold uppercase truncate">{contactInfo.fax || "N/A"}</p>
              </div>
           </div>
           <a href={contactInfo.website} target="_blank" rel="noreferrer" className="bg-[#1a2e1c]/40 border border-white/5 p-4 xs:p-5 rounded-2xl flex flex-col gap-3 group active:scale-95 transition-all min-w-0">
              <Globe className="w-4 h-4 text-[#fbbf24]" />
              <div className="min-w-0">
-               <p className="text-[8px] text-[#059669] uppercase font-black tracking-widest group-hover:text-[#fbbf24] truncate">Official Web</p>
+               <p className="text-[8px] text-[#059669] uppercase font-black tracking-widest group-hover:text-[#fbbf24] truncate">{t('official_web')}</p>
                <p className="text-[#e8f5e9] text-[10px] font-bold uppercase flex items-center gap-1 truncate">kcmsc.edu.bd <Navigation size={8} className="rotate-45" /></p>
              </div>
           </a>

@@ -69,6 +69,8 @@ interface AppContextType {
   facilities: Facility[];
   isAdmin: boolean;
   isLoading: boolean;
+  language: 'en' | 'bn';
+  setLanguage: (lang: 'en' | 'bn') => void;
   setIsAdmin: (isAdmin: boolean) => void;
   saveNotice: (notice: Partial<Notice>) => Promise<void>;
   deleteNotice: (id: number) => Promise<void>;
@@ -99,6 +101,20 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [facilities, setFacilities] = useState<Facility[]>(verifiedFacilities as any);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [language, setLanguage] = useState<'en' | 'bn'>('en');
+
+  useEffect(() => {
+    // Load saved language from localStorage if available
+    const savedLang = localStorage.getItem('app-language') as 'en' | 'bn';
+    if (savedLang && (savedLang === 'en' || savedLang === 'bn')) {
+      setLanguage(savedLang);
+    }
+  }, []);
+
+  const handleSetLanguage = (lang: 'en' | 'bn') => {
+    setLanguage(lang);
+    localStorage.setItem('app-language', lang);
+  };
 
   useEffect(() => {
     const init = async () => {
@@ -267,6 +283,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   return (
     <AppContext.Provider value={{ 
       events, notices, floors, teachers, classes, facilities, isAdmin, isLoading, setIsAdmin,
+      language, setLanguage: handleSetLanguage,
       saveNotice, deleteNotice, saveEvent, deleteEvent,
       addFloor, updateFloor, deleteFloor,
       saveTeacher, deleteTeacher, 

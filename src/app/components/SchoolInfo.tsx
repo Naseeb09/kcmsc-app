@@ -7,6 +7,8 @@ import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { Separator } from '@/app/components/ui/separator';
 import { useAppContext } from '@/context/AppContext';
+import { useTranslation } from '@/hooks/useTranslation';
+import { LanguageToggle } from '@/app/components/LanguageToggle';
 // Import schoolInfo directly as a fallback if context isn't populated
 import { schoolInfo as localSchoolInfo } from '@/data/announcements';
 
@@ -17,6 +19,7 @@ interface SchoolInfoProps {
 export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
   // Pull notices from context, and check if schoolInfo exists in context too
   const { notices, schoolInfo: contextSchoolInfo } = useAppContext();
+  const { t } = useTranslation();
   
   // Use context data if available, otherwise fallback to the direct import
   const schoolData = contextSchoolInfo || localSchoolInfo;
@@ -64,18 +67,21 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
               
               <div>
                 <h1 className="text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                  Institutional <span className="text-[#059669]">Profile</span>
+                  {t('institutional_profile')}
                 </h1>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">About the School</p>
+                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">{t('about_the_school')}</p>
                 </div>
               </div>
             </div>
 
-            {/* Contextual Icon Container */}
-            <div className="w-12 h-12 rounded-2xl bg-[#fbbf24]/5 border border-[#fbbf24]/20 flex items-center justify-center shadow-2xl backdrop-blur-md">
-                <BookOpen className="w-5 h-5 text-[#fbbf24] drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]" />
+            <div className="flex items-center gap-3">
+              <LanguageToggle />
+              {/* Contextual Icon Container */}
+              <div className="w-12 h-12 rounded-2xl bg-[#fbbf24]/5 border border-[#fbbf24]/20 flex items-center justify-center shadow-2xl backdrop-blur-md">
+                  <BookOpen className="w-5 h-5 text-[#fbbf24] drop-shadow-[0_0_8px_rgba(251,191,36,0.4)]" />
+              </div>
             </div>
           </div>
         </div>
@@ -87,7 +93,7 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
         <section>
           <div className="flex items-center gap-2 mb-6 ml-1">
             <Sparkles className="w-3 h-3 text-[#fbbf24]" />
-            <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">Historical Overview</h2>
+            <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">{t('historical_overview')}</h2>
           </div>
           
           <div className="bg-gradient-to-br from-[#1a2e1c] to-[#112613] border border-white/5 rounded-[2.5rem] p-7 shadow-2xl relative overflow-hidden group">
@@ -97,11 +103,11 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
                 <History className="w-7 h-7 text-[#fbbf24]" />
               </div>
               <div className="flex-1">
-                <h3 className="text-sm font-black text-white uppercase tracking-wide">{schoolData.name}</h3>
-                <p className="text-[10px] text-[#fbbf24] font-bold mt-1 tracking-widest uppercase opacity-80">{schoolData.motto}</p>
+                <h3 className="text-sm font-black text-white uppercase tracking-wide">{t(schoolData.name)}</h3>
+                <p className="text-[10px] text-[#fbbf24] font-bold mt-1 tracking-widest uppercase opacity-80">{t(schoolData.motto)}</p>
               </div>
             </div>
-            <p className="text-sm text-[#a0b5a3] leading-relaxed font-medium">{schoolData.about}</p>
+            <p className="text-sm text-[#a0b5a3] leading-relaxed font-medium">{t(schoolData.about)}</p>
           </div>
         </section>
 
@@ -112,8 +118,8 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
               <Target className="w-5 h-5 text-[#fbbf24]" />
             </div>
             <div>
-              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-2">Our Mission</h3>
-              <p className="text-xs text-[#a0b5a3] leading-relaxed font-medium">{schoolData.mission}</p>
+              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-2">{t('our_mission')}</h3>
+              <p className="text-xs text-[#a0b5a3] leading-relaxed font-medium">{t(schoolData.mission)}</p>
             </div>
           </div>
           
@@ -122,8 +128,8 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
               <Eye className="w-5 h-5 text-[#fbbf24]" />
             </div>
             <div>
-              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-2">Our Vision</h3>
-              <p className="text-xs text-[#a0b5a3] leading-relaxed font-medium">{schoolData.vision}</p>
+              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-2">{t('our_vision')}</h3>
+              <p className="text-xs text-[#a0b5a3] leading-relaxed font-medium">{t(schoolData.vision)}</p>
             </div>
           </div>
         </section>
@@ -132,13 +138,13 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
         <section>
           <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] mb-6 ml-1 flex items-center gap-2">
             <Heart className="w-3 h-3 text-[#fbbf24]" />
-            Core Philosophy
+            {t('core_philosophy')}
           </h2>
           <div className="grid grid-cols-2 gap-3">
             {schoolData.values?.map((value: string, index: number) => (
               <div key={index} className="bg-[#112613] border border-[#059669]/10 rounded-2xl p-4 flex items-center gap-3 shadow-md">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24]" />
-                <span className="text-[10px] font-black text-[#e8f5e9] uppercase tracking-wide">{value}</span>
+                <span className="text-[10px] font-black text-[#e8f5e9] uppercase tracking-wide">{t(value)}</span>
               </div>
             ))}
           </div>
@@ -149,17 +155,17 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
           <div className="bg-[#1a2e1c] border border-white/5 rounded-[2.5rem] p-8 shadow-2xl">
             <div className="flex items-center gap-3 mb-8">
               <Award className="w-5 h-5 text-[#fbbf24]" />
-              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">Institutional Stats</h3>
+              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">{t('institutional_stats')}</h3>
             </div>
             
             <div className="grid grid-cols-1 gap-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">Scope</p>
-                  <p className="text-xs font-black text-white uppercase">{schoolData.grades}</p>
+                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">{t('scope')}</p>
+                  <p className="text-xs font-black text-white uppercase">{t(schoolData.grades)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">Body</p>
+                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">{t('body')}</p>
                   <p className="text-xs font-black text-white uppercase">{schoolData.totalStudents}</p>
                 </div>
               </div>
@@ -168,12 +174,12 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">Ratio</p>
+                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">{t('ratio')}</p>
                   <p className="text-xs font-black text-white uppercase">{schoolData.studentTeacherRatio}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">Accreditation</p>
-                  <p className="text-[9px] font-bold text-[#059669] uppercase tracking-tighter">{schoolData.accreditation}</p>
+                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">{t('accreditation')}</p>
+                  <p className="text-[9px] font-bold text-[#059669] uppercase tracking-tighter">{t(schoolData.accreditation)}</p>
                 </div>
               </div>
             </div>
@@ -185,9 +191,9 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
           <div className="flex items-center justify-between mb-6 ml-1">
             <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] flex items-center gap-2">
               <Megaphone className="w-3 h-3 text-[#fbbf24]" />
-              Campus Notices
+              {t('campus_notices')}
             </h2>
-            <Badge className="bg-[#059669]/20 text-[#059669] border-0 text-[9px] font-black uppercase tracking-widest px-2 py-1">{notices?.length || 0} Active</Badge>
+            <Badge className="bg-[#059669]/20 text-[#059669] border-0 text-[9px] font-black uppercase tracking-widest px-2 py-1">{notices?.length || 0} {t('active')}</Badge>
           </div>
           
           <div className="space-y-4">
@@ -198,13 +204,13 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
                 style={{ borderLeftColor: announcement.priority === 'high' ? '#ef4444' : announcement.priority === 'medium' ? '#f59e0b' : '#059669' }}
               >
                 <div className="flex items-start justify-between gap-4 mb-3">
-                  <h4 className="font-black text-white text-[11px] uppercase tracking-wide flex-1 leading-tight">{announcement.title}</h4>
+                  <h4 className="font-black text-white text-[11px] uppercase tracking-wide flex-1 leading-tight">{t(announcement.title)}</h4>
                   <Badge className={`${getPriorityBadgeColor(announcement.priority)} border-0 text-[8px] font-black uppercase tracking-tighter px-2 py-0.5 rounded-md`}>
-                    {announcement.priority}
+                    {t(announcement.priority)}
                   </Badge>
                 </div>
                 <p className="text-[9px] font-black text-[#059669] uppercase tracking-widest mb-3 opacity-60">{formatDate(announcement.date)}</p>
-                <p className="text-xs text-[#a0b5a3] leading-relaxed font-medium">{announcement.content}</p>
+                <p className="text-xs text-[#a0b5a3] leading-relaxed font-medium">{t(announcement.content)}</p>
               </div>
             ))}
           </div>
