@@ -2,6 +2,8 @@ import { useState, useMemo } from 'react';
 import { Search, MapPin, ChevronLeft, Building, Users, Info, X } from 'lucide-react';
 import { Card, CardContent } from '@/app/components/ui/card';
 import { useAppContext } from '@/context/AppContext';
+import { useTranslation } from '@/hooks/useTranslation';
+import { LanguageToggle } from '@/app/components/LanguageToggle';
 
 interface ClassSearchProps {
   onNavigate: (view: string, data?: any) => void;
@@ -10,22 +12,21 @@ interface ClassSearchProps {
 
 export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
   const { floors, classes: dbClasses } = useAppContext();
+  const { t } = useTranslation();
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
   
   // Initialize with the query passed from HomeScreen if available
   const [searchQuery, setSearchQuery] = useState(initialQuery || '');
 
-  // 1. Data Normalization for Levels
+  // 1. Data Normalization for Levels (Removed Kindergarten as requested)
   const levels = [
-    { id: 'kg', name: 'Kindergarten (KG)', labelMatch: 'G' },
-    { id: 'primary', name: 'Primary (Class 1-5)', labelMatch: ['1', '2'] },
-    { id: 'secondary', name: 'Secondary (Class 6-10)', labelMatch: ['3', '4', '5'] },
-    { id: 'college', name: 'College (Class 11-12)', labelMatch: ['6', '7'] },
+    { id: 'primary', name: t('Primary (Class 1-5)'), labelMatch: ['1', '2'] },
+    { id: 'secondary', name: t('Secondary (Class 6-10)'), labelMatch: ['3', '4', '5'] },
+    { id: 'college', name: t('College (Class 11-12)'), labelMatch: ['6', '7'] },
   ];
 
   // 2. Flatten all rooms for global search
   const allRooms = useMemo(() => {
-    // Start with local data
     const roomsMap = new Map();
 
     floors.forEach(f => {
@@ -47,9 +48,7 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
       });
     });
 
-    // Override with DB data
     dbClasses.forEach(c => {
-      // Try to find the floor by floor_id or room prefix
       const floor = floors.find(f => f.id === c.floor_id) || 
                    floors.find(f => c.room && f.label && c.room.startsWith(f.label));
       
@@ -78,7 +77,7 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
     const query = searchQuery.toLowerCase();
     return allRooms.filter(room => {
       if (room.searchSlug.includes(query)) return true;
-      if (!isNaN(Number(query)) && room.name.includes(query)) return true;
+      if (!isNaN(Number(query)) && room.name.toLowerCase().includes(query)) return true;
       return false;
     }).slice(0, 10);
   }, [searchQuery, allRooms]);
@@ -112,12 +111,13 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
             </button>
             <div className="flex-1">
               <h1 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">
-                {searchQuery ? 'Search' : selectedLevel ? 'Room Directory' : 'Campus Navigator'}
+                {searchQuery ? t('Search') : selectedLevel ? t('room_directory') : t('campus_navigator')}
               </h1>
               <h2 className="text-sm font-bold text-[#e8f5e9]">
                 {selectedLevel ? levels.find(l => l.id === selectedLevel)?.name : 'KC Model School'}
               </h2>
             </div>
+            <LanguageToggle />
           </div>
 
           <div className="relative pb-2">
@@ -126,7 +126,7 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search 'ten ev', '301', etc..."
+              placeholder={t('search_hint')}
               className="w-full bg-[#0d1f0f] border border-[#059669]/30 rounded-2xl py-4 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-[#fbbf24]/50 transition-all shadow-2xl"
             />
             {searchQuery && (
@@ -149,7 +149,7 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
             ) : (
               <div className="text-center py-20 bg-[#1a3a1d]/20 rounded-[2rem] border border-dashed border-[#059669]/20">
                 <Search className="w-10 h-10 text-[#059669]/40 mx-auto mb-4" />
-                <p className="text-[#a0b5a3] text-sm">No matches found</p>
+                <p className="text-[#a0b5a3] text-sm">{t('no_matches_found')}</p>
               </div>
             )}
           </div>
@@ -157,8 +157,8 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
           /* CASE 2: LEVEL SELECTION */
           <div className="space-y-4">
             <div className="mb-2">
-              <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.4em] mb-1">Floor Levels</h2>
-              <p className="text-xs text-[#a0b5a3]">Select a category to browse rooms</p>
+              <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.4em] mb-1">{t('floor_levels')}</h2>
+              <p className="text-xs text-[#a0b5a3]">{t('select_category')}</p>
             </div>
 
             {levels.map((level) => (
@@ -174,7 +174,7 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
                     </div>
                     <div>
                       <h3 className="text-sm font-black text-[#e8f5e9] uppercase tracking-wider">{level.name}</h3>
-                      <p className="text-[10px] text-[#059669] font-black uppercase tracking-widest">Explore Directory</p>
+                      <p className="text-[10px] text-[#059669] font-black uppercase tracking-widest">{t('explore_directory')}</p>
                     </div>
                   </div>
                 </CardContent>
@@ -196,6 +196,7 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
 
 // SHARED PRO ROOM CARD
 function RoomCard({ room, onNavigate }: { room: any, onNavigate: (v: string, d?: any) => void }) {
+  const { t } = useTranslation();
   return (
     <Card className="group bg-gradient-to-br from-[#1a2e1c] to-[#0d1f0f] border border-white/5 hover:border-[#fbbf24]/30 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-300">
       <CardContent className="p-0">
@@ -204,16 +205,16 @@ function RoomCard({ room, onNavigate }: { room: any, onNavigate: (v: string, d?:
             <div className="flex items-center gap-2">
               <span className="flex items-center gap-1.5 text-[9px] font-black text-[#fbbf24] bg-[#fbbf24]/10 border border-[#fbbf24]/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-                Room {room.room}
+                {t('Room')} {room.room}
               </span>
               {room.version && room.version !== 'N/A' && (
                 <span className="text-[9px] font-black text-[#059669] bg-[#059669]/10 border border-[#059669]/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
-                  {room.version}
+                  {t(room.version)}
                 </span>
               )}
             </div>
             <h3 className="text-xl font-black text-white tracking-tight group-hover:text-[#fbbf24] transition-colors">
-              {room.name !== 'N/A' ? `Class ${room.name}` : room.section}
+              {room.name !== 'N/A' ? `${t('Class')} ${t(room.name)}` : t(room.section)}
             </h3>
           </div>
           <div className="text-right">
@@ -221,7 +222,7 @@ function RoomCard({ room, onNavigate }: { room: any, onNavigate: (v: string, d?:
                <MapPin className="w-4 h-4 text-[#059669]" />
             </div>
             <p className="mt-2 text-[10px] text-[#a0b5a3] font-bold uppercase italic tracking-tighter">
-              {room.floorName}
+              {t(room.floorName)}
             </p>
           </div>
         </div>
@@ -231,16 +232,16 @@ function RoomCard({ room, onNavigate }: { room: any, onNavigate: (v: string, d?:
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-[#059669]">
               <Users className="w-3.5 h-3.5" />
-              <span className="text-[9px] font-black uppercase tracking-[0.1em]">Teachers</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.1em]">{t('teacher')}</span>
             </div>
-            <p className="text-[13px] font-bold text-[#e8f5e9] leading-tight truncate">{room.teacher}</p>
+            <p className="text-[13px] font-bold text-[#e8f5e9] leading-tight truncate">{t(room.teacher)}</p>
           </div>
           <div className="space-y-1 pl-4">
             <div className="flex items-center gap-2 text-[#059669]">
               <Info className="w-3.5 h-3.5" />
-              <span className="text-[9px] font-black uppercase tracking-[0.1em]">Section</span>
+              <span className="text-[9px] font-black uppercase tracking-[0.1em]">{t('section')}</span>
             </div>
-            <p className="text-[13px] font-bold text-[#e8f5e9] leading-tight truncate">{room.section}</p>
+            <p className="text-[13px] font-bold text-[#e8f5e9] leading-tight truncate">{t(room.section)}</p>
           </div>
         </div>
 
@@ -249,7 +250,7 @@ function RoomCard({ room, onNavigate }: { room: any, onNavigate: (v: string, d?:
             onClick={() => onNavigate(`floor-detail-${room.floorId}`)}
             className="w-full bg-[#059669] text-[#0d1f0f] rounded-2xl py-3.5 text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#fbbf24] transition-all shadow-lg"
           >
-            Locate Room
+            {t('locate_room')}
           </button>
         </div>
       </CardContent>

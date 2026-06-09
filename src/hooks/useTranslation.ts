@@ -11,36 +11,43 @@ export function useTranslation() {
     }
 
     if (language === 'bn') {
-      // Smart translation for dynamic content
+      // Smart translation for dynamic content using word boundaries to protect names
       let translated = key;
       
-      // Academic levels
-      if (key.toLowerCase().includes('nursery')) translated = translated.replace(/Nursery/gi, 'নার্সারি');
-      if (key.toLowerCase().includes('kg')) translated = translated.replace(/KG/gi, 'কেজি');
-      if (key.toLowerCase().includes('one')) translated = translated.replace(/One/gi, 'প্রথম');
-      if (key.toLowerCase().includes('two')) translated = translated.replace(/Two/gi, 'দ্বিতীয়');
-      if (key.toLowerCase().includes('three')) translated = translated.replace(/Three/gi, 'তৃতীয়');
-      if (key.toLowerCase().includes('four')) translated = translated.replace(/Four/gi, 'চতুর্থ');
-      if (key.toLowerCase().includes('five')) translated = translated.replace(/Five/gi, 'পঞ্চম');
-      if (key.toLowerCase().includes('six')) translated = translated.replace(/Six/gi, 'ষষ্ঠ');
-      if (key.toLowerCase().includes('seven')) translated = translated.replace(/Seven/gi, 'সপ্তম');
-      if (key.toLowerCase().includes('eight')) translated = translated.replace(/Eight/gi, 'অষ্টম');
-      if (key.toLowerCase().includes('nine')) translated = translated.replace(/Nine/gi, 'নবম');
-      if (key.toLowerCase().includes('ten')) translated = translated.replace(/Ten/gi, 'দশম');
-      if (key.toLowerCase().includes('eleven')) translated = translated.replace(/Eleven/gi, 'একাদশ');
-      if (key.toLowerCase().includes('twelve')) translated = translated.replace(/Twelve/gi, 'দ্বাদশ');
+      const academicMaps: Record<string, string> = {
+        'Nursery': 'নার্সারি',
+        'KG': 'কেজি',
+        'One': 'প্রথম',
+        'Two': 'দ্বিতীয়',
+        'Three': 'তৃতীয়',
+        'Four': 'চতুর্থ',
+        'Five': 'পঞ্চম',
+        'Six': 'ষষ্ঠ',
+        'Seven': 'সপ্তম',
+        'Eight': 'অষ্টম',
+        'Nine': 'নবম',
+        'Ten': 'দশম',
+        'Eleven': 'একাদশ',
+        'Twelve': 'দ্বাদশ',
+        'Class': 'শ্রেণী',
+        'Room': 'রুম',
+        'Floor': 'তলা',
+        'Office': 'কার্যালয়',
+        'Principal': 'অধ্যক্ষ',
+        'Lab': 'ল্যাব',
+        'Library': 'লাইব্রেরি'
+      };
 
-      // Common locations
-      if (key.toLowerCase().includes('floor')) translated = translated.replace(/(\d+)(st|nd|rd|th)?\s+Floor/gi, (_, num) => {
+      Object.entries(academicMaps).forEach(([en, bn]) => {
+        const regex = new RegExp(`\\b${en}\\b`, 'gi');
+        translated = translated.replace(regex, bn);
+      });
+
+      // Handle Floor numbers specifically
+      translated = translated.replace(/(\d+)(st|nd|rd|th)?\s+Floor/gi, (_, num) => {
         const bnNums: any = { '1': '১ম', '2': '২য়', '3': '৩য়', '4': '৪র্থ', '5': '৫ম', '6': '৬ষ্ঠ', '7': '৭ম', '8': '৮ম', '9': '৯ম' };
         return `${bnNums[num] || num} তলা`;
       });
-      if (key.toLowerCase().includes('room')) translated = translated.replace(/Room/gi, 'রুম');
-      if (key.toLowerCase().includes('office')) translated = translated.replace(/Office/gi, 'কার্যালয়');
-      if (key.toLowerCase().includes('principal')) translated = translated.replace(/Principal/gi, 'অধ্যক্ষ');
-      if (key.toLowerCase().includes('teacher')) translated = translated.replace(/Teacher/gi, 'শিক্ষক');
-      if (key.toLowerCase().includes('lab')) translated = translated.replace(/Lab/gi, 'ল্যাব');
-      if (key.toLowerCase().includes('library')) translated = translated.replace(/Library/gi, 'লাইব্রেরি');
 
       return translated;
     }

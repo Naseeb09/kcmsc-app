@@ -217,8 +217,42 @@ export const translations: Record<string, { en: string; bn: string }> = {
   'search_results': { en: 'Search Results', bn: 'অনুসন্ধান ফলাফল' },
   'no_members_found': { en: 'No members found', bn: 'কোন সদস্য পাওয়া যায়নি' },
   'search_by_name': { en: 'Search by name, subject or role...', bn: 'নাম, বিষয় বা পদবী দিয়ে খুঁজুন...' },
-  'phone_number': { en: 'Phone Number', bn: 'ফোন নম্বর' },
-  'form_teacher_of': { en: 'Form Teacher of', bn: 'এর ক্লাস টিচার' }
+  // About Screen Content (Full)
+  'Education, Discipline, Progress': { en: 'Education, Discipline, Progress', bn: 'শিক্ষা, শৃঙ্খলা, প্রগতি' },
+  'Founded in 2014 by Al-Hajj Md. Khashru Chowdhury (CIP), KC Model School & College is a premier educational institution in Dakshinkhan, providing quality education under the NCTB curriculum.': {
+    en: 'Founded in 2014 by Al-Hajj Md. Khashru Chowdhury (CIP), KC Model School & College is a premier educational institution in Dakshinkhan, providing quality education under the NCTB curriculum.',
+    bn: '২০১৪ সালে আল-হাজ্ব মো: খসরু চৌধুরী (সিআইপি) কর্তৃক প্রতিষ্ঠিত, কেসি মডেল স্কুল এন্ড কলেজ দক্ষিণখানের একটি শীর্ষস্থানীয় শিক্ষা প্রতিষ্ঠান, যা এনসিটিবি কারিকুলামের অধীনে মানসম্মত শিক্ষা প্রদান করে আসছে।'
+  },
+  'To enable students to explore their full potential and produce 21st-century global citizens.': {
+    en: 'To enable students to explore their full potential and produce 21st-century global citizens.',
+    bn: 'শিক্ষার্থীদের পূর্ণ সম্ভাবনা বিকাশে সহায়তা করা এবং একবিংশ শতাব্দীর বিশ্ব নাগরিক হিসেবে গড়ে তোলা।'
+  },
+  'To produce future leaders equipped with modern skills and ethical values.': {
+    en: 'To produce future leaders equipped with modern skills and ethical values.',
+    bn: 'আধুনিক দক্ষতা এবং নৈতিক মূল্যবোধ সম্পন্ন ভবিষ্যৎ নেতৃত্ব তৈরি করা।'
+  },
+  'Academic Excellence': { en: 'Academic Excellence', bn: 'একাডেমিক শ্রেষ্ঠত্ব' },
+  'Integrity': { en: 'Integrity', bn: 'সততা' },
+  'Respect': { en: 'Respect', bn: 'শ্রদ্ধা' },
+  'Innovation': { en: 'Innovation', bn: 'উদ্ভাবন' },
+  'Nursery - Class 12': { en: 'Nursery - Class 12', bn: 'নার্সারি - দ্বাদশ শ্রেণী' },
+  'Board of Intermediate and Secondary Education, Dhaka.': { 
+    en: 'Board of Intermediate and Secondary Education, Dhaka.', 
+    bn: 'মাধ্যমিক ও উচ্চ মাধ্যমিক শিক্ষা বোর্ড, ঢাকা।' 
+  },
+
+  // Explore Screen
+  'campus_navigator': { en: 'Campus Navigator', bn: 'ক্যাম্পাস নেভিগেটর' },
+  'room_directory': { en: 'Room Directory', bn: 'রুম নির্দেশিকা' },
+  'floor_levels': { en: 'Floor Levels', bn: 'ফ্লোর লেভেল' },
+  'select_category': { en: 'Select a category to browse rooms', bn: 'রুম দেখতে একটি বিভাগ নির্বাচন করুন' },
+  'explore_directory': { en: 'Explore Directory', bn: 'ডাইরেক্টরি দেখুন' },
+  'Primary (Class 1-5)': { en: 'Primary (Class 1-5)', bn: 'প্রাথমিক (১ম-৫ম শ্রেণী)' },
+  'Secondary (Class 6-10)': { en: 'Secondary (Class 6-10)', bn: 'মাধ্যমিক (৬ষ্ঠ-১০ম শ্রেণী)' },
+  'College (Class 11-12)': { en: 'College (Class 11-12)', bn: 'কলেজ (একাদশ-দ্বাদশ শ্রেণী)' },
+  'locate_room': { en: 'Locate Room', bn: 'রুমের অবস্থান' },
+  'no_matches_found': { en: 'No matches found', bn: 'কিছু পাওয়া যায়নি' },
+  'search_hint': { en: "Search 'ten ev', '301', etc...", bn: "'দশম শ্রেণী', '৩০১', ইত্যাদি লিখে খুঁজুন..." }
 };
 
 export type TranslationKey = keyof typeof translations;
