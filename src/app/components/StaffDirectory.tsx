@@ -12,7 +12,7 @@ interface StaffDirectoryProps {
 
 export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
   const { teachers } = useAppContext();
-  const { t } = useTranslation();
+  const { t, s, language } = useTranslation();
   const [activeSection, setActiveSection] = useState<'Junior' | 'Senior'>('Senior');
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearching, setIsSearching] = useState(false);
@@ -75,12 +75,12 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
               </button>
               
               <div>
-                <h1 className="text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                  {t('Teacher')} <span className="text-[#059669]">{t('Directory')}</span>
+                <h1 className={s("text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]")}>
+                  {t('teacher_label')} <span className="text-[#059669]">{t('directory_label')}</span>
                 </h1>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">{t('teachers_admin')}</p>
+                  <p className={s("text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]")}>{t('teachers_admin')}</p>
                 </div>
               </div>
             </div>
@@ -218,20 +218,20 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
                       <h3 className="text-sm font-black text-white truncate uppercase tracking-tight">
                         {t(te.name)}
                       </h3>
-                      <p className="text-[10px] text-[#059669] font-bold uppercase tracking-wider mt-0.5">
-                        {t(te.subject || 'Teacher')} • {t(te.section || activeSection)}
+                      <p className={s("text-[10px] text-[#059669] font-bold uppercase tracking-wider mt-0.5")}>
+                        {t(te.subject || 'teacher_label')} • {t(te.section || activeSection)}
                       </p>
                       
                       {te.formTeacherOf && (
                         <div className="mt-2 inline-flex items-center bg-[#fbbf24]/10 border border-[#fbbf24]/20 rounded-lg px-2 py-0.5">
-                          <p className="text-[9px] text-[#fbbf24] font-black uppercase tracking-widest">
+                          <p className={s("text-[9px] text-[#fbbf24] font-black uppercase tracking-widest")}>
                             {t('form_teacher_of')} {t(te.formTeacherOf)}
                           </p>
                         </div>
                       )}
 
                       <div className="mt-4 pt-4 border-t border-[#059669]/10">
-                        <p className="text-[10px] text-[#a0b5a3] font-bold uppercase tracking-[0.1em]">
+                        <p className={s("text-[10px] text-[#a0b5a3] font-bold uppercase tracking-[0.1em]")}>
                           {t('phone_number')}: <span className="text-[#fbbf24]">{te.phone || 'N/A'}</span>
                         </p>
                       </div>

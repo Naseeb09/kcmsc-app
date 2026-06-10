@@ -1,4 +1,4 @@
-import { MapPin, Users, Building2, BookOpen, Phone, Search, DollarSign, ChevronRight, Sparkles, Megaphone, AlertCircle, ShieldAlert } from 'lucide-react';
+import { MapPin, Users, Building2, BookOpen, Phone, Search, DollarSign, ChevronRight, Sparkles, Megaphone, AlertCircle, ShieldAlert, Package } from 'lucide-react';
 import { Badge } from '@/app/components/ui/badge';
 import { useState, useEffect, useRef } from 'react';
 import { useAppContext } from '@/context/AppContext';
@@ -12,7 +12,7 @@ interface HomeScreenProps {
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const { events, notices } = useAppContext();
-  const { t } = useTranslation();
+  const { t, s, language } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedEvent, setSelectedEvent] = useState<any>(null);
   
@@ -29,6 +29,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     { id: 'about', label: t('about_school'), icon: BookOpen, description: t('history_mission') },
     { id: 'fees', label: t('fees_costs'), icon: DollarSign, description: t('tuition_details') },
     { id: 'smart-complaint', label: t('smart_complaint'), icon: ShieldAlert, description: t('file_complaint') },
+    { id: 'lost-found', label: t('lost_and_found'), icon: Package, description: t('what_did_you_lose_find') },
   ];
 
   const handleSearchSubmit = (e?: React.FormEvent) => {
@@ -80,10 +81,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               />
             </div>
             <div>
-              <h1 className="text-[11px] font-black text-[#059669] uppercase tracking-[0.3em] mb-0.5">KC Model School & College</h1>
+              <h1 className={s("text-[11px] font-black text-[#059669] uppercase tracking-[0.3em] mb-0.5")}>KC Model School & College</h1>
               <div className="flex items-center gap-1.5 mt-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#059669] animate-pulse" />
-                <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-widest">{t('dhaka_bangladesh')}</p>
+                <p className={s("text-[9px] text-[#a0b5a3] uppercase font-bold tracking-widest")}>{t('dhaka_bangladesh')}</p>
               </div>
             </div>
           </div>
@@ -211,7 +212,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 <Phone className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-white uppercase tracking-widest">{t('campus_hotline')}</h3>
+                <h3 className={s("text-sm font-black text-white uppercase tracking-widest")}>{t('campus_hotline')}</h3>
                 <p className="text-[10px] text-white/60 font-medium">{t('available_during_hours')}</p>
               </div>
             </div>
@@ -222,8 +223,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
         {/* 6. Footer Signature */}
         <footer className="py-12 flex flex-col items-center gap-3">
           <div className="w-12 h-[2px] bg-gradient-to-r from-transparent via-[#059669]/40 to-transparent"></div>
-          <p className="text-[9px] font-black text-[#a0b5a3]/30 uppercase tracking-[0.5em]">
-            {t('built_by')} <span className="text-[#059669]">Glitched Technologies</span>
+          <p className={s("text-[9px] font-black text-[#a0b5a3]/30 uppercase tracking-[0.5em]")}>
+            {t('built_by')} <a href="https://glitched-tech.vercel.app/index.html" target="_blank" rel="noopener noreferrer" className="text-[#059669] hover:text-[#fbbf24] transition-colors">Glitched Technologies</a>
           </p>
         </footer>
       </main>

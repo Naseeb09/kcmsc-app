@@ -203,12 +203,12 @@ function RoomCard({ room, onNavigate }: { room: any, onNavigate: (v: string, d?:
         <div className="p-5 flex justify-between items-start bg-gradient-to-b from-white/5 to-transparent">
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1.5 text-[9px] font-black text-[#fbbf24] bg-[#fbbf24]/10 border border-[#fbbf24]/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
+              <span className={s("flex items-center gap-1.5 text-[9px] font-black text-[#fbbf24] bg-[#fbbf24]/10 border border-[#fbbf24]/20 px-2.5 py-1 rounded-full uppercase tracking-widest")}>
                 <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
                 {t('Room')} {room.room}
               </span>
               {room.version && room.version !== 'N/A' && (
-                <span className="text-[9px] font-black text-[#059669] bg-[#059669]/10 border border-[#059669]/20 px-2.5 py-1 rounded-full uppercase tracking-widest">
+                <span className={s("text-[9px] font-black text-[#059669] bg-[#059669]/10 border border-[#059669]/20 px-2.5 py-1 rounded-full uppercase tracking-widest")}>
                   {t(room.version)}
                 </span>
               )}
@@ -232,14 +232,14 @@ function RoomCard({ room, onNavigate }: { room: any, onNavigate: (v: string, d?:
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-[#059669]">
               <Users className="w-3.5 h-3.5" />
-              <span className="text-[9px] font-black uppercase tracking-[0.1em]">{t('teacher')}</span>
+              <span className={s("text-[9px] font-black uppercase tracking-[0.1em]")}>{t('teacher_label')}</span>
             </div>
             <p className="text-[13px] font-bold text-[#e8f5e9] leading-tight truncate">{t(room.teacher)}</p>
           </div>
           <div className="space-y-1 pl-4">
             <div className="flex items-center gap-2 text-[#059669]">
               <Info className="w-3.5 h-3.5" />
-              <span className="text-[9px] font-black uppercase tracking-[0.1em]">{t('section')}</span>
+              <span className={s("text-[9px] font-black uppercase tracking-[0.1em]")}>{t('section_label')}</span>
             </div>
             <p className="text-[13px] font-bold text-[#e8f5e9] leading-tight truncate">{t(room.section)}</p>
           </div>

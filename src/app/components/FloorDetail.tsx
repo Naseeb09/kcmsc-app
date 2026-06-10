@@ -88,11 +88,11 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
                   <div className="flex justify-between items-start mb-3">
                     <div className="space-y-2.5">
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] font-black text-[#fbbf24] bg-[#fbbf24]/10 border border-[#fbbf24]/20 px-3 py-1 rounded-full uppercase tracking-widest">
+                        <span className={s("text-[9px] font-black text-[#fbbf24] bg-[#fbbf24]/10 border border-[#fbbf24]/20 px-3 py-1 rounded-full uppercase tracking-widest")}>
                           {t('Room')} {classInfo.room}
                         </span>
                         {classInfo.version && classInfo.version !== 'N/A' && (
-                          <span className="text-[9px] font-black text-[#059669] bg-[#059669]/10 border border-[#059669]/20 px-3 py-1 rounded-full uppercase tracking-widest">
+                          <span className={s("text-[9px] font-black text-[#059669] bg-[#059669]/10 border border-[#059669]/20 px-3 py-1 rounded-full uppercase tracking-widest")}>
                             {t(classInfo.version)}
                           </span>
                         )}
@@ -112,16 +112,16 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-[#059669]">
                       <Users className="w-4 h-4" />
-                      <span className="text-[9px] font-black uppercase tracking-widest">{t('teacher')}</span>
+                      <span className={s("text-[9px] font-black uppercase tracking-widest")}>{t('teacher_label')}</span>
                     </div>
-                    <p className="text-sm font-bold text-[#e8f5e9] truncate">{t(classInfo.teacher)}</p>
+                    <p className="text-sm font-black text-[#e8f5e9] truncate uppercase">{t(classInfo.teacher)}</p>
                   </div>
-                  <div className="space-y-1.5 pl-4">
+                  <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-[#059669]">
-                      <Layers className="w-4 h-4" />
-                      <span className="text-[9px] font-black uppercase tracking-widest">{t('section')}</span>
+                      <Search className="w-4 h-4" />
+                      <span className={s("text-[9px] font-black uppercase tracking-widest")}>{t('section_label')}</span>
                     </div>
-                    <p className="text-sm font-bold text-[#e8f5e9]">{t(classInfo.section)}</p>
+                    <p className="text-sm font-black text-[#fbbf24] uppercase">{t(classInfo.section)}</p>
                   </div>
                 </div>
 

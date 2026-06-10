@@ -138,6 +138,86 @@ export const translations: Record<string, { en: string; bn: string }> = {
     en: 'Your complaint has been sent to the admins. It will remain private and they will look after it.',
     bn: 'আপনার অভিযোগটি অ্যাডমিনদের কাছে পাঠানো হয়েছে। এটি গোপন থাকবে এবং তারা এটি দেখবে।'
   },
+  'lost_and_found': {
+    en: 'Lost & Found',
+    bn: 'হারানো ও প্রাপ্তি'
+  },
+  'lost': {
+    en: 'Lost',
+    bn: 'হারানো'
+  },
+  'found': {
+    en: 'Found',
+    bn: 'প্রাপ্তি'
+  },
+  'post_item': {
+    en: 'Post an Item',
+    bn: 'একটি আইটেম পোস্ট করুন'
+  },
+  'item_title': {
+    en: 'Item Title',
+    bn: 'আইটেমের নাম'
+  },
+  'item_type': {
+    en: 'Item Type',
+    bn: 'আইটেমের ধরন'
+  },
+  'location_found_lost': {
+    en: 'Location (Where?)',
+    bn: 'স্থান (কোথায়?)'
+  },
+  'date_found_lost': {
+    en: 'Date (When?)',
+    bn: 'তারিখ (কখন?)'
+  },
+  'add_media': {
+    en: 'Add Photos / Videos',
+    bn: 'ছবি / ভিডিও যুক্ত করুন'
+  },
+  'contact_details': {
+    en: 'Contact Details',
+    bn: 'যোগাযোগের তথ্য'
+  },
+  'all_items': {
+    en: 'All Items',
+    bn: 'সব আইটেম'
+  },
+  'no_items_posted': {
+    en: 'No items posted yet.',
+    bn: 'এখনো কোনো আইটেম পোস্ট করা হয়নি।'
+  },
+  'post_now': {
+    en: 'Post Now',
+    bn: 'এখনই পোস্ট করুন'
+  },
+  'teacher_label': {
+    en: 'Teacher',
+    bn: 'শিক্ষক'
+  },
+  'directory_label': {
+    en: 'Directory',
+    bn: 'নির্দেশিকা'
+  },
+  'form_teacher_of': {
+    en: 'Form Teacher of',
+    bn: 'শ্রেণী শিক্ষক'
+  },
+  'phone_number': {
+    en: 'Phone Number',
+    bn: 'ফোন নম্বর'
+  },
+  'location_label': {
+    en: 'Location',
+    bn: 'লোকেশন'
+  },
+  'campus_label': {
+    en: 'Campus',
+    bn: 'ক্যাম্পাস'
+  },
+  'institutional_profile_label': {
+    en: 'Institutional Profile',
+    bn: 'প্রাতিষ্ঠানিক প্রোফাইল'
+  },
 
   // Bottom Nav
   'nav_home': {

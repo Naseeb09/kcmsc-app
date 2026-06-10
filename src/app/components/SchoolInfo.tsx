@@ -19,7 +19,7 @@ interface SchoolInfoProps {
 export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
   // Pull notices from context, and check if schoolInfo exists in context too
   const { notices, schoolInfo: contextSchoolInfo } = useAppContext();
-  const { t } = useTranslation();
+  const { t, s, language } = useTranslation();
   
   // Use context data if available, otherwise fallback to the direct import
   const schoolData = contextSchoolInfo || localSchoolInfo;
@@ -66,12 +66,12 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
               </button>
               
               <div>
-                <h1 className="text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                  {t('institutional_profile')}
+                <h1 className={s("text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]")}>
+                  {t('institutional_profile_label')}
                 </h1>
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">{t('about_the_school')}</p>
+                  <p className={s("text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]")}>{t('about_the_school')}</p>
                 </div>
               </div>
             </div>
@@ -93,7 +93,7 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
         <section>
           <div className="flex items-center gap-2 mb-6 ml-1">
             <Sparkles className="w-3 h-3 text-[#fbbf24]" />
-            <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]">{t('historical_overview')}</h2>
+            <h2 className={s("text-[10px] font-black text-[#059669] uppercase tracking-[0.3em]")}>{t('historical_overview')}</h2>
           </div>
           
           <div className="bg-gradient-to-br from-[#1a2e1c] to-[#112613] border border-white/5 rounded-[2.5rem] p-7 shadow-2xl relative overflow-hidden group">
@@ -104,7 +104,7 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
               </div>
               <div className="flex-1">
                 <h3 className="text-sm font-black text-white uppercase tracking-wide">{t(schoolData.name)}</h3>
-                <p className="text-[10px] text-[#fbbf24] font-bold mt-1 tracking-widest uppercase opacity-80">{t(schoolData.motto)}</p>
+                <p className={s("text-[10px] text-[#fbbf24] font-bold mt-1 tracking-widest uppercase opacity-80")}>{t(schoolData.motto)}</p>
               </div>
             </div>
             <p className="text-sm text-[#a0b5a3] leading-relaxed font-medium">{t(schoolData.about)}</p>
@@ -118,7 +118,7 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
               <Target className="w-5 h-5 text-[#fbbf24]" />
             </div>
             <div>
-              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-2">{t('our_mission')}</h3>
+              <h3 className={s("text-[10px] font-black text-white uppercase tracking-[0.2em] mb-2")}>{t('our_mission')}</h3>
               <p className="text-xs text-[#a0b5a3] leading-relaxed font-medium">{t(schoolData.mission)}</p>
             </div>
           </div>
@@ -128,7 +128,7 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
               <Eye className="w-5 h-5 text-[#fbbf24]" />
             </div>
             <div>
-              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.2em] mb-2">{t('our_vision')}</h3>
+              <h3 className={s("text-[10px] font-black text-white uppercase tracking-[0.2em] mb-2")}>{t('our_vision')}</h3>
               <p className="text-xs text-[#a0b5a3] leading-relaxed font-medium">{t(schoolData.vision)}</p>
             </div>
           </div>
@@ -136,7 +136,7 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
 
         {/* 4. Core Values */}
         <section>
-          <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] mb-6 ml-1 flex items-center gap-2">
+          <h2 className={s("text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] mb-6 ml-1 flex items-center gap-2")}>
             <Heart className="w-3 h-3 text-[#fbbf24]" />
             {t('core_philosophy')}
           </h2>
@@ -144,7 +144,7 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
             {schoolData.values?.map((value: string, index: number) => (
               <div key={index} className="bg-[#112613] border border-[#059669]/10 rounded-2xl p-4 flex items-center gap-3 shadow-md">
                 <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24]" />
-                <span className="text-[10px] font-black text-[#e8f5e9] uppercase tracking-wide">{t(value)}</span>
+                <span className={s("text-[10px] font-black text-[#e8f5e9] uppercase tracking-wide")}>{t(value)}</span>
               </div>
             ))}
           </div>
@@ -155,17 +155,17 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
           <div className="bg-[#1a2e1c] border border-white/5 rounded-[2.5rem] p-8 shadow-2xl">
             <div className="flex items-center gap-3 mb-8">
               <Award className="w-5 h-5 text-[#fbbf24]" />
-              <h3 className="text-[10px] font-black text-white uppercase tracking-[0.3em]">{t('institutional_stats')}</h3>
+              <h3 className={s("text-[10px] font-black text-white uppercase tracking-[0.3em]")}>{t('institutional_stats')}</h3>
             </div>
             
             <div className="grid grid-cols-1 gap-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">{t('scope')}</p>
+                  <p className={s("text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1")}>{t('scope')}</p>
                   <p className="text-xs font-black text-white uppercase">{t(schoolData.grades)}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">{t('body')}</p>
+                  <p className={s("text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1")}>{t('body')}</p>
                   <p className="text-xs font-black text-white uppercase">{schoolData.totalStudents}</p>
                 </div>
               </div>
@@ -174,12 +174,12 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
               
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">{t('ratio')}</p>
+                  <p className={s("text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1")}>{t('ratio')}</p>
                   <p className="text-xs font-black text-white uppercase">{schoolData.studentTeacherRatio}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1">{t('accreditation')}</p>
-                  <p className="text-[9px] font-bold text-[#059669] uppercase tracking-tighter">{t(schoolData.accreditation)}</p>
+                  <p className={s("text-[8px] text-[#a0b5a3] uppercase font-black tracking-widest mb-1")}>{t('accreditation')}</p>
+                  <p className={s("text-[9px] font-bold text-[#059669] uppercase tracking-tighter")}>{t(schoolData.accreditation)}</p>
                 </div>
               </div>
             </div>
@@ -189,11 +189,11 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
         {/* 6. Announcements */}
         <section className="pb-10">
           <div className="flex items-center justify-between mb-6 ml-1">
-            <h2 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] flex items-center gap-2">
+            <h2 className={s("text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] flex items-center gap-2")}>
               <Megaphone className="w-3 h-3 text-[#fbbf24]" />
               {t('campus_notices')}
             </h2>
-            <Badge className="bg-[#059669]/20 text-[#059669] border-0 text-[9px] font-black uppercase tracking-widest px-2 py-1">{notices?.length || 0} {t('active')}</Badge>
+            <Badge className={s("bg-[#059669]/20 text-[#059669] border-0 text-[9px] font-black uppercase tracking-widest px-2 py-1")}>{notices?.length || 0} {t('active')}</Badge>
           </div>
           
           <div className="space-y-4">
@@ -209,7 +209,7 @@ export function SchoolInfo({ onNavigate }: SchoolInfoProps) {
                     {t(announcement.priority)}
                   </Badge>
                 </div>
-                <p className="text-[9px] font-black text-[#059669] uppercase tracking-widest mb-3 opacity-60">{formatDate(announcement.date)}</p>
+                <p className={s("text-[9px] font-black text-[#059669] uppercase tracking-widest mb-3 opacity-60")}>{formatDate(announcement.date)}</p>
                 <p className="text-xs text-[#a0b5a3] leading-relaxed font-medium">{t(announcement.content)}</p>
               </div>
             ))}

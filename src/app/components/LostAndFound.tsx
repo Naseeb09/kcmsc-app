@@ -1,0 +1,374 @@
+import { useState, useEffect } from 'react';
+import { ChevronLeft, Plus, Search, MapPin, Calendar, Camera, Video, Send, Filter, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Input } from '@/app/components/ui/input';
+import { useTranslation } from '@/hooks/useTranslation';
+import { supabase } from '@/lib/supabase';
+import { Badge } from '@/app/components/ui/badge';
+
+interface LostAndFoundProps {
+  onNavigate: (view: string) => void;
+}
+
+interface ItemPost {
+  id: string;
+  type: 'lost' | 'found';
+  title: string;
+  description: string;
+  location: string;
+  date: string;
+  student_name: string;
+  contact_info: string;
+  media_urls: string[];
+  status: 'active' | 'resolved';
+  created_at: string;
+}
+
+export function LostAndFound({ onNavigate }: LostAndFoundProps) {
+  const { t, s, language } = useTranslation();
+  const [items, setItems] = useState<ItemPost[]>([]);
+  const [isPosting, setIsPosting] = useState(false);
+  const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUploading, setIsUploading] = useState(false);
+
+  const [formData, setFormData] = useState({
+    type: 'lost' as 'lost' | 'found',
+    title: '',
+    description: '',
+    location: '',
+    date: new Date().toISOString().split('T')[0],
+    student_name: '',
+    contact_info: '',
+    media_urls: [] as string[]
+  });
+
+  useEffect(() => {
+    fetchItems();
+    // Subscribe to realtime updates
+    const channel = supabase
+      .channel('lost_and_found_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_and_found' }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          setItems(prev => [payload.new as ItemPost, ...prev]);
+        } else if (payload.eventType === 'UPDATE') {
+          setItems(prev => prev.map(item => item.id === payload.new.id ? payload.new as ItemPost : item));
+        } else if (payload.eventType === 'DELETE') {
+          setItems(prev => prev.filter(item => item.id === payload.old.id));
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+
+    setIsUploading(true);
+    const newMediaUrls = [...formData.media_urls];
+    
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        newMediaUrls.push(reader.result as string);
+        if (newMediaUrls.length === files.length + formData.media_urls.length) {
+          setFormData(prev => ({ ...prev, media_urls: newMediaUrls }));
+          setIsUploading(false);
+        }
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const fetchItems = async () => {
+    try {
+      setIsLoading(true);
+      const { data, error } = await supabase
+        .from('lost_and_found')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setItems(data || []);
+    } catch (err) {
+      console.error('Error fetching lost and found items:', err);
+      // Fallback to empty list or mock data if needed
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const { error } = await supabase
+        .from('lost_and_found')
+        .insert([formData]);
+
+      if (error) throw error;
+      
+      setIsPosting(false);
+      setFormData({
+        type: 'lost',
+        title: '',
+        description: '',
+        location: '',
+        date: new Date().toISOString().split('T')[0],
+        student_name: '',
+        contact_info: '',
+        media_urls: []
+      });
+    } catch (err) {
+      console.error('Error posting item:', err);
+      alert('Failed to post item. Please try again.');
+    }
+  };
+
+  const filteredItems = items.filter(item => {
+    const matchesFilter = filter === 'all' || item.type === filter;
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         item.location.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesFilter && matchesSearch;
+  });
+
+  // Helper for conditional styling
+  const getGlitchedStyle = (baseClasses: string, isTranslated: boolean) => {
+    if (isTranslated && language === 'bn') {
+      return baseClasses.replace(/tracking-\[.*?\]|tracking-\w+|uppercase/g, '');
+    }
+    return baseClasses;
+  };
+
+  return (
+    <div className="pb-40 bg-[#0d1f0f] min-h-screen">
+      {/* Header */}
+      <header className="bg-[#1a2e1c] px-6 py-8 border-b border-[#059669]/20 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-[#fbbf24]/5 rounded-full blur-3xl -mr-16 -mt-16" />
+        <div className="max-w-2xl mx-auto flex items-center gap-4 relative z-10">
+          <button
+            onClick={() => onNavigate('home')}
+            className="w-12 h-12 flex items-center justify-center rounded-2xl bg-[#0d1f0f] border border-[#059669]/20 text-[#059669] active:scale-90 transition-all"
+          >
+            <ChevronLeft className="w-6 h-6" />
+          </button>
+          <div className="flex-1">
+            <h1 className={s("text-[14px] font-black text-white uppercase tracking-[0.2em]")}>{t('lost_and_found')}</h1>
+            <p className={s("text-[10px] text-[#059669] font-bold uppercase tracking-widest mt-0.5")}>CAMPUS FORUM</p>
+          </div>
+          <button
+            onClick={() => setIsPosting(true)}
+            className="w-12 h-12 rounded-2xl bg-[#fbbf24] flex items-center justify-center border border-[#fbbf24]/20 text-[#0d1f0f] shadow-lg shadow-[#fbbf24]/20 active:scale-90 transition-all"
+          >
+            <Plus className="w-6 h-6" />
+          </button>
+        </div>
+      </header>
+
+      <main className="px-6 py-6 max-w-2xl mx-auto">
+        {/* Search and Filters */}
+        <div className="flex flex-col gap-4 mb-8">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#059669]" />
+            <Input
+              type="text"
+              placeholder="Search items..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-[#112613] border-[#059669]/20 rounded-2xl pl-12 pr-4 py-6 text-[#e8f5e9] placeholder:text-[#a0b5a3]/20 focus:border-[#fbbf24]/30 focus:bg-[#1a311c] transition-all"
+            />
+          </div>
+
+          <div className="flex gap-2">
+            {(['all', 'lost', 'found'] as const).map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={s(`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                  filter === f 
+                    ? 'bg-[#059669] text-[#0d1f0f] border-[#059669]' 
+                    : 'bg-[#1a2e1c] text-[#a0b5a3] border-white/5'
+                }`)}
+              >
+                {t(f === 'all' ? 'all_items' : f)}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* List of Items */}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20 opacity-50">
+            <div className="w-8 h-8 border-2 border-[#059669] border-t-transparent rounded-full animate-spin mb-4" />
+            <p className={s("text-[10px] font-black uppercase tracking-widest text-[#a0b5a3]")}>Loading Forum...</p>
+          </div>
+        ) : filteredItems.length > 0 ? (
+          <div className="space-y-6">
+            {filteredItems.map((item) => (
+              <div key={item.id} className="bg-[#1a2e1c] border border-white/5 rounded-[2rem] overflow-hidden shadow-xl group transition-all hover:border-[#059669]/30">
+                {item.media_urls && item.media_urls.length > 0 && (
+                  <div className="aspect-video w-full overflow-hidden border-b border-white/5">
+                    <img src={item.media_urls[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                )}
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <Badge className={s(`${item.type === 'lost' ? 'bg-red-500/20 text-red-400' : 'bg-[#fbbf24]/20 text-[#fbbf24]'} border-0 px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg`)}>
+                      {t(item.type)}
+                    </Badge>
+                    <span className="text-[10px] text-[#a0b5a3] font-medium opacity-60">
+                      {new Date(item.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-black text-white mb-2 uppercase tracking-tight group-hover:text-[#fbbf24] transition-colors">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-[#a0b5a3] leading-relaxed mb-4 line-clamp-3">
+                    {item.description}
+                  </p>
+                  
+                  <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-white/5">
+                    <div className={s("flex items-center gap-2 text-[10px] text-[#059669] font-bold uppercase tracking-widest")}>
+                      <MapPin className="w-3 h-3 text-[#fbbf24]" />
+                      <span className="truncate">{item.location}</span>
+                    </div>
+                    <div className={s("flex items-center gap-2 text-[10px] text-[#059669] font-bold uppercase tracking-widest")}>
+                      <Calendar className="w-3 h-3 text-[#fbbf24]" />
+                      <span>{item.date}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-[#1a2e1c]/50 rounded-[2rem] border border-dashed border-white/10">
+            <AlertCircle className="w-12 h-12 text-[#a0b5a3]/20 mx-auto mb-4" />
+            <p className="text-sm text-[#a0b5a3] font-medium">{t('no_items_posted')}</p>
+            <button 
+              onClick={() => setIsPosting(true)}
+              className={s("mt-6 text-[10px] font-black text-[#059669] uppercase tracking-widest hover:text-[#fbbf24] transition-colors")}
+            >
+              + {t('post_now')}
+            </button>
+          </div>
+        )}
+      </main>
+
+      {/* Posting Modal */}
+      {isPosting && (
+        <div className="fixed inset-0 bg-[#0d1f0f]/98 z-50 flex items-center justify-center p-6 backdrop-blur-md overflow-y-auto">
+          <div className="bg-[#1a2e1c] rounded-[2.5rem] max-w-md w-full border border-white/10 overflow-hidden shadow-2xl my-auto">
+            <div className="p-8">
+              <div className="flex justify-between items-center mb-8">
+                <h2 className={s("text-2xl font-black text-white uppercase tracking-tight")}>{t('post_item')}</h2>
+                <button onClick={() => setIsPosting(false)} className="text-[#a0b5a3] hover:text-white transition-colors">
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="flex gap-2">
+                  {(['lost', 'found'] as const).map((t_type) => (
+                    <button
+                      key={t_type}
+                      type="button"
+                      onClick={() => setFormData({ ...formData, type: t_type })}
+                      className={s(`flex-1 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border ${
+                        formData.type === t_type 
+                          ? (t_type === 'lost' ? 'bg-red-500 text-white border-red-500' : 'bg-[#fbbf24] text-[#0d1f0f] border-[#fbbf24]')
+                          : 'bg-[#112613] text-[#a0b5a3] border-white/5'
+                      }`)}
+                    >
+                      {t(t_type)}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="space-y-2">
+                  <label className={s("text-[10px] font-black text-[#059669] uppercase tracking-widest ml-1")}>{t('item_title')} *</label>
+                  <Input
+                    required
+                    placeholder="e.g. Blue Water Bottle"
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                    className="bg-[#112613] border-[#059669]/20 rounded-2xl py-6 px-5 text-[#e8f5e9]"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className={s("text-[10px] font-black text-[#059669] uppercase tracking-widest ml-1")}>{t('Location')} *</label>
+                    <Input
+                      required
+                      placeholder="e.g. Canteen"
+                      value={formData.location}
+                      onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                      className="bg-[#112613] border-[#059669]/20 rounded-2xl py-6 px-5 text-[#e8f5e9]"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className={s("text-[10px] font-black text-[#059669] uppercase tracking-widest ml-1")}>Date *</label>
+                    <Input
+                      type="date"
+                      required
+                      value={formData.date}
+                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                      className="bg-[#112613] border-[#059669]/20 rounded-2xl py-6 px-5 text-[#e8f5e9]"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className={s("text-[10px] font-black text-[#059669] uppercase tracking-widest ml-1")}>Description *</label>
+                  <textarea
+                    required
+                    rows={4}
+                    placeholder="Provide details about the item..."
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    className="w-full bg-[#112613] border border-[#059669]/20 rounded-2xl px-5 py-4 text-sm text-[#e8f5e9] placeholder:text-[#a0b5a3]/20 focus:outline-none focus:border-[#fbbf24]/30 transition-all resize-none"
+                  />
+                </div>
+
+                <div className="space-y-4">
+                  <label className={s("text-[10px] font-black text-[#059669] uppercase tracking-widest ml-1")}>{t('add_media')}</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <label className="flex-1 aspect-video bg-[#112613] border border-dashed border-[#059669]/30 rounded-2xl flex flex-col items-center justify-center gap-2 group hover:border-[#fbbf24]/50 transition-all cursor-pointer">
+                      <Camera className="w-6 h-6 text-[#a0b5a3] group-hover:text-[#fbbf24]" />
+                      <span className="text-[8px] font-black uppercase text-[#a0b5a3]/50">{isUploading ? 'Uploading...' : 'Photo'}</span>
+                      <input type="file" accept="image/*" multiple onChange={handleImageUpload} className="hidden" />
+                    </label>
+                    {formData.media_urls.length > 0 && (
+                      <div className="relative aspect-video rounded-2xl overflow-hidden border border-[#059669]/20">
+                        <img src={formData.media_urls[0]} className="w-full h-full object-cover" />
+                        {formData.media_urls.length > 1 && (
+                          <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-xs font-black">
+                            +{formData.media_urls.length - 1} More
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isUploading}
+                  className={s("w-full bg-[#059669] text-[#0d1f0f] py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] hover:bg-[#fbbf24] transition-all active:scale-95 shadow-lg shadow-[#059669]/20 flex items-center justify-center gap-3 mt-4 disabled:opacity-50")}
+                >
+                  <Send className="w-4 h-4" />
+                  {t('post_now')}
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

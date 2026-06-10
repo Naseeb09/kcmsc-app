@@ -10,7 +10,7 @@ interface MapProps {
 }
 
 export function Map({ onNavigate }: MapProps) {
-  const { t } = useTranslation();
+  const { t, s, language } = useTranslation();
   const pinterestUrl = "https://www.pinterest.com/kcmscofficial/";
 
   return (
@@ -33,13 +33,13 @@ export function Map({ onNavigate }: MapProps) {
               </button>
               
               <div>
-                <h1 className="text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
-                  {t('Campus')} <span className="text-[#059669]">{t('Location')}</span>
+                <h1 className={s("text-[11px] font-black text-white uppercase tracking-[0.4em] leading-none mb-1.5 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]")}>
+                  {t('campus_label')} <span className="text-[#059669]">{t('location_label')}</span>
                 </h1>
                 <div className="flex items-center gap-2">
                   {/* Pulsing Status - Aligned with Fees Page style */}
                   <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-                  <p className="text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]">{t('find_the_campus')}</p>
+                  <p className={s("text-[9px] text-[#a0b5a3] uppercase font-bold tracking-[0.2em]")}>{t('find_the_campus')}</p>
                 </div>
               </div>
             </div>
@@ -69,7 +69,7 @@ export function Map({ onNavigate }: MapProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-[#0d1f0f] via-transparent to-transparent opacity-80" />
               
               <div className="absolute bottom-6 left-6 right-6">
-                <Badge className="bg-[#fbbf24] text-[#0d1f0f] border-0 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest mb-2 shadow-lg">{t('main_campus')}</Badge>
+                <Badge className={s("bg-[#fbbf24] text-[#0d1f0f] border-0 px-2.5 py-1 text-[9px] font-black uppercase tracking-widest mb-2 shadow-lg")}>{t('main_campus')}</Badge>
                 <h3 className="text-2xl font-black text-white uppercase tracking-tight leading-none">KC Model School <br/>& College</h3>
               </div>
             </div>
@@ -77,13 +77,13 @@ export function Map({ onNavigate }: MapProps) {
             <div className="p-5 bg-[#112613] flex items-center justify-between border-t border-[#059669]/20">
                 <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-[#059669] shadow-[0_0_8px_#059669]" />
-                    <span className="text-[10px] font-black text-white uppercase tracking-widest">{t('premises_active')}</span>
+                    <span className={s("text-[10px] font-black text-white uppercase tracking-widest")}>{t('premises_active')}</span>
                 </div>
                 <a 
                   href={pinterestUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-[10px] font-black text-[#fbbf24] uppercase tracking-widest flex items-center gap-1.5 hover:underline"
+                  className={s("text-[10px] font-black text-[#fbbf24] uppercase tracking-widest flex items-center gap-1.5 hover:underline")}
                 >
                     {t('view_gallery')} <ExternalLink size={12} />
                 </a>
@@ -98,11 +98,11 @@ export function Map({ onNavigate }: MapProps) {
                     <MapPin className="w-6 h-6 text-[#fbbf24]" />
                 </div>
                 <div>
-                    <p className="text-[10px] font-black text-[#059669] uppercase tracking-widest mb-1">{t('physical_address')}</p>
+                    <p className={s("text-[10px] font-black text-[#059669] uppercase tracking-widest mb-1")}>{t('physical_address')}</p>
                     <p className="text-sm font-bold text-white uppercase leading-tight">{t(contactInfo.address)}</p>
                 </div>
             </div>
-            <button className="w-full bg-[#059669] text-[#0d1f0f] py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 active:scale-95">
+            <button className={s("w-full bg-[#059669] text-[#0d1f0f] py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all flex items-center justify-center gap-3 active:scale-95")}>
                 <Navigation className="w-4 h-4 fill-current" />
                 {t('open_maps_navigation')}
             </button>
@@ -112,20 +112,20 @@ export function Map({ onNavigate }: MapProps) {
         <div className="grid grid-cols-2 gap-4">
             <div className="bg-[#1a2e1c] border border-white/5 rounded-[2rem] p-5">
                 <Clock className="w-5 h-5 text-[#fbbf24] mb-3" />
-                <p className="text-[9px] font-black text-[#059669] uppercase tracking-widest mb-1">{t('office_hours')}</p>
+                <p className={s("text-[9px] font-black text-[#059669] uppercase tracking-widest mb-1")}>{t('office_hours')}</p>
                 <p className="text-xs text-white font-bold uppercase">{t(contactInfo.officeHours)}</p>
             </div>
             <div className="bg-[#1a2e1c] border border-white/5 rounded-[2rem] p-5">
                 <PhoneCall className="w-5 h-5 text-[#059669] mb-3" />
-                <p className="text-[9px] font-black text-[#059669] uppercase tracking-widest mb-1">{t('contact_office')}</p>
+                <p className={s("text-[9px] font-black text-[#059669] uppercase tracking-widest mb-1")}>{t('contact_office')}</p>
                 <p className="text-xs text-white font-bold uppercase">{contactInfo.phone}</p>
-                <button onClick={() => onNavigate('contact')} className="text-[9px] font-black text-[#fbbf24] uppercase mt-2 block">{t('support_info')} →</button>
+                <button onClick={() => onNavigate('contact')} className={s("text-[9px] font-black text-[#fbbf24] uppercase mt-2 block")}>{t('support_info')} →</button>
             </div>
         </div>
 
         {/* 5. Context Section */}
         <section className="space-y-3">
-            <h4 className="text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] ml-2">{t('area_context')}</h4>
+            <h4 className={s("text-[10px] font-black text-[#059669] uppercase tracking-[0.3em] ml-2")}>{t('area_context')}</h4>
             <div className="space-y-3">
                 <div className="bg-[#112613] border border-white/5 rounded-2xl p-4 flex items-center gap-4">
                     <Building2 size={20} className="text-[#059669]" />
