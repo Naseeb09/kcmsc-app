@@ -12,7 +12,7 @@ interface FloorDetailProps {
 
 export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
   const { floors, classes: dbClasses } = useAppContext();
-  const { t } = useTranslation();
+  const { t, s } = useTranslation();
   const [searchQuery, setSearchQuery] = useState('');
   const floor = floors.find(f => f.id === floorId);
 
@@ -22,17 +22,42 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
     
     // Start with local classes
     const classesMap = new Map();
-    floor.classes.forEach(c => classesMap.set(c.room, c));
+    if (floor.classes) {
+      floor.classes.forEach(c => classesMap.set(c.room, c));
+    }
 
     // Override or add from DB if they belong to this floor
     dbClasses.forEach(c => {
-      if (c.floor_id === floorId || c.room.startsWith(floor.label)) {
-        classesMap.set(c.room, c);
+      const floorLabel = parseInt(floor.label);
+      const expectedPrefix = (floorLabel + 1).toString();
+      
+      if (c.floor_id === floorId || c.room.startsWith(expectedPrefix)) {
+        const existing = classesMap.get(c.room);
+        
+        // Only override if the DB class has useful information
+        // Otherwise keep the local data which is more complete now
+        if (existing) {
+          classesMap.set(c.room, {
+            ...existing,
+            ...c,
+            // Fallback to existing (local) if DB is N/A or empty
+            teacher: (c.teacher && c.teacher !== 'N/A') ? c.teacher : existing.teacher,
+            teacherNumber: (c.teacherNumber && c.teacherNumber !== 'N/A') ? c.teacherNumber : existing.teacherNumber,
+            name: (c.name && c.name !== 'N/A') ? c.name : existing.name,
+            section: (c.section && c.section !== 'N/A') ? c.section : existing.section,
+          });
+        } else {
+          classesMap.set(c.room, c);
+        }
       }
     });
 
     // Sort by room number (ascending)
-    return Array.from(classesMap.values()).sort((a, b) => a.room.localeCompare(b.room));
+    return Array.from(classesMap.values()).sort((a, b) => {
+      const roomA = parseInt(a.room) || 0;
+      const roomB = parseInt(b.room) || 0;
+      return roomA - roomB;
+    });
   }, [floor, dbClasses, floorId]);
 
   // OMNI-FILTER: Search Section, Teacher, Class Name, and Room No
@@ -114,7 +139,17 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
                       <Users className="w-4 h-4" />
                       <span className={s("text-[9px] font-black uppercase tracking-widest")}>{t('teacher_label')}</span>
                     </div>
-                    <p className="text-sm font-black text-[#e8f5e9] truncate uppercase">{t(classInfo.teacher)}</p>
+                    <div className="flex flex-col">
+                      <p className="text-sm font-black text-[#e8f5e9] truncate uppercase">{t(classInfo.teacher)}</p>
+                      {classInfo.teacherNumber && classInfo.teacherNumber !== 'N/A' && (
+                        <a 
+                          href={`tel:${classInfo.teacherNumber}`} 
+                          className="text-[10px] font-black text-[#fbbf24] hover:underline mt-0.5 flex items-center gap-1"
+                        >
+                          <Phone size={10} /> {classInfo.teacherNumber}
+                        </a>
+                      )}
+                    </div>
                   </div>
                   <div className="space-y-1.5">
                     <div className="flex items-center gap-2 text-[#059669]">

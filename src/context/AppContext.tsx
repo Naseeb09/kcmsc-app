@@ -3,6 +3,12 @@ import { campusData, FloorData as CampusFloorData } from '../data/campusData';
 import { defaultNotices, verifiedFacilities, defaultEvents } from '../data/announcements';
 import { supabase } from '../lib/supabase';
 
+// Import admin photos
+import chiefAdvisorImg from '../photos/cheif_advisor.png';
+import principalImg from '../photos/principal.png';
+import actingViceImg from '../photos/acting_vice.png';
+import salmaImg from '../photos/salma.png';
+
 // Re-exporting for use in other files
 export type FloorData = CampusFloorData;
 
@@ -92,11 +98,54 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
+const DEFAULT_ADMINS: Teacher[] = [
+  {
+    id: 'admin-0',
+    name: 'Brigadier General ASM Musfiqur Rahman, spp, psc (retd)',
+    role: 'Chief Advisor',
+    section: 'admin',
+    phone: '',
+    imageUrl: chiefAdvisorImg,
+    isFormTeacher: false,
+    subject: 'Administration'
+  },
+  {
+    id: 'admin-1',
+    name: 'Prof Md Abdul Baten',
+    role: 'Principal',
+    section: 'admin',
+    phone: '',
+    imageUrl: principalImg,
+    isFormTeacher: false,
+    subject: 'Administration'
+  },
+  {
+    id: 'admin-2',
+    name: 'AKM Mahbub Hasan',
+    role: 'Acting Vice Principal',
+    section: 'admin',
+    phone: '',
+    imageUrl: actingViceImg,
+    isFormTeacher: false,
+    subject: 'Administration'
+  },
+  {
+    id: 'admin-3',
+    name: 'Salma Fouzia Noor',
+    role: 'Vice Principal, Junior Section',
+    section: 'admin',
+    phone: '',
+    imageUrl: salmaImg,
+    isFormTeacher: false,
+    subject: 'Administration'
+  }
+];
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [events, setEvents] = useState<Event[]>(defaultEvents);
   const [notices, setNotices] = useState<Notice[]>(defaultNotices);
   const [floors, setFloors] = useState<FloorData[]>(campusData);
-  const [teachers, setTeachers] = useState<Teacher[]>([]);
+  const [teachers, setTeachers] = useState<Teacher[]>(DEFAULT_ADMINS);
   const [classes, setClasses] = useState<ClassInfo[]>([]);
   const [facilities, setFacilities] = useState<Facility[]>(verifiedFacilities as any);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -190,15 +239,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
       const { data: tData, error: tError } = await supabase.from('teachers').select('*').order('name');
       if (tError) console.error('Error fetching teachers:', tError);
+      
+      let finalTeachers = [...DEFAULT_ADMINS];
       if (tData && tData.length > 0) {
         console.log(`✅ Loaded ${tData.length} teachers`);
-        setTeachers(tData.map((t: any) => ({ 
+        const fetchedTeachers = tData.map((t: any) => ({ 
           ...t, 
           isFormTeacher: t.is_form_teacher || false, 
           formTeacherOf: t.form_teacher_of || '',
           imageUrl: t.image_url || ''
-        })));
+        }));
+        
+        // Filter out any default admins that might already be in the database (by name or role)
+        const fetchedNames = fetchedTeachers.map(t => t.name.toLowerCase());
+        const uniqueDefaults = DEFAULT_ADMINS.filter(d => !fetchedNames.includes(d.name.toLowerCase()));
+        
+        finalTeachers = [...uniqueDefaults, ...fetchedTeachers];
       }
+      setTeachers(finalTeachers);
 
       const { data: cData, error: cError } = await supabase.from('classes').select('*').order('room');
       if (cError) console.error('Error fetching classes:', cError);

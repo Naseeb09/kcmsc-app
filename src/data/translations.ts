@@ -345,6 +345,17 @@ export const translations: Record<string, { en: string; bn: string }> = {
   'search_results': { en: 'Search Results', bn: 'অনুসন্ধান ফলাফল' },
   'no_members_found': { en: 'No members found', bn: 'কোন সদস্য পাওয়া যায়নি' },
   'search_by_name': { en: 'Search by name, subject or role...', bn: 'নাম, বিষয় বা পদবী দিয়ে খুঁজুন...' },
+
+  // Admin Names & Roles
+  'Brigadier General ASM Musfiqur Rahman, spp, psc (retd)': { en: 'Brigadier General ASM Musfiqur Rahman, spp, psc (retd)', bn: 'ব্রিগেডিয়ার জেনারেল এএসএম মুশফিকুর রহমান, এসপিপি, পিএসসি (অব:)' },
+  'Chief Advisor': { en: 'Chief Advisor', bn: 'প্রধান উপদেষ্টা' },
+  'Prof Md Abdul Baten': { en: 'Prof Md Abdul Baten', bn: 'প্রফেসর মো: আব্দুল বাতেন' },
+  'Principal': { en: 'Principal', bn: 'অধ্যক্ষ' },
+  'AKM Mahbub Hasan': { en: 'AKM Mahbub Hasan', bn: 'এ কে এম মাহবুব হাসান' },
+  'Acting Vice Principal': { en: 'Acting Vice Principal', bn: 'ভারপ্রাপ্ত উপাধ্যক্ষ' },
+  'Salma Fouzia Noor': { en: 'Salma Fouzia Noor', bn: 'সালমা ফৌজিয়া নূর' },
+  'Vice Principal, Junior Section': { en: 'Vice Principal, Junior Section', bn: 'উপাধ্যক্ষ, জুনিয়র শাখা' },
+  'Administration': { en: 'Administration', bn: 'প্রশাসন' },
   // About Screen Content (Full)
   'Education, Discipline, Progress': { en: 'Education, Discipline, Progress', bn: 'শিক্ষা, শৃঙ্খলা, প্রগতি' },
   'Founded in 2014 by Al-Hajj Md. Khashru Chowdhury (CIP), KC Model School & College is a premier educational institution in Dakshinkhan, providing quality education under the NCTB curriculum.': {

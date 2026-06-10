@@ -5,6 +5,13 @@ import { Badge } from '@/app/components/ui/badge';
 import { useAppContext } from '@/context/AppContext';
 import { useTranslation } from '@/hooks/useTranslation';
 import { LanguageToggle } from '@/app/components/LanguageToggle';
+import { 
+  Carousel, 
+  CarouselContent, 
+  CarouselItem, 
+  CarouselNext, 
+  CarouselPrevious 
+} from '@/app/components/ui/carousel';
 
 interface StaffDirectoryProps {
   onNavigate: (view: string) => void;
@@ -28,11 +35,15 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
       const roleB = (b.role || '').toLowerCase();
       
       const getRank = (role: string) => {
-        if (role.includes('advisor')) return 0;
-        if (role.includes('vice principal')) return 2; 
-        if (role.includes('principal')) return 1;
-        if (role.includes('co-ordinator') || role.includes('coordinator')) return 3;
-        return 4;
+        const r = role.toLowerCase();
+        if (r.includes('chief advisor')) return 0;
+        if (r.includes('principal') && !r.includes('vice')) return 1;
+        if (r.includes('acting vice principal')) return 2;
+        if (r.includes('vice principal') && r.includes('junior')) return 3;
+        if (r.includes('vice principal')) return 4;
+        if (r.includes('advisor')) return 5;
+        if (r.includes('co-ordinator') || r.includes('coordinator')) return 6;
+        return 7;
       };
       
       return getRank(roleA) - getRank(roleB);
@@ -119,7 +130,7 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
 
       <div className="px-6 py-8 max-w-2xl mx-auto space-y-8">
         
-        {/* EXECUTIVE SUITE */}
+        {/* EXECUTIVE SUITE - VERTICAL LIST */}
         {!searchQuery && admins.length > 0 && (
           <section className="space-y-4">
             <div className="flex items-center gap-2 mb-2">
@@ -129,27 +140,38 @@ export function StaffDirectory({ onNavigate }: StaffDirectoryProps) {
             
             <div className="space-y-4">
               {admins.map((admin) => (
-                <Card key={admin.id} className="bg-gradient-to-br from-[#1a3a1d] to-[#0d1f0f] border border-[#fbbf24]/30 rounded-[2rem] overflow-hidden shadow-2xl relative group">
-                  <div className="absolute top-0 right-0 p-4">
-                    <Award className="w-6 h-6 text-[#fbbf24]/20" />
+                <Card key={admin.id} className="bg-gradient-to-br from-[#1a3a1d] to-[#0d1f0f] border-2 border-[#fbbf24]/40 rounded-[2.5rem] overflow-hidden shadow-2xl relative group">
+                  {/* Decorative elements */}
+                  <div className="absolute top-0 right-0 p-6">
+                    <Award className="w-8 h-8 text-[#fbbf24]/10 group-hover:text-[#fbbf24]/30 transition-all" />
                   </div>
+                  <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-[#fbbf24]/5 rounded-full blur-3xl" />
+                  
                   <CardContent className="p-6">
-                    <div className="flex items-center gap-5">
-                      <div className="w-20 h-20 rounded-[1.5rem] bg-[#0d1f0f] border-2 border-[#fbbf24]/40 flex-shrink-0 overflow-hidden shadow-inner">
+                    <div className="flex items-center gap-6">
+                      <div className="w-24 h-24 rounded-[2rem] bg-[#0d1f0f] border-2 border-[#fbbf24]/60 flex-shrink-0 overflow-hidden shadow-[0_0_25px_rgba(251,191,36,0.1)]">
                         {admin.imageUrl ? (
                           <img src={admin.imageUrl} alt={admin.name} className="w-full h-full object-cover" />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#fbbf24] text-xl font-black">
+                          <div className="w-full h-full flex items-center justify-center text-[#fbbf24] text-2xl font-black">
                             {getInitials(admin.name)}
                           </div>
                         )}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-black text-white leading-tight mb-1">{t(admin.name)}</h3>
-                        <p className="text-[#fbbf24] text-xs font-bold uppercase tracking-widest">{t(admin.role || 'Administration')}</p>
-                        <p className="text-[#a0b5a3] text-[10px] mt-2 font-bold uppercase tracking-widest">
-                          {t('phone_number')}: <span className="text-[#e8f5e9]">{admin.phone || 'N/A'}</span>
+                        <h3 className="text-lg font-black text-white leading-tight mb-1 drop-shadow-md">
+                          {t(admin.name)}
+                        </h3>
+                        <p className="text-[#fbbf24] text-[11px] font-black uppercase tracking-[0.2em] mb-3">
+                          {t(admin.role || 'Administration')}
                         </p>
+                        {admin.phone && (
+                          <div className="flex items-center gap-2 bg-[#0d1f0f]/50 self-start px-3 py-1.5 rounded-full border border-white/5 w-fit">
+                            <p className="text-[#a0b5a3] text-[9px] font-bold uppercase tracking-widest">
+                              {t('phone_number')}: <span className="text-[#e8f5e9] ml-1">{admin.phone}</span>
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </CardContent>
