@@ -98,6 +98,10 @@ export const translations: Record<string, { en: string; bn: string }> = {
     en: 'File a complaint privately',
     bn: 'গোপনে অভিযোগ দাখিল করুন'
   },
+  'what_did_you_lose_find': {
+    en: 'Post lost or found items here',
+    bn: 'হারানো বা প্রাপ্তি আইটেম পোস্ট করুন'
+  },
   'complaint_description': {
     en: 'Report harassment, bullying, or any incident.',
     bn: 'হয়রানি, বুলিং বা যেকোনো ঘটনার অভিযোগ করুন।'

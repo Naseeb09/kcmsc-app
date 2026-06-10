@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { ChevronLeft, Plus, Search, MapPin, Calendar, Camera, Video, Send, Filter, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { ChevronLeft, Plus, Search, MapPin, Calendar, Camera, Video, Send, Filter, AlertCircle, CheckCircle2, Trash2, X } from 'lucide-react';
 import { Input } from '@/app/components/ui/input';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/lib/supabase';
 import { Badge } from '@/app/components/ui/badge';
+import { useAppContext } from '@/context/AppContext';
+import { toast } from 'sonner';
 
 interface LostAndFoundProps {
   onNavigate: (view: string) => void;
@@ -25,6 +27,7 @@ interface ItemPost {
 
 export function LostAndFound({ onNavigate }: LostAndFoundProps) {
   const { t, s, language } = useTranslation();
+  const { isAdmin } = useAppContext();
   const [items, setItems] = useState<ItemPost[]>([]);
   const [isPosting, setIsPosting] = useState(false);
   const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all');
@@ -54,7 +57,7 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
         } else if (payload.eventType === 'UPDATE') {
           setItems(prev => prev.map(item => item.id === payload.new.id ? payload.new as ItemPost : item));
         } else if (payload.eventType === 'DELETE') {
-          setItems(prev => prev.filter(item => item.id === payload.old.id));
+          setItems(prev => prev.filter(item => item.id !== payload.old.id));
         }
       })
       .subscribe();
@@ -64,24 +67,38 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
     };
   }, []);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
     setIsUploading(true);
     const newMediaUrls = [...formData.media_urls];
     
-    Array.from(files).forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        newMediaUrls.push(reader.result as string);
-        if (newMediaUrls.length === files.length + formData.media_urls.length) {
-          setFormData(prev => ({ ...prev, media_urls: newMediaUrls }));
-          setIsUploading(false);
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+    try {
+      for (const file of Array.from(files)) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${Math.random()}.${fileExt}`;
+        const filePath = `lost-found/${fileName}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from('lost-and-found')
+          .upload(filePath, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('lost-and-found')
+          .getPublicUrl(filePath);
+
+        newMediaUrls.push(publicUrl);
+      }
+      setFormData(prev => ({ ...prev, media_urls: newMediaUrls }));
+    } catch (error: any) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image: ' + error.message);
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const fetchItems = async () => {
@@ -96,7 +113,6 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
       setItems(data || []);
     } catch (err) {
       console.error('Error fetching lost and found items:', err);
-      // Fallback to empty list or mock data if needed
     } finally {
       setIsLoading(false);
     }
@@ -104,6 +120,11 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isUploading) {
+      toast.info('Please wait for images to finish uploading');
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('lost_and_found')
@@ -111,6 +132,7 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
 
       if (error) throw error;
       
+      toast.success('Item posted successfully!');
       setIsPosting(false);
       setFormData({
         type: 'lost',
@@ -122,27 +144,37 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
         contact_info: '',
         media_urls: []
       });
-    } catch (err) {
+      fetchItems();
+    } catch (err: any) {
       console.error('Error posting item:', err);
-      alert('Failed to post item. Please try again.');
+      toast.error('Failed to post item: ' + err.message);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this post?')) return;
+    
+    try {
+      const { error } = await supabase
+        .from('lost_and_found')
+        .delete()
+        .match({ id });
+
+      if (error) throw error;
+      toast.success('Post deleted');
+      setItems(prev => prev.filter(i => i.id !== id));
+    } catch (error: any) {
+      toast.error('Failed to delete: ' + error.message);
     }
   };
 
   const filteredItems = items.filter(item => {
     const matchesFilter = filter === 'all' || item.type === filter;
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                         item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         item.location.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = (item.title || '').toLowerCase().includes(searchQuery.toLowerCase()) || 
+                         (item.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         (item.location || '').toLowerCase().includes(searchQuery.toLowerCase());
     return matchesFilter && matchesSearch;
   });
-
-  // Helper for conditional styling
-  const getGlitchedStyle = (baseClasses: string, isTranslated: boolean) => {
-    if (isTranslated && language === 'bn') {
-      return baseClasses.replace(/tracking-\[.*?\]|tracking-\w+|uppercase/g, '');
-    }
-    return baseClasses;
-  };
 
   return (
     <div className="pb-40 bg-[#0d1f0f] min-h-screen">
@@ -209,7 +241,16 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
         ) : filteredItems.length > 0 ? (
           <div className="space-y-6">
             {filteredItems.map((item) => (
-              <div key={item.id} className="bg-[#1a2e1c] border border-white/5 rounded-[2rem] overflow-hidden shadow-xl group transition-all hover:border-[#059669]/30">
+              <div key={item.id} className="bg-[#1a2e1c] border border-white/5 rounded-[2rem] overflow-hidden shadow-xl group transition-all hover:border-[#059669]/30 relative">
+                {isAdmin && (
+                  <button 
+                    onClick={() => handleDelete(item.id)}
+                    className="absolute top-4 right-4 z-10 w-10 h-10 rounded-xl bg-red-500/10 text-red-500 flex items-center justify-center border border-red-500/20 active:scale-95 transition-all"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                )}
+                
                 {item.media_urls && item.media_urls.length > 0 && (
                   <div className="aspect-video w-full overflow-hidden border-b border-white/5">
                     <img src={item.media_urls[0]} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
