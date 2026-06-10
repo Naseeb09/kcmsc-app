@@ -161,7 +161,13 @@ export function FloorDetail({ onNavigate, floorId }: FloorDetailProps) {
                 </div>
 
                 {classInfo.teacherNumber && classInfo.teacherNumber !== 'N/A' && (
-                  <div className="p-4 bg-white/[0.02] border-t border-white/5">
+                  <div className="p-4 bg-white/[0.02] border-t border-white/5 space-y-3">
+                    <button
+                      onClick={() => onNavigate('student-directory', { classInfo, floorId })}
+                      className="w-full flex items-center justify-center gap-2 bg-[#fbbf24]/10 text-[#fbbf24] border border-[#fbbf24]/30 rounded-2xl py-4 text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#fbbf24] hover:text-[#0d1f0f] transition-all active:scale-95"
+                    >
+                      <Users size={14} /> {t('View Students')}
+                    </button>
                     <a href={`tel:${classInfo.teacherNumber}`} className="w-full flex items-center justify-center gap-2 bg-[#059669] text-[#0d1f0f] rounded-2xl py-4 text-[11px] font-black uppercase tracking-[0.2em] hover:bg-[#fbbf24] transition-all">
                       <Phone size={14} /> {t('Call Representative')}
                     </a>

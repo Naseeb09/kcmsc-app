@@ -30,6 +30,7 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
   const { isAdmin } = useAppContext();
   const [items, setItems] = useState<ItemPost[]>([]);
   const [isPosting, setIsPosting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [filter, setFilter] = useState<'all' | 'lost' | 'found'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
@@ -53,7 +54,11 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
       .channel('lost_and_found_changes')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'lost_and_found' }, (payload) => {
         if (payload.eventType === 'INSERT') {
-          setItems(prev => [payload.new as ItemPost, ...prev]);
+          setItems(prev => {
+            // Prevent duplicates if local state and Realtime collide
+            if (prev.some(item => item.id === payload.new.id)) return prev;
+            return [payload.new as ItemPost, ...prev];
+          });
         } else if (payload.eventType === 'UPDATE') {
           setItems(prev => prev.map(item => item.id === payload.new.id ? payload.new as ItemPost : item));
         } else if (payload.eventType === 'DELETE') {
@@ -120,12 +125,10 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isUploading) {
-      toast.info('Please wait for images to finish uploading');
-      return;
-    }
+    if (isUploading || isSubmitting) return;
 
     try {
+      setIsSubmitting(true);
       const { error } = await supabase
         .from('lost_and_found')
         .insert([formData]);
@@ -144,10 +147,12 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
         contact_info: '',
         media_urls: []
       });
-      fetchItems();
+      // UI will update automatically via Realtime listener
     } catch (err: any) {
       console.error('Error posting item:', err);
       toast.error('Failed to post item: ' + err.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -399,11 +404,15 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
 
                 <button
                   type="submit"
-                  disabled={isUploading}
+                  disabled={isUploading || isSubmitting}
                   className={s("w-full bg-[#059669] text-[#0d1f0f] py-5 rounded-2xl text-[11px] font-black uppercase tracking-[0.3em] hover:bg-[#fbbf24] transition-all active:scale-95 shadow-lg shadow-[#059669]/20 flex items-center justify-center gap-3 mt-4 disabled:opacity-50")}
                 >
-                  <Send className="w-4 h-4" />
-                  {t('post_now')}
+                  {isSubmitting ? (
+                    <div className="w-4 h-4 border-2 border-[#0d1f0f] border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <Send className="w-4 h-4" />
+                  )}
+                  {isSubmitting ? 'Posting...' : t('post_now')}
                 </button>
               </form>
             </div>
