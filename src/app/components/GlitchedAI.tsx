@@ -3,7 +3,7 @@ import { Bot, Send, X, MessageSquare, ShieldAlert, Sparkles, User, ChevronRight 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppContext } from '@/context/AppContext';
 import { useTranslation } from '@/hooks/useTranslation';
-import { schoolInfo, contactInfo } from '@/data/announcements';
+import { schoolInfo, contactInfo, verifiedFacilities } from '@/data/announcements';
 
 interface Message {
   role: 'user' | 'bot';
@@ -11,11 +11,11 @@ interface Message {
 }
 
 export function GlitchedAI({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const { floors, teachers, language } = useAppContext();
+  const { floors, teachers, notices, events, facilities, language } = useAppContext();
   const { t, s } = useTranslation();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'bot', content: language === 'bn' ? 'হ্যালো! আমি কেসিএমএসসি এআই। আমি আপনাকে কীভাবে সাহায্য করতে পারি?' : 'Hello! I am KCMSC AI. How can I help you today?' }
+    { role: 'bot', content: language === 'bn' ? 'হ্যালো! আমি ক্যাম্পাস এআই। আমি এই অ্যাপের যেকোনো তথ্য সম্পর্কে আপনাকে সাহায্য করতে পারি।' : 'Hello! I am Campus AI. I can help you with any information available on this app.' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -26,85 +26,156 @@ export function GlitchedAI({ isOpen, onClose }: { isOpen: boolean; onClose: () =
     }
   }, [messages, isTyping]);
 
-  const knowledgeBase = {
-    school: schoolInfo,
-    contact: contactInfo,
-    floors: floors.map(f => ({
-      name: f.name,
-      label: f.label,
-      purpose: f.purpose,
-      rooms: f.classes.map(c => `${c.room} (${c.name || c.section})`)
-    })),
-    teachers: teachers.map(t => ({ name: t.name, role: t.role, subject: t.subject }))
-  };
-
   const generateResponse = (query: string) => {
     const q = query.toLowerCase();
     
-    // Safety check for "bad things"
-    const redFlags = ['bad', 'stupid', 'hate', 'kill', 'abuse', 'hack', 'porn', 'sexy'];
+    // Safety check
+    const redFlags = ['bad', 'stupid', 'hate', 'kill', 'abuse', 'hack', 'porn', 'sexy', 'fuck', 'shit', 'idiot'];
     if (redFlags.some(flag => q.includes(flag))) {
       return language === 'bn' ? 'আমি এই ধরণের বার্তার উত্তর দিতে পারি না। অনুগ্রহ করে শালীন ভাষা ব্যবহার করুন।' : "I can't respond to this. Please maintain a respectful tone.";
     }
 
-    // Dynamic Context Logic
-    if (q.includes('what are you') || q.includes('who are you') || q.includes('doing')) {
+    // 1. Identity & Developers
+    if (q.includes('what are you') || q.includes('who are you') || q.includes('doing') || q.includes('what you can do')) {
       return language === 'bn' 
-        ? 'আমি কেসিএমএসসি স্মার্ট অ্যাসিস্ট্যান্ট। আমি আপনাকে এই ক্যাম্পাস নেভিগেট করতে এবং স্কুল সম্পর্কে তথ্য দিতে সাহায্য করি।' 
-        : 'I am the KCMSC Smart Assistant. I help you navigate the campus and provide real-time information about our school.';
+        ? 'আমি ক্যাম্পাস এআই, কেসিএমএসসি-র স্মার্ট অ্যাসিস্ট্যান্ট। আমি আপনাকে টিচারদের ফোন নম্বর, ক্লাস লোকেশন, নোটিশ এবং স্কুলের যেকোনো ফি বা সুবিধা সম্পর্কে জানাতে পারি।' 
+        : 'I am Campus AI, the smart assistant for KCMSC. I can help you find teacher contact numbers, classroom locations, latest notices, school fees, and facilities.';
     }
 
-    if (q.includes('how many classes') || q.includes('total classes') || q.includes('classes')) {
-      const totalClasses = floors.reduce((acc, f) => acc + (f.classes?.length || 0), 0);
-      return language === 'bn' 
-        ? `আমাদের স্কুলে বর্তমানে মোট ${totalClasses} টি ক্লাস বা রুম রেকর্ড করা আছে। আপনি এক্সপ্লোর সেকশনে সব তলার তথ্য পাবেন।` 
-        : `We currently have ${totalClasses} recorded classes/rooms across the campus. You can view them floor-by-floor in the Explore section.`;
+    if (q.includes('built') || q.includes('developer') || q.includes('made') || q.includes('creator') || q.includes('who built')) {
+      return language === 'bn'
+        ? 'আমাকে তৈরি করেছে Glitched Technologies (গ্লিচড টেকনোলজিস)।'
+        : 'I was built by Glitched Technologies.';
     }
 
-    if (q.includes('teacher') || q.includes('faculty')) {
+    // 2. School Profile & History
+    if (q.includes('about the school') || q.includes('tell me about') || q.includes('school info')) {
+      return language === 'bn'
+        ? `${schoolInfo.name} একটি শ্রেষ্ঠ বিদ্যাপীঠ। ${schoolInfo.about}`
+        : `${schoolInfo.name} is a premier institution. ${schoolInfo.about}`;
+    }
+
+    if (q.includes('founded') || q.includes('established') || q.includes('history') || q.includes('start') || q.includes('who is the founder')) {
+      return language === 'bn'
+        ? `কেসি মডেল স্কুল এন্ড কলেজ ${schoolInfo.established} সালে আল-হাজ্ব মো: খসরু চৌধুরী (সিআইপি) দ্বারা প্রতিষ্ঠিত হয়েছিল।`
+        : `KC Model School & College was founded in ${schoolInfo.established} by Al-Hajj Md. Khashru Chowdhury (CIP).`;
+    }
+
+    if (q.includes('motto') || q.includes('slogan')) {
+      return language === 'bn' ? `আমাদের মূলমন্ত্র হল: শিক্ষা, শৃঙ্খলা, প্রগতি।` : `Our motto is: Education, Discipline, Progress.`;
+    }
+
+    if (q.includes('mission') || q.includes('vision') || q.includes('goal')) {
+      return language === 'bn'
+        ? `লক্ষ্য: ${schoolInfo.mission} ভিশন: ${schoolInfo.vision}`
+        : `Mission: ${schoolInfo.mission} Vision: ${schoolInfo.vision}`;
+    }
+
+    // 3. Stats (Teachers & Students)
+    if (q.includes('teacher') || q.includes('faculty') || q.includes('staff')) {
       const totalTeachers = teachers.length;
+      const foundTeacher = teachers.find(teacher => q.includes(teacher.name.toLowerCase()));
+      if (foundTeacher) {
+        return language === 'bn'
+          ? `${foundTeacher.name} একজন ${t(foundTeacher.role || 'Teacher')}। তাঁর বিভাগ: ${t(foundTeacher.subject || 'General')}। ${foundTeacher.phone ? 'ফোন: ' + foundTeacher.phone : ''}`
+          : `${foundTeacher.name} is a ${foundTeacher.role || 'Teacher'} (${foundTeacher.subject || 'General'}). ${foundTeacher.phone ? 'Phone: ' + foundTeacher.phone : ''}`;
+      }
       return language === 'bn'
-        ? `আমাদের বর্তমানে ${totalTeachers} জন অনুষদ সদস্য রয়েছেন। আপনি ডিরেক্টরি সেকশনে তাদের বিস্তারিত এবং ফোন নম্বর পেতে পারেন।`
-        : `We have ${totalTeachers} faculty members listed. You can find their details and phone numbers in the Directory section.`;
+        ? `আমাদের বর্তমানে ${totalTeachers} জন অনুষদ সদস্য রয়েছেন।`
+        : `We have ${totalTeachers} faculty members listed in our directory.`;
     }
 
-    // FAQ Logic
-    if (q.includes('principal')) {
-      const principal = teachers.find(t => t.role?.toLowerCase().includes('principal'));
+    if (q.includes('student') || q.includes('how many kids') || q.includes('population') || q.includes('ratio')) {
       return language === 'bn' 
-        ? `কেসি মডেল স্কুল এন্ড কলেজের অধ্যক্ষ হলেন ${principal?.name || 'প্রফেসর মো: আব্দুল বাতেন'}। তাঁর কক্ষটি ১ম তলায় (রুম ২০৬)।` 
-        : `The Principal of KC Model School & College is ${principal?.name || 'Prof Md Abdul Baten'}. His office is on the 1st Floor (Room 206).`;
+        ? `আমাদের স্কুলে ${schoolInfo.totalStudents} এর বেশি শিক্ষার্থী রয়েছে। ছাত্র-শিক্ষক অনুপাত হল ${schoolInfo.studentTeacherRatio}।` 
+        : `We have over ${schoolInfo.totalStudents} students with a student-teacher ratio of ${schoolInfo.studentTeacherRatio}.`;
     }
 
-    if (q.includes('vice principal')) {
-      const vps = teachers.filter(t => t.role?.toLowerCase().includes('vice principal'));
-      const vpNames = vps.map(v => v.name).join(', ');
+    // 4. Fees & Admission
+    if (q.includes('fee') || q.includes('cost') || q.includes('admission') || q.includes('money') || q.includes('enroll') || q.includes('pay')) {
       return language === 'bn'
-        ? `আমাদের উপাধ্যক্ষরা হলেন: ${vpNames}।`
-        : `Our Vice Principals are: ${vpNames}.`;
-    }
-    
-    if (q.includes('fee') || q.includes('cost') || q.includes('admission')) {
-      return language === 'bn' ? 'ভর্তি ফি এবং মাসিক বেতনের বিস্তারিত তথ্যের জন্য অনুগ্রহ করে আমাদের প্রধান ডেস্কে যোগাযোগ করুন অথবা মেনু থেকে "Fees" সেকশনটি দেখুন।' : 'For admission fees and tuition details, please contact our main desk or visit the "Fees" section in the menu.';
+        ? `ভর্তি এবং মাসিক বেতনের তথ্যের জন্য অ্যাপের "Fees" সেকশনটি দেখুন। সাধারণত কেজি থেকে ১০ম শ্রেণী পর্যন্ত বিভিন্ন ফি কাঠামো রয়েছে। বিস্তারিত জানতে ০১৭৯৩ ৫৬০ ৪৬৬ নম্বরে কল করুন।`
+        : `For admission and tuition fee details, please check the "Fees" section in the app. Fees vary from Nursery to College levels. For specific inquiries, call 01793 560 466.`;
     }
 
-    if (q.includes('location') || q.includes('address') || q.includes('where')) {
-      return `${language === 'bn' ? 'আমাদের ক্যাম্পাসটি এখানে অবস্থিত:' : 'Our campus is located at:'} ${contactInfo.address}`;
+    // 5. Locations & Floors
+    if (q.includes('where') || q.includes('location') || q.includes('address') || q.includes('map')) {
+      return `${language === 'bn' ? 'ঠিকানা:' : 'Address:'} ${contactInfo.address}. ${language === 'bn' ? 'এটি দক্ষিণখানের প্রেমবাগানে অবস্থিত।' : 'Located in Prembagan, Dakshinkhan.'}`;
     }
 
-    if (q.includes('floor') || q.includes('map')) {
-      return language === 'bn' ? `আমাদের ${floors.length}টি তলা রয়েছে। ১ম তলায় নার্সারি ও কেজি, এবং ৮ম তলায় কলেজ শাখা অবস্থিত।` : `We have ${floors.length} floors. Nursery & KG are on the 1st Floor, and the College section is on the 8th Floor.`;
+    if (q.includes('floor') || q.includes('how many floors') || q.includes('levels')) {
+      return language === 'bn' 
+        ? `আমাদের ভবনে মোট ৮টি তলা (Floor) রয়েছে।` 
+        : `The campus has 8 floors in total.`;
     }
 
-    if (q.includes('phone') || q.includes('contact') || q.includes('call')) {
-      return `${language === 'bn' ? 'আপনি আমাদের এখানে ফোন করতে পারেন:' : 'You can call us at:'} ${contactInfo.phone}`;
+    const roomMatch = q.match(/\d{3}/);
+    if (roomMatch) {
+      const roomNum = roomMatch[0];
+      for (const floor of floors) {
+        const found = floor.classes.find(c => c.room === roomNum);
+        if (found) {
+          return language === 'bn'
+            ? `রুম ${roomNum} (${t(found.name)}) আমাদের ${t(floor.name)} এ অবস্থিত।`
+            : `Room ${roomNum} (${found.name}) is located on the ${floor.name}.`;
+        }
+      }
     }
 
-    if (q.includes('hello') || q.includes('hi')) {
-      return language === 'bn' ? 'হ্যালো! আমি আপনাকে কীভাবে সাহায্য করতে পারি? আপনি স্কুল, ফ্লোর বা শিক্ষক সম্পর্কে জিজ্ঞাসা করতে পারেন।' : "Hello! How can I help you? You can ask about the school, floors, or teachers.";
+    // 6. Facilities & Labs
+    if (q.includes('facility') || q.includes('lab') || q.includes('library') || q.includes('wifi') || q.includes('computer') || q.includes('science')) {
+      const facNames = verifiedFacilities.map(f => f.name).join(', ');
+      return language === 'bn'
+        ? `আমাদের সুবিধাসমূহ: ${facNames}। বেশিরভাগ ল্যাব ৭ম তলায় অবস্থিত।`
+        : `Facilities include: ${facNames}. Most labs are on the 7th Floor.`;
     }
 
-    return language === 'bn' ? 'দুঃখিত, আমি এই বিষয়ে জানি না। আপনি কি অন্য কিছু জিজ্ঞাসা করতে চান? যেমন কতটি তলা বা অধ্যক্ষের নাম?' : "I'm sorry, I don't have information on that specific topic yet. Try asking about the number of floors, total teachers, or the Principal!";
+    // 7. Principal & Leaders
+    if (q.includes('principal') || q.includes('head')) {
+      const principal = teachers.find(t => t.role?.toLowerCase().includes('principal') && !t.role?.toLowerCase().includes('acting'));
+      return language === 'bn' 
+        ? `আমাদের অধ্যক্ষ হলেন ${principal?.name || 'প্রফেসর মো: আব্দুল বাতেন'}। তাঁর অফিস রুম ২০৬ তে।` 
+        : `Our Principal is ${principal?.name || 'Prof Md Abdul Baten'}. His office is in Room 206.`;
+    }
+
+    if (q.includes('advisor')) {
+      return language === 'bn'
+        ? `আমাদের প্রধান উপদেষ্টা হলেন ব্রিগেডিয়ার জেনারেল এএসএম মুশফিকুর রহমান।`
+        : `Our Chief Advisor is Brigadier General ASM Musfiqur Rahman.`;
+    }
+
+    // 8. Notices & Events
+    if (q.includes('notice') || q.includes('update') || q.includes('latest')) {
+      if (notices.length > 0) {
+        return language === 'bn'
+          ? `সর্বশেষ নোটিশ: "${notices[0].title}" (${notices[0].date})। বিস্তারিত নোটিশ সেকশনে দেখুন।`
+          : `Latest Notice: "${notices[0].title}" posted on ${notices[0].date}.`;
+      }
+    }
+
+    if (q.includes('event')) {
+      if (events.length > 0) {
+        return language === 'bn'
+          ? `আগামী ইভেন্ট: "${events[0].title}"। বিস্তারিত হোম স্ক্রিনে দেখুন।`
+          : `Next Event: "${events[0].title}". Check the home screen slider for details.`;
+      }
+    }
+
+    // 9. Contact Info
+    if (q.includes('phone') || q.includes('number') || q.includes('call') || q.includes('contact') || q.includes('email')) {
+      return language === 'bn'
+        ? `আমাদের ফোন: ${contactInfo.phone}, ইমেইল: ${contactInfo.email}`
+        : `Phone: ${contactInfo.phone}, Email: ${contactInfo.email}`;
+    }
+
+    // Greetings
+    if (q.includes('hi') || q.includes('hello') || q.includes('hey')) {
+      return language === 'bn' ? 'হ্যালো! আমি আপনাকে কীভাবে সাহায্য করতে পারি?' : "Hello! How can I help you today?";
+    }
+
+    return language === 'bn' 
+      ? 'দুঃখিত, আমি এই বিষয়ে জানি না। আপনি টিচার, রুম, ফি বা স্কুলের ইতিহাস সম্পর্কে জিজ্ঞাসা করতে পারেন।' 
+      : "I'm not sure about that. Try asking about teachers, room numbers, fees, or school history!";
   };
 
   const handleSend = () => {
@@ -138,10 +209,10 @@ export function GlitchedAI({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 <Bot className="text-white w-6 h-6" />
               </div>
               <div>
-                <h2 className="text-sm font-black text-white uppercase tracking-widest leading-none mb-1">KCMSC <span className="text-[#fbbf24]">AI Bot</span></h2>
+                <h2 className="text-sm font-black text-white uppercase tracking-widest leading-none mb-1">Campus <span className="text-[#fbbf24]">AI</span></h2>
                 <div className="flex items-center gap-1.5">
                   <div className="w-1.5 h-1.5 rounded-full bg-[#fbbf24] animate-pulse" />
-                  <p className="text-[10px] text-[#a0b5a3] font-bold uppercase tracking-widest">Always Online</p>
+                  <p className="text-[10px] text-[#a0b5a3] font-bold uppercase tracking-widest">Knowledge Sync Active</p>
                 </div>
               </div>
             </div>
@@ -198,9 +269,6 @@ export function GlitchedAI({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                 <Send size={20} />
               </button>
             </div>
-            <p className="text-[9px] text-center text-[#a0b5a3] mt-4 font-bold uppercase tracking-widest opacity-50 flex items-center justify-center gap-2">
-              <Sparkles size={10} className="text-[#fbbf24]" /> AI Powered Assistant
-            </p>
           </div>
         </motion.div>
       )}

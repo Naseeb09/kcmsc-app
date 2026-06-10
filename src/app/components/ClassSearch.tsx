@@ -12,7 +12,7 @@ interface ClassSearchProps {
 
 export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
   const { floors, classes: dbClasses } = useAppContext();
-  const { t } = useTranslation();
+  const { t, s } = useTranslation();
   const [selectedLevel, setSelectedLevel] = useState<string | null>(null);
   
   // Initialize with the query passed from HomeScreen if available
@@ -38,12 +38,16 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
         const version = c.version || '';
         const floorName = f.name || '';
         
+        // Include Bengali translations in search slug
+        const slugBN = `${t(name)} ${room} ${t(teacher)} ${t(section)} ${t(version)} ${t(floorName)}`.toLowerCase();
+        const slugEN = `${name} ${room} ${teacher} ${section} ${version} ${floorName}`.toLowerCase();
+
         roomsMap.set(room, {
           ...c,
           floorName,
           floorId: f.id,
           floorLabel: f.label,
-          searchSlug: `${name} ${room} ${teacher} ${section} ${version} ${floorName}`.toLowerCase()
+          searchSlug: `${slugEN} ${slugBN}`
         });
       });
     });
@@ -59,17 +63,20 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
       const version = c.version || '';
       const floorName = floor?.name || 'Unknown Floor';
 
+      const slugBN = `${t(name)} ${room} ${t(teacher)} ${t(section)} ${t(version)} ${t(floorName)}`.toLowerCase();
+      const slugEN = `${name} ${room} ${teacher} ${section} ${version} ${floorName}`.toLowerCase();
+
       roomsMap.set(room, {
         ...c,
         floorName,
         floorId: floor?.id || 'unknown',
         floorLabel: floor?.label || '?',
-        searchSlug: `${name} ${room} ${teacher} ${section} ${version} ${floorName}`.toLowerCase()
+        searchSlug: `${slugEN} ${slugBN}`
       });
     });
 
     return Array.from(roomsMap.values());
-  }, [floors, dbClasses]);
+  }, [floors, dbClasses, t]);
 
   // 3. Search & Filter Logic
   const filteredResults = useMemo(() => {
@@ -196,7 +203,7 @@ export function ClassSearch({ onNavigate, initialQuery }: ClassSearchProps) {
 
 // SHARED PRO ROOM CARD
 function RoomCard({ room, onNavigate }: { room: any, onNavigate: (v: string, d?: any) => void }) {
-  const { t } = useTranslation();
+  const { t, s } = useTranslation();
   return (
     <Card className="group bg-gradient-to-br from-[#1a2e1c] to-[#0d1f0f] border border-white/5 hover:border-[#fbbf24]/30 rounded-[2rem] overflow-hidden shadow-2xl transition-all duration-300">
       <CardContent className="p-0">
