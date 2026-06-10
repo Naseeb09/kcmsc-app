@@ -18,6 +18,8 @@ import { LostAndFound } from '@/app/components/LostAndFound';
 import { BottomNavigation } from '@/app/components/BottomNavigation';
 import { LoadingScreen } from '@/app/components/LoadingScreen';
 import { AppProvider, useAppContext } from '@/context/AppContext';
+import { GlitchedAI } from '@/app/components/GlitchedAI';
+import { Bot } from 'lucide-react';
 
 import { Toaster } from '@/app/components/ui/sonner';
 import { LanguageToggle } from '@/app/components/LanguageToggle';
@@ -26,8 +28,13 @@ function AppContent() {
   const { isLoading, isAdmin } = useAppContext();
   const [currentView, setCurrentView] = useState('home');
   const [navigationData, setNavigationData] = useState<any>(null);
+  const [isBotOpen, setIsBotOpen] = useState(false);
 
   const handleNavigate = (view: string, data?: any) => {
+    if (view === 'bot') {
+      setIsBotOpen(true);
+      return;
+    }
     setNavigationData(data || null);
     setCurrentView(view);
     // Scroll to top when navigating
@@ -96,6 +103,21 @@ function AppContent() {
         <div className="flex-1 pb-32">
           {renderView()}
         </div>
+
+        {/* Floating AI Bot Button */}
+        {!isBotOpen && (
+          <div className="fixed bottom-28 right-6 z-[60]">
+            <button 
+              onClick={() => setIsBotOpen(true)}
+              className="w-14 h-14 rounded-2xl bg-[#059669] text-white flex items-center justify-center shadow-[0_0_20px_rgba(5,150,105,0.4)] border border-[#fbbf24]/30 active:scale-90 transition-all group"
+            >
+              <Bot className="w-7 h-7 group-hover:animate-bounce" />
+              <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#fbbf24] rounded-full border-2 border-[#0d1f0f] animate-pulse" />
+            </button>
+          </div>
+        )}
+
+        <GlitchedAI isOpen={isBotOpen} onClose={() => setIsBotOpen(false)} />
 
         {/* Bottom Navigation */}
         <BottomNavigation currentView={currentView} onNavigate={handleNavigate} />
