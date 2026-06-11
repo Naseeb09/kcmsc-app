@@ -75,6 +75,8 @@ interface AppContextType {
   facilities: Facility[];
   isAdmin: boolean;
   isLoading: boolean;
+  isFabElevated: boolean;
+  setIsFabElevated: (val: boolean) => void;
   language: 'en' | 'bn';
   setLanguage: (lang: 'en' | 'bn') => void;
   setIsAdmin: (isAdmin: boolean) => void;
@@ -150,6 +152,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [facilities, setFacilities] = useState<Facility[]>(verifiedFacilities as any);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isFabElevated, setIsFabElevated] = useState(false);
   const [language, setLanguage] = useState<'en' | 'bn'>('en');
 
   useEffect(() => {
@@ -337,12 +340,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const addFloor = (floor: Omit<FloorData, 'id'>) => console.warn('Write operations are disabled in this build.');
   const updateFloor = (id: string, floor: Omit<FloorData, 'id'>) => console.warn('Write operations are disabled in this build.');
   const deleteFloor = (id: string) => console.warn('Write operations are disabled in this build.');
-
-  return (
-    <AppContext.Provider value={{ 
-      events, notices, floors, teachers, classes, facilities, isAdmin, isLoading, setIsAdmin,
-      language, setLanguage: handleSetLanguage,
-      saveNotice, deleteNotice, saveEvent, deleteEvent,
+return (
+  <AppContext.Provider value={{ 
+    events, notices, floors, teachers, classes, facilities, isAdmin, isLoading, setIsAdmin,
+    isFabElevated, setIsFabElevated,
+    language, setLanguage: handleSetLanguage,
+    saveNotice, deleteNotice, saveEvent, deleteEvent,
+...
       addFloor, updateFloor, deleteFloor,
       saveTeacher, deleteTeacher, 
       saveClass, deleteClass,

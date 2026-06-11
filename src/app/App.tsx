@@ -28,7 +28,7 @@ import { Toaster } from '@/app/components/ui/sonner';
 import { LanguageToggle } from '@/app/components/LanguageToggle';
 
 function AppContent() {
-  const { isLoading, isAdmin } = useAppContext();
+  const { isLoading, isAdmin, isFabElevated } = useAppContext();
   const [currentView, setCurrentView] = useState('home');
   const [navigationData, setNavigationData] = useState<{
     student?: Student;
@@ -133,12 +133,11 @@ function AppContent() {
 
         {/* Floating AI Bot Button */}
         {!isBotOpen && (
-          <div className="fixed bottom-28 right-6 z-[60]">
-            <button 
+          <div className={`fixed ${isFabElevated ? 'bottom-52' : 'bottom-28'} right-6 z-[60] transition-all duration-500 ease-in-out`}>
+            <button
               onClick={() => setIsBotOpen(true)}
               className="w-14 h-14 rounded-2xl bg-[#059669] text-white flex items-center justify-center shadow-[0_0_20px_rgba(5,150,105,0.4)] border border-[#fbbf24]/30 active:scale-90 transition-all group"
-            >
-              <Bot className="w-7 h-7 group-hover:animate-bounce" />
+            >              <Bot className="w-7 h-7 group-hover:animate-bounce" />
               <div className="absolute -top-1 -right-1 w-4 h-4 bg-[#fbbf24] rounded-full border-2 border-[#0d1f0f] animate-pulse" />
             </button>
           </div>

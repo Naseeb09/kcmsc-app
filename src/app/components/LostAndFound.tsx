@@ -37,7 +37,7 @@ interface Comment {
 
 export function LostAndFound({ onNavigate }: LostAndFoundProps) {
   const { t, s } = useTranslation();
-  const { isAdmin } = useAppContext();
+  const { isAdmin, setIsFabElevated } = useAppContext();
   const [items, setItems] = useState<ItemPost[]>([]);
   const [isPosting, setIsPosting] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -102,8 +102,13 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
   useEffect(() => {
     if (selectedPost) {
       fetchComments(selectedPost.id);
+      setIsFabElevated(true);
+    } else {
+      setIsFabElevated(false);
     }
-  }, [selectedPost?.id]);
+
+    return () => setIsFabElevated(false);
+  }, [selectedPost?.id, setIsFabElevated]);
 
   const fetchComments = async (postId: string) => {
     try {
