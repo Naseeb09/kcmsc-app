@@ -1,0 +1,89 @@
+:root {
+  --bg-color: #0f172a;
+  --surface-color: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent-primary: #38bdf8;
+  --accent-secondary: #6366f1;
+  --border-color: #334155;
+  --border-width: 2px;
+  --shadow-offset: 4px;
+  --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-primary);
+  font-family: var(--font-main);
+  line-height: 1.6;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+#root {
+  height: 100%;
+  display: flex;
+}
+
+button {
+  cursor: pointer;
+  background: var(--accent-primary);
+  color: #0f172a;
+  border: var(--border-width) solid var(--border-color);
+  padding: 0.6rem 1.2rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--border-color);
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--border-color);
+}
+
+button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px var(--border-color);
+}
+
+button:disabled {
+  background: var(--surface-color);
+  color: var(--text-secondary);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.brutalist-card {
+  background: var(--surface-color);
+  color: var(--text-primary);
+  border: var(--border-width) solid var(--border-color);
+  padding: 1.5rem;
+  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--border-color);
+}
+
+.neo-input {
+  background: var(--surface-color);
+  border: var(--border-width) solid var(--border-color);
+  color: var(--text-primary);
+  padding: 1rem;
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  outline: none;
+  width: 100%;
+  transition: border-color 0.2s;
+}
+
+.neo-input:focus {
+  border-color: var(--accent-primary);
+}
