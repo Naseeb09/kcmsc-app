@@ -69,7 +69,7 @@ STRICT GUARDRAILS:
 - NO YAPPING. STRUCTURED DATA ONLY.
 - RESPONSES MUST BE BOLD AND PROFESSIONAL."""
 
-@app.post("/api/chat", response_model=ChatResponse)
+@app.post("/", response_model=ChatResponse)
 async def chat(request: ChatRequest):
     start_time = asyncio.get_event_loop().time()
     
