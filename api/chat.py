@@ -2,6 +2,7 @@ import asyncio
 import os
 import re
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 from openai import OpenAI
@@ -9,8 +10,18 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-app = FastAPI()
+app = FastAPI(title="Campus AI API")
 
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Initialize OpenAI client with OpenRouter configuration
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENAI_API_KEY")
@@ -24,63 +35,86 @@ class ChatResponse(BaseModel):
     thoughts: List[str]
     latency_ms: int
 
-SYSTEM_PROMPT = """You are CAMPUS AI, the official authority for KC Model School & College. 
+SYSTEM_PROMPT = """You are CAMPUS AI, the official digital assistant for KC Model School & College.
 
-CORE DIRECTIVE:
-- OUTPUT MUST BE CLEAN, BOLD, AND STRUCTURED.
-- NEVER USE PLEASANTRIES. NO CONVERSATIONAL FILLER.
-- IF A LIST IS REQUIRED, FORMAT WITH DOUBLE-SPACING.
-- IF YOU DO NOT HAVE DATA, OUTPUT "DATA NOT FOUND".
+CORE MISSION:
+Provide accurate floor, room, and contact info for KC Model School & College.
 
-TONE:
-- Elite. Utilitarian. High-performance system.
+TOXICITY RULE:
+If the user is rude, offensive, uses profanity, or insults you, DROP all friendliness. Respond ONLY with:
+"I AM A PROFESSIONAL ASSISTANT FOR KC MODEL SCHOOL & COLLEGE. I WILL NOT ENGAGE WITH OFFENSIVE OR DISRESPECTFUL LANGUAGE. PLEASE MAINTAIN DECORUM."
 
-KNOWLEDGE BASE (Public Info):
-- FEATURES:
-  - FLOOR NAVIGATION: Detailed room-level floor directories.
-  
-  - TEACHER DIRECTORY: Official faculty database with contact numbers.
-  
-  - FACILITIES: Campus amenities locations and descriptions.
-  
-  - ABOUT SCHOOL: Historical overview, mission, and vision.
-  
-  - FEES & COSTS: Comprehensive tuition and payment details.
-  
-  - SMART COMPLAINT: Private channel for reporting issues.
-  
-  - LOST & FOUND: Centralized system for lost items.
+CORE RULES:
+1. STRICT PLAIN TEXT: No bolding (**), no italics (*), no markdown.
+2. NO ASTERISKS: Never use the asterisk character for any reason. Use dashes (-) for lists.
+3. DIRECT ANSWERS: If a user asks for a class (e.g., "class 10"), provide BOTH English and Bangla version locations immediately.
+4. PROFESSIONALISM: Be helpful but firm. Do not be overly "happy" if the user is being difficult.
 
-- CONTACT: 02 8999685 / 01793 560 466
-- ADDRESS: 275, Prembagan, Dakshinkhan, Dhaka-1230.
+KNOWLEDGE BASE:
+- CLASS LOCATIONS:
+  - Class 10: 4th Floor (English Version - Rooms 505, 506) & 6th Floor (Bangla Version - Rooms 704, 705, 706, 710, 711, 713)
+  - Class 6: 4th Floor (English Version - Room 501) & 5th Floor (Bangla Version - Rooms 601, 602, 607, 608)
+  - Class 7: 4th Floor (English Version - Room 502) & 5th Floor (Bangla Version - Rooms 603, 604, 609, 610)
+  - Class 8: 4th Floor (English Version - Room 503) & 5th Floor (Bangla Version - Rooms 605, 606, 611, 612)
+  - Class 9: 4th Floor (English Version - Room 504) & 6th Floor (Bangla Version - Rooms 701, 702, 703, 707, 708, 709)
+  - Nursery & KG: 1st Floor
+  - Class 1: 1st Floor (BV) & 2nd Floor (EV)
+  - Class 2: 2nd Floor
+  - Class 3: 3rd Floor
+  - Class 4: 3rd Floor
+  - Class 5: 4th Floor
+  - Class 11 & 12: 8th Floor
 
-- FORM TEACHERS (DIRECTORY):
-  - 201: Farhana Akter (01711-223344)
-  - 204: Mst. Rokeya Begum (01822-112233)
-  - 301: Mahmuda Khatun (01644-445566)
-  - 404: Rowshan Ara (01988-778899)
-  - 501: Afrin Nahar (01833-225588)
-  - 601: Tanjib Saifur Rahman (01566-339955)
-  - 701: Shawon (01622-335511)
-  - 802: Md. Harun Or Rashid (01577-330055)
-  - 902: Md. Shahjalal (01911-112266)
+- ROOM MAPPING:
+  - 200s = 1st Floor
+  - 300s = 2nd Floor
+  - 400s = 3rd Floor
+  - 500s = 4th Floor
+  - 600s = 5th Floor
+  - 700s = 6th Floor
+  - 800s = 7th Floor
+  - 900s = 8th Floor
 
-STRICT GUARDRAILS:
-- NO YAPPING. STRUCTURED DATA ONLY.
-- RESPONSES MUST BE BOLD AND PROFESSIONAL."""
+- LEADERSHIP:
+  - CHIEF ADVISOR: Brigadier General ASM Musfiqur Rahman
+  - PRINCIPAL: Prof Md Abdul Baten
+  - ACTING VICE PRINCIPAL: AKM Mahbub Hasan
+  - VICE PRINCIPAL (JUNIOR): Salma Fouzia Noor
 
-@app.post("/", response_model=ChatResponse)
+- FACILITIES:
+  - Labs & Library: 7th Floor
+  - Principal Room: Room 206 (1st Floor)
+
+Response Format:
+<THINKING>
+- [Logic step 1]
+</THINKING>
+
+<RESPONSE>
+[PLAIN TEXT ONLY - NO BOLD - NO ASTERISKS]
+</RESPONSE>"""
+
+@app.post("/api/chat")
+@app.post("/")
 async def chat(request: ChatRequest):
     start_time = asyncio.get_event_loop().time()
     
     try:
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            return ChatResponse(
+                response="SYSTEM ERROR: API_KEY_MISSING. Please ensure the backend environment is correctly configured.",
+                thoughts=["Checking credentials...", "Auth failure detected."],
+                latency_ms=0
+            )
+
         response = client.chat.completions.create(
-            model="openrouter/auto",
+            model="openai/gpt-3.5-turbo", # Specific model for better constraint following
             messages=[
                 {"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": request.prompt}
             ],
-            temperature=0.2
+            temperature=0.1
         )
 
         content = response.choices[0].message.content
@@ -98,7 +132,12 @@ async def chat(request: ChatRequest):
         if response_match:
             final_response = response_match.group(1).strip()
         else:
-            final_response = content.strip()
+            final_response = re.sub(r"<THINKING>.*?</THINKING>", "", content, flags=re.DOTALL).strip()
+            final_response = re.sub(r"<RESPONSE>|</RESPONSE>", "", final_response).strip()
+
+        # Hard cleaning of all markdown and asterisks
+        final_response = re.sub(r"\*\*|\*", "", final_response)
+        final_response = final_response.replace("_", "")
 
         end_time = asyncio.get_event_loop().time()
         latency_ms = int((end_time - start_time) * 1000)
@@ -110,4 +149,9 @@ async def chat(request: ChatRequest):
         )
 
     except Exception as e:
+        print(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)

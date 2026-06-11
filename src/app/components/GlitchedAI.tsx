@@ -15,7 +15,7 @@ export function GlitchedAI({ isOpen, onClose }: { isOpen: boolean; onClose: () =
   const { t, s } = useTranslation();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { role: 'bot', content: 'SYSTEM READY. ENTER COMMAND OR QUERY.' }
+    { role: 'bot', content: 'HELLO! I AM CAMPUS AI. HOW CAN I HELP YOU NAVIGATE KC MODEL SCHOOL & COLLEGE TODAY?' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [latency, setLatency] = useState(0);
@@ -46,11 +46,12 @@ export function GlitchedAI({ isOpen, onClose }: { isOpen: boolean; onClose: () =
       if (!response.ok) throw new Error('Backend unavailable');
 
       const data = await response.json();
-      setMessages(prev => [...prev, { role: 'bot', content: data.response }]);
+      const cleanResponse = data.response.replace(/\*\*|\*/g, '');
+      setMessages(prev => [...prev, { role: 'bot', content: cleanResponse }]);
       setLatency(data.latency_ms);
     } catch (error) {
       console.error('AI Backend Error:', error);
-      setMessages(prev => [...prev, { role: 'bot', content: 'SYSTEM ERROR: CONNECTION_FAILED' }]);
+      setMessages(prev => [...prev, { role: 'bot', content: 'SYSTEM ERROR: CONNECTION_FAILED. PLEASE ENSURE THE AI BACKEND IS OPERATIONAL.' }]);
     } finally {
       setIsTyping(false);
     }
@@ -73,7 +74,7 @@ export function GlitchedAI({ isOpen, onClose }: { isOpen: boolean; onClose: () =
               </div>
               <div>
                 <h2 className="text-sm font-black text-white uppercase tracking-widest leading-none mb-1">CAMPUS <span className="text-[#fbbf24]">AI</span></h2>
-                <p className="text-[10px] text-[#a0b5a3] font-bold uppercase tracking-widest">{isTyping ? 'PROCESSING...' : 'READY'}</p>
+                <p className="text-[10px] text-[#a0b5a3] font-bold uppercase tracking-widest">{isTyping ? 'ANALYZING...' : 'ONLINE'}</p>
               </div>
             </div>
             <button onClick={onClose} className="p-3 rounded-xl bg-[#0d1f0f] text-[#a0b5a3] hover:text-white transition-colors border border-white/5">
