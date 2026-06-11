@@ -71,6 +71,7 @@ function AppContent() {
           student={navigationData.student}
           roomName={navigationData.roomName || ''}
           className={navigationData.className || ''}
+          teacherNumber={navigationData.classInfo?.teacherNumber || 'N/A'}
         />
       );
     }
@@ -165,13 +166,14 @@ function StudentDirectory({ onBack, onNavigate, classInfo, floorId }: { onBack: 
     const firstNames = ['Arif', 'Tahmid', 'Nusrat', 'Sadia', 'Mashrafe', 'Tamim', 'Sakib', 'Fariha', 'Anika', 'Zubayer', 'Mahmud', 'Raisa', 'Sumaiya'];
     const lastNames = ['Hasan', 'Ahmed', 'Islam', 'Rahman', 'Jahan', 'Akter', 'Khan', 'Sultana', 'Chowdhury', 'Hossain'];
     
-    const getGrade = (score: number) => {
-      if (score >= 80) return { gpa: 5.00, label: 'A+' };
-      if (score >= 70) return { gpa: 4.00, label: 'A' };
-      if (score >= 60) return { gpa: 3.50, label: 'A-' };
-      if (score >= 50) return { gpa: 3.00, label: 'B' };
-      if (score >= 40) return { gpa: 2.00, label: 'C' };
-      if (score >= 33) return { gpa: 1.00, label: 'D' };
+    const getGrade = (score: number, fullMarks: number = 100) => {
+      const percentage = (score / fullMarks) * 100;
+      if (percentage >= 80) return { gpa: 5.00, label: 'A+' };
+      if (percentage >= 70) return { gpa: 4.00, label: 'A' };
+      if (percentage >= 60) return { gpa: 3.50, label: 'A-' };
+      if (percentage >= 50) return { gpa: 3.00, label: 'B' };
+      if (percentage >= 40) return { gpa: 2.00, label: 'C' };
+      if (percentage >= 33) return { gpa: 1.00, label: 'D' };
       return { gpa: 0.00, label: 'F' };
     };
 
@@ -184,7 +186,7 @@ function StudentDirectory({ onBack, onNavigate, classInfo, floorId }: { onBack: 
       ];
 
       const gradeStr = className.toLowerCase();
-      
+
       if (gradeStr.includes('9') || gradeStr.includes('10')) {
         return [
           ...basic,
@@ -220,22 +222,33 @@ function StudentDirectory({ onBack, onNavigate, classInfo, floorId }: { onBack: 
     const count = 12; // Fixed count for consistency
     const strengthsPool = ['Analytical Thinking', 'Punctuality', 'Creative Writing', 'Problem Solving', 'Public Speaking', 'Peer Support', 'Quick Learner', 'Active Participation', 'Neat Handwriting', 'Logical Reasoning'];
     const improvementsPool = ['Note-taking speed', 'Peer collaboration', 'Time management', 'Focus during lectures', 'Spelling accuracy', 'Calculative speed', 'Classroom engagement', 'Homework consistency', 'Vocabulary range', 'Critical thinking'];
-    
+
     const tempStudents = Array.from({ length: count }, (_, i) => {
       const name = `${firstNames[Math.floor(Math.random() * firstNames.length)]} ${lastNames[Math.floor(Math.random() * lastNames.length)]}`;
       const attendance = Math.floor(Math.random() * (98 - 45) + 45); // Much wider range for variety
-      
+
       // Generate unique subject scores with more variance
-      const subjects = getSubjectsForClass(classInfo.name).map(sub => ({
-        ...sub,
-        score: Math.floor(Math.random() * 65 + 35) // 35-100 range for more drama
-      }));
+      const subjects = getSubjectsForClass(classInfo.name).map(sub => {
+        const isArt = sub.name.toLowerCase().includes('art');
+        const fullMarks = isArt ? 50 : 100;
+        return {
+          ...sub,
+          score: isArt 
+            ? Math.floor(Math.random() * 25 + 25) // 25-50 range
+            : Math.floor(Math.random() * 65 + 35) // 35-100 range
+        };
+      });
 
-      const avgScore = Math.floor(subjects.reduce((acc, s) => acc + s.score, 0) / subjects.length);
-      const totalGPA = subjects.reduce((acc, s) => acc + getGrade(s.score).gpa, 0) / subjects.length;
-      const gpa = totalGPA.toFixed(2);
+      const totalFullMarks = subjects.reduce((acc, s) => acc + (s.name.toLowerCase().includes('art') ? 50 : 100), 0);
+      const totalObtained = subjects.reduce((acc, s) => acc + s.score, 0);
+      const avgScore = Math.floor((totalObtained / totalFullMarks) * 100);
 
-      // Performance Health is a mix of GPA, attendance, and homework
+      const totalGPA = subjects.reduce((acc, s) => {
+        const isArt = s.name.toLowerCase().includes('art');
+        return acc + getGrade(s.score, isArt ? 50 : 100).gpa;
+      }, 0) / subjects.length;
+
+      const gpa = totalGPA.toFixed(2);      // Performance Health is a mix of GPA, attendance, and homework
       const hwRate = 60 + Math.floor(Math.random() * 40);
       const performanceHealth = Math.floor((totalGPA / 5 * 40) + (attendance / 100 * 40) + (hwRate / 100 * 20));
 

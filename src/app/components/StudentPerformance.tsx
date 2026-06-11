@@ -54,11 +54,12 @@ interface StudentPerformanceProps {
   student: Student;
   roomName: string;
   className: string;
+  teacherNumber?: string;
 }
 
 // --- Component ---
 
-export function StudentPerformance({ onBack, student, roomName, className }: StudentPerformanceProps) {
+export function StudentPerformance({ onBack, student, roomName, className, teacherNumber = 'N/A' }: StudentPerformanceProps) {
   const { t, s } = useTranslation();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [studentIdInput, setStudentIdInput] = useState('');
@@ -78,16 +79,30 @@ export function StudentPerformance({ onBack, student, roomName, className }: Stu
 
   const handleMessageTeacher = () => {
     const message = `Hello, I am the guardian of ${student.name} (Roll: ${student.rollNo}, Class: ${className}). I would like to discuss...`;
-    window.location.href = `sms:?body=${encodeURIComponent(message)}`;
+    
+    // Platform detection for SMS link optimization
+    const isAndroid = /Android/i.test(navigator.userAgent);
+    
+    // Clean teacher number (remove dashes and spaces)
+    const cleanNumber = teacherNumber !== 'N/A' ? teacherNumber.replace(/[^0-9+]/g, '') : '';
+    
+    // Universal SMS body population:
+    // Android: sms:[number]?body=... (Requires ? and body)
+    // iOS: sms:[number];body=... (Requires ; and body)
+    const separator = isAndroid ? '?' : ';';
+    const smsUrl = `sms:${cleanNumber}${separator}body=${encodeURIComponent(message)}`;
+    
+    window.location.href = smsUrl;
   };
 
-  const getGradeInfo = (score: number) => {
-    if (score >= 80) return { label: 'A+', gpa: '5.00' };
-    if (score >= 70) return { label: 'A', gpa: '4.00' };
-    if (score >= 60) return { label: 'A-', gpa: '3.50' };
-    if (score >= 50) return { label: 'B', gpa: '3.00' };
-    if (score >= 40) return { label: 'C', gpa: '2.00' };
-    if (score >= 33) return { label: 'D', gpa: '1.00' };
+  const getGradeInfo = (score: number, fullMarks: number = 100) => {
+    const percentage = (score / fullMarks) * 100;
+    if (percentage >= 80) return { label: 'A+', gpa: '5.00' };
+    if (percentage >= 70) return { label: 'A', gpa: '4.00' };
+    if (percentage >= 60) return { label: 'A-', gpa: '3.50' };
+    if (percentage >= 50) return { label: 'B', gpa: '3.00' };
+    if (percentage >= 40) return { label: 'C', gpa: '2.00' };
+    if (percentage >= 33) return { label: 'D', gpa: '1.00' };
     return { label: 'F', gpa: '0.00' };
   };
 
@@ -179,11 +194,13 @@ export function StudentPerformance({ onBack, student, roomName, className }: Stu
             </thead>
             <tbody>
               {student.subjects.map((s, i) => {
-                const info = getGradeInfo(s.score);
+                const isArt = s.name.toLowerCase().includes('art');
+                const fullMarks = isArt ? 50 : 100;
+                const info = getGradeInfo(s.score, fullMarks);
                 return (
                   <tr key={i}>
                     <td className="border-2 border-black p-2 font-bold">{s.name}</td>
-                    <td className="border-2 border-black p-2 text-center">100</td>
+                    <td className="border-2 border-black p-2 text-center">{fullMarks}</td>
                     <td className="border-2 border-black p-2 text-center">{s.score}</td>
                     <td className="border-2 border-black p-2 text-center font-black">{info.label}</td>
                     <td className="border-2 border-black p-2 text-center">{info.gpa}</td>
@@ -526,17 +543,22 @@ export function StudentPerformance({ onBack, student, roomName, className }: Stu
                 </div>
 
                 <div className="space-y-5">
-                   {student.subjects.map((sub, i) => (
-                     <div key={i} className="space-y-2">
-                        <div className="flex justify-between items-end">
-                           <p className="text-xs font-black text-white uppercase tracking-wider">{sub.name}</p>
-                           <p className="text-xs font-black text-white">{sub.score}<span className="text-[10px] text-[#a0b5a3]/50">/100</span></p>
-                        </div>
-                        <div className="w-full h-1.5 bg-[#0d1f0f] rounded-full overflow-hidden">
-                           <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${sub.score}%`, backgroundColor: sub.color }} />
-                        </div>
-                     </div>
-                   ))}
+                   {student.subjects.map((sub, i) => {
+                     const isArt = sub.name.toLowerCase().includes('art');
+                     const fullMarks = isArt ? 50 : 100;
+                     const percentage = (sub.score / fullMarks) * 100;
+                     return (
+                       <div key={i} className="space-y-2">
+                          <div className="flex justify-between items-end">
+                             <p className="text-xs font-black text-white uppercase tracking-wider">{sub.name}</p>
+                             <p className="text-xs font-black text-white">{sub.score}<span className="text-[10px] text-[#a0b5a3]/50">/{fullMarks}</span></p>
+                          </div>
+                          <div className="w-full h-1.5 bg-[#0d1f0f] rounded-full overflow-hidden">
+                             <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${percentage}%`, backgroundColor: sub.color }} />
+                          </div>
+                       </div>
+                     );
+                   })}
                 </div>
 
                 <div className="pt-6 border-t border-white/5 flex justify-between items-center">
