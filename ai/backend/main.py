@@ -95,16 +95,9 @@ KNOWLEDGE BASE:
   - Vice Principal Junior: Room 309 (2nd Floor)
   - Vice Principal Senior: Room 801 (7th Floor)
 
-Response Format:
-<THINKING>
-- [Logic step 1]
-</THINKING>
-
-<RESPONSE>
-[CONCISE PLAIN TEXT RESPONSE]
-</RESPONSE>"""
-  - 800s = 7th Floor
-  - 900s = 8th Floor
+- ROOM NUMBERING:
+  - 800s: 7th Floor
+  - 900s: 8th Floor
 
 Response Format:
 <THINKING>
@@ -116,6 +109,7 @@ Response Format:
 </RESPONSE>"""
 
 @app.post("/api/chat")
+@app.post("/chat")
 @app.post("/")
 async def chat(request: ChatRequest):
     start_time = asyncio.get_event_loop().time()
