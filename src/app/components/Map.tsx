@@ -11,7 +11,7 @@ interface MapProps {
 
 export function Map({ onNavigate }: MapProps) {
   const { t, s, language } = useTranslation();
-  const pinterestUrl = "https://www.pinterest.com/kcmscofficial/";
+  const pinterestUrl = "https://pin.it/bkib0UavH";
 
   return (
     <div className="pb-24 bg-[#0d1f0f] min-h-screen font-sans selection:bg-[#fbbf24] selection:text-[#0d1f0f]">
