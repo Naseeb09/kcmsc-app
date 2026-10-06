@@ -175,9 +175,9 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
     
     try {
       for (const file of Array.from(files)) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${Math.random()}.${fileExt}`;
-        const filePath = `lost-found/${fileName}`;
+        const fileExt = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '');
+        const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+        const filePath = `items/${fileName}`;
 
         const { error: uploadError } = await supabase.storage
           .from('lost-and-found')

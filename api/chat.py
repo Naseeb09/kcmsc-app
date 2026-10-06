@@ -24,7 +24,7 @@ app.add_middleware(
 # Initialize OpenAI client with OpenRouter configuration
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENAI_API_KEY")
+    api_key=os.getenv("OPENAI_API_KEY") or "placeholder"
 )
 
 class ChatRequest(BaseModel):
@@ -101,11 +101,9 @@ Response Format:
 - [Logic step 1]
 </THINKING>
 
-<RESPONSE>
-[CONCISE PLAIN TEXT RESPONSE]
-</RESPONSE>"""
-  - 800s = 7th Floor
-  - 900s = 8th Floor
+- ROOM NUMBERING:
+  - 800s: 7th Floor
+  - 900s: 8th Floor
 
 Response Format:
 <THINKING>

@@ -148,56 +148,33 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [notices, setNotices] = useState<Notice[]>(defaultNotices);
   const [floors, setFloors] = useState<FloorData[]>(campusData);
   const [teachers, setTeachers] = useState<Teacher[]>(DEFAULT_ADMINS);
-  const [classes, setClasses] = useState<ClassInfo[]>([]);
+  const [classes, setClasses] = useState<ClassInfo[]>(() => campusData.flatMap(f => f.classes || []));
   const [facilities, setFacilities] = useState<Facility[]>(verifiedFacilities as any);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isFabElevated, setIsFabElevated] = useState(false);
   const [language, setLanguage] = useState<'en' | 'bn'>('en');
 
   useEffect(() => {
-    // Load saved language from localStorage if available
-    const savedLang = localStorage.getItem('app-language') as 'en' | 'bn';
-    if (savedLang && (savedLang === 'en' || savedLang === 'bn')) {
-      setLanguage(savedLang);
+    // Load saved language safely from localStorage if available
+    try {
+      const savedLang = localStorage.getItem('app-language') as 'en' | 'bn';
+      if (savedLang && (savedLang === 'en' || savedLang === 'bn')) {
+        setLanguage(savedLang);
+      }
+    } catch (e) {
+      // Ignored if storage access is restricted in mobile emulator/iframe
     }
   }, []);
 
   const handleSetLanguage = (lang: 'en' | 'bn') => {
     setLanguage(lang);
-    localStorage.setItem('app-language', lang);
-  };
-
-  useEffect(() => {
-    const init = async () => {
-      setIsLoading(true);
-      try {
-        await fetchInitialData();
-      } catch (error) {
-        console.error('INIT_ERROR:', error);
-        setIsLoading(false);
-      }
-    };
-    init();
-    
-    // Safety check for setupSubscriptions
-    let channels: any[] = [];
     try {
-      channels = setupSubscriptions();
-    } catch (error) {
-      console.warn('SUBSCRIPTION_SETUP_FAILED:', error);
+      localStorage.setItem('app-language', lang);
+    } catch (e) {
+      // Ignored if storage access is restricted
     }
-
-    return () => {
-      try {
-        channels.forEach(channel => {
-          if (channel) supabase.removeChannel(channel);
-        });
-      } catch (error) {
-        console.error('SUBSCRIPTION_CLEANUP_FAILED:', error);
-      }
-    };
-  }, []);
+  };
 
   // Run migration if no data exists - DISABLED for Read-Only App
   /*
@@ -288,11 +265,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const setupSubscriptions = () => {
-    return ['notices', 'events', 'teachers', 'classes', 'facilities'].map(table => 
-      supabase.channel(`${table}-changes`)
-        .on('postgres_changes', { event: '*', table, schema: 'public' }, () => { fetchInitialData(); })
-        .subscribe()
-    );
+    // Subscriptions for lost and found are managed inside LostAndFound component
+    return [];
   };
 
   const saveNotice = async (notice: Partial<Notice>) => {

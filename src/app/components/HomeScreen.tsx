@@ -41,27 +41,37 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
     }
   };
 
+  const isAutoScrolling = useRef(false);
+
   useEffect(() => {
     if (displayEvents.length === 0) return;
     const timer = setInterval(() => {
       if (!scrollRef.current) return;
-      const nextIndex = (activeIndex + 1) % displayEvents.length;
-      const cardWidth = 280 + 20; 
-      scrollRef.current.scrollTo({
-        left: nextIndex * cardWidth,
-        behavior: 'smooth'
+      setActiveIndex(prev => {
+        const nextIndex = (prev + 1) % displayEvents.length;
+        const cardWidth = 300; 
+        isAutoScrolling.current = true;
+        scrollRef.current?.scrollTo({
+          left: nextIndex * cardWidth,
+          behavior: 'smooth'
+        });
+        setTimeout(() => {
+          isAutoScrolling.current = false;
+        }, 600);
+        return nextIndex;
       });
-      setActiveIndex(nextIndex);
     }, 5000);
     return () => clearInterval(timer);
-  }, [activeIndex, displayEvents.length]);
+  }, [displayEvents.length]);
 
   const handleScroll = () => {
-    if (!scrollRef.current) return;
+    if (isAutoScrolling.current || !scrollRef.current) return;
     const scrollPosition = scrollRef.current.scrollLeft;
-    const cardWidth = 280 + 20;
+    const cardWidth = 300;
     const newIndex = Math.round(scrollPosition / cardWidth);
-    if (newIndex !== activeIndex) setActiveIndex(newIndex);
+    if (newIndex >= 0 && newIndex < displayEvents.length && newIndex !== activeIndex) {
+      setActiveIndex(newIndex);
+    }
   };
 
   return (
