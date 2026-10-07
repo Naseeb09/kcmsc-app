@@ -9,6 +9,8 @@ import { Card, CardContent } from '@/app/components/ui/card';
 import { Badge } from '@/app/components/ui/badge';
 import { useTranslation } from '@/hooks/useTranslation';
 import { toast } from 'sonner';
+import { StudentDiaryView } from './StudentDiaryView';
+import { AcademicTimelineView } from './AcademicTimelineView';
 
 // --- Types ---
 
@@ -372,18 +374,24 @@ export function StudentPerformance({ onBack, student, roomName, className, teach
         </Card>
 
         {/* Navigation Tabs - CUSTOM IMPLEMENTATION */}
-        <div className="w-full bg-[#1a2e1c] border border-white/5 p-1.5 rounded-2xl mb-8 flex gap-1.5">
-          {['overview', 'academics', 'feedback', 'activity'].map((tab) => (
+        <div className="w-full bg-[#1a2e1c] border border-white/5 p-1 rounded-2xl mb-8 flex gap-1 overflow-x-auto no-scrollbar shadow-lg">
+          {[
+            { id: 'overview', label: 'Overview' },
+            { id: 'academics', label: 'Academics' },
+            { id: 'feedback', label: 'Feedback' },
+            { id: 'diary', label: 'Diary' },
+            { id: 'timeline', label: 'Timeline' },
+          ].map((tab) => (
             <button
-              key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`flex-1 py-3 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all ${
-                activeTab === tab 
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex-1 min-w-[62px] py-3 text-[9px] sm:text-[10px] font-black uppercase tracking-wider rounded-xl transition-all whitespace-nowrap ${
+                activeTab === tab.id 
                   ? 'bg-[#059669] text-white shadow-lg' 
                   : 'text-[#a0b5a3] hover:text-[#e8f5e9]'
               }`}
             >
-              {tab}
+              {tab.label}
             </button>
           ))}
         </div>
@@ -667,14 +675,14 @@ export function StudentPerformance({ onBack, student, roomName, className, teach
           </div>
         )}
 
-        {/* ACTIVITY CONTENT */}
-        {activeTab === 'activity' && (
-          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-             <div className="text-center py-20 opacity-30">
-                <LayoutDashboard size={48} className="mx-auto mb-4" />
-                <p className="text-xs font-black uppercase tracking-widest">Activity Log Coming Soon</p>
-             </div>
-          </div>
+        {/* DIARY CONTENT */}
+        {activeTab === 'diary' && (
+          <StudentDiaryView studentName={student.name} />
+        )}
+
+        {/* TIMELINE CONTENT */}
+        {activeTab === 'timeline' && (
+          <AcademicTimelineView />
         )}
       </main>
     </div>
