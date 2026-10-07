@@ -1,15 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const FALLBACK_URL = 'https://pjrbhqviexpqmtdgwurv.supabase.co';
+const FALLBACK_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBqcmJocXZpZXhwcW10ZGd3dXJ2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTEyODg5MDAsImV4cCI6MjEwNjg2NDkwMH0.wwFpHSA6-Xylgr_piob3n3SUgFAaXqTcJ9fiQaZRWaw';
 
-if (!supabaseUrl || !supabaseKey) {
-  console.warn('Supabase environment variables are missing. Please set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in your environment.');
-}
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || FALLBACK_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || FALLBACK_ANON_KEY;
 
-// Initialize with a placeholder if missing to avoid throwing during import
-// This allows the app to at least render the LoadingScreen or an Error state
-export const supabase = createClient(
-  supabaseUrl || 'https://placeholder.supabase.co', 
-  supabaseKey || 'placeholder'
-);
+export const supabase = createClient(supabaseUrl, supabaseKey);

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { ChevronLeft, Plus, Search, MapPin, Calendar, Camera, Send, AlertCircle, Trash2, X, MessageCircle, Reply, User } from 'lucide-react';
+import { ChevronLeft, Plus, Search, MapPin, Calendar, Camera, Send, AlertCircle, Trash2, X, MessageCircle, Reply, User, RefreshCw } from 'lucide-react';
 import { Input } from '@/app/components/ui/input';
 import { useTranslation } from '@/hooks/useTranslation';
 import { supabase } from '@/lib/supabase';
@@ -208,9 +208,20 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
-      setItems(data || []);
-    } catch (err) {
+      if (error) {
+        console.error('Error fetching lost and found items:', error);
+        throw error;
+      }
+      
+      const normalizedData = (data || []).map((item: any) => ({
+        ...item,
+        media_urls: Array.isArray(item.media_urls)
+          ? item.media_urls
+          : (typeof item.media_urls === 'string' && item.media_urls.startsWith('http') ? [item.media_urls] : [])
+      }));
+
+      setItems(normalizedData);
+    } catch (err: any) {
       console.error('Error fetching lost and found items:', err);
     } finally {
       setIsLoading(false);
@@ -241,6 +252,9 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
         contact_info: '',
         media_urls: []
       });
+
+      // Instantly refresh list so newly submitted item shows up immediately
+      await fetchItems();
     } catch (err: any) {
       console.error('Error posting item:', err);
       toast.error('Failed to post item: ' + err.message);
@@ -457,6 +471,14 @@ export function LostAndFound({ onNavigate }: LostAndFoundProps) {
             <h1 className={s("text-[14px] font-black text-white uppercase tracking-[0.2em]")}>{t('lost_and_found')}</h1>
             <p className={s("text-[10px] text-[#059669] font-bold uppercase tracking-widest mt-0.5")}>CAMPUS FORUM</p>
           </div>
+          <button
+            onClick={() => fetchItems()}
+            disabled={isLoading}
+            className="w-12 h-12 rounded-2xl bg-[#0d1f0f] flex items-center justify-center border border-[#059669]/30 text-[#059669] hover:text-[#fbbf24] hover:border-[#fbbf24]/30 active:scale-90 transition-all disabled:opacity-50"
+            title="Refresh forum"
+          >
+            <RefreshCw className={`w-5 h-5 ${isLoading ? 'animate-spin text-[#fbbf24]' : ''}`} />
+          </button>
           <button
             onClick={() => setIsPosting(true)}
             className="w-12 h-12 rounded-2xl bg-[#fbbf24] flex items-center justify-center border border-[#fbbf24]/20 text-[#0d1f0f] shadow-lg shadow-[#fbbf24]/20 active:scale-90 transition-all"
